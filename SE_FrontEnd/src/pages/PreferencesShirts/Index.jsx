@@ -15,6 +15,7 @@ import {
   Chip,
 } from "@mui/material"
 import CheckCircleIcon from "@mui/icons-material/CheckCircle"
+import { useNavigate } from "react-router-dom"
 
 // Import shirt images
 import modernImg from "../../assets/StylePreferences/larki1.jpeg"
@@ -25,6 +26,7 @@ import casualImg from "../../assets/StylePreferences/larki5.png"
 function PreferencesShirts() {
   const [selectedShirts, setSelectedShirts] = useState([])
   const [showError, setShowError] = useState(false)
+  const navigate = useNavigate()
 
   const shirtImages = [modernImg, businessImg, oldMoneyImg, casualImg]
 
@@ -174,6 +176,9 @@ function PreferencesShirts() {
                 backgroundColor: "rgba(63, 81, 181, 0.04)",
               },
             }}
+            onClick={() => {
+                navigate('/preferences/style')
+            }}
           >
             Back
           </Button>
@@ -181,6 +186,9 @@ function PreferencesShirts() {
             variant="contained"
             size="large"
             disabled={selectedShirts.length !== 3}
+            onClick={() => {
+                navigate("/preferences/pants")
+            }}
             sx={{
               px: 4,
               py: 1.5,

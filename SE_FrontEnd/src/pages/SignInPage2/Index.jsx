@@ -24,6 +24,16 @@ function LoginPage() {
   // Check if both email and password are filled
   const isFormValid = email !== "" && password !== "";
 
+  // Handle form submission
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (isFormValid) {
+      // Perform login action
+      navigate("/preferences/gender");
+    }
+  }
+
+
   return (
     <Box sx={pageContainer}>
       <Box sx={cardContainer}>
@@ -50,7 +60,7 @@ function LoginPage() {
         <Button
           variant="contained"
           sx={continueButton}
-          onClick={() => navigate("/explore")}
+          onClick={handleSubmit} // Call handleSubmit on button click
           disabled={!isFormValid} // Disable button if form is not valid
         >
           Continue

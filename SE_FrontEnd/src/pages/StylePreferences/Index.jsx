@@ -9,8 +9,10 @@ import {
   CardMedia,
   CardContent,
   CardActionArea,
+  Button,
+  Stack,
 } from "@mui/material"
-
+import { useNavigate } from "react-router-dom"
 
 // Import images
 import modernImg from "../../assets/StylePreferences/larki1.jpeg"
@@ -20,11 +22,11 @@ import casualImg from "../../assets/StylePreferences/larki5.png"
 
 function StylePreferences() {
   const [selectedStyle, setSelectedStyle] = useState(null)
+  const navigate = useNavigate()
 
   const handleStyleSelect = (style) => {
     setSelectedStyle(style)
   }
-
 
   const styleOptions = [
     { id: "modern", name: "Modern", image: modernImg },
@@ -32,8 +34,6 @@ function StylePreferences() {
     { id: "oldmoney", name: "Old Money", image: oldMoneyImg },
     { id: "casual", name: "Casual", image: casualImg },
   ]
-
-  console.log(styleOptions[0].image)
 
   return (
     <Box
@@ -70,8 +70,7 @@ function StylePreferences() {
       </Typography>
 
       {/* Main content */}
-      <Container maxWidth="lg" sx={{ flexGrow: 1}}>
-        {/* Title */}
+      <Container maxWidth="lg" sx={{ flexGrow: 1 }}>
         <Typography variant="h3" align="center" sx={{ mb: 2, fontWeight: 600 }}>
           Select your style
         </Typography>
@@ -79,21 +78,25 @@ function StylePreferences() {
           preferences
         </Typography>
 
-        <Grid container spacing={3} sx = {{
+        <Grid
+          container
+          spacing={3}
+          sx={{
             gap: 4,
             width: "100%",
             display: "flex",
             justifyContent: "center",
-        }}>
-          {styleOptions.map((style, index) => (
-            <Grid item xs={12} sm={6} key={style.id}>
+          }}
+        >
+          {styleOptions.map((style) => (
+            <Grid item xs={12} sm={6} md={4} key={style.id}>
               <Card
                 elevation={0}
                 onClick={() => handleStyleSelect(style.id)}
                 sx={{
                   borderRadius: 2,
                   overflow: "hidden",
-                  border: "1px solid #e0e0e0",
+                  border: selectedStyle === style.id ? "2px solid #3f51b5" : "1px solid #e0e0e0",
                   transition: "all 0.3s ease",
                   cursor: "pointer",
                   height: "100%",
@@ -101,9 +104,6 @@ function StylePreferences() {
                     boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
                     transform: "translateY(-4px)",
                   },
-                  ...(selectedStyle === style.id && {
-                    border: "2px solid #3f51b5",
-                  }),
                 }}
               >
                 <CardActionArea sx={{ height: "100%" }}>
@@ -124,6 +124,47 @@ function StylePreferences() {
             </Grid>
           ))}
         </Grid>
+
+        {/* Navigation buttons */}
+        <Stack direction="row" spacing={2} justifyContent="center" mt={6}>
+          <Button
+            variant="outlined"
+            size="large"
+            onClick={() => navigate("/preferences/weight")}
+            sx={{
+              px: 4,
+              py: 1.5,
+              borderColor: "#3f51b5",
+              color: "#3f51b5",
+              "&:hover": {
+                borderColor: "#303f9f",
+                backgroundColor: "rgba(63, 81, 181, 0.04)",
+              },
+            }}
+          >
+            Back
+          </Button>
+          <Button
+            variant="contained"
+            size="large"
+            onClick={() => navigate("/preferences/shirts")}
+            disabled={!selectedStyle}
+            sx={{
+              px: 4,
+              py: 1.5,
+              backgroundColor: "#3f51b5",
+              "&:hover": {
+                backgroundColor: "#303f9f",
+              },
+              "&.Mui-disabled": {
+                backgroundColor: "#c5cae9",
+                color: "#9fa8da",
+              },
+            }}
+          >
+            Next
+          </Button>
+        </Stack>
       </Container>
     </Box>
   )
