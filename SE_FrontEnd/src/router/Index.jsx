@@ -11,6 +11,7 @@ const CardPaymentPage = lazy(() => import("../pages/CardPaymentPage/Index"));
 const OrderConfirmation = lazy(() => import("../pages/OrderConfirmation/Index"));
 const SignInPage = lazy(() => import("../pages/SignInPage/Index"));
 const SignInPage2 = lazy(() => import("../pages/SignInPage2/Index"));
+const ChatbotPage = lazy(() => import("../pages/Chatbot/Index")); // Add Chatbot
 
 // Route configuration
 const router = createBrowserRouter([
@@ -79,6 +80,14 @@ const router = createBrowserRouter([
     element: (
       <Suspense fallback={<div>Loading Sign In 2...</div>}>
         <SignInPage2 />
+      </Suspense>
+    ),
+  },
+  {
+    path: "/chatbot", // New chatbot route (if you prefer full-page view)
+    element: (
+      <Suspense fallback={<div>Loading Chatbot...</div>}>
+        <ChatbotPage />
       </Suspense>
     ),
   }
