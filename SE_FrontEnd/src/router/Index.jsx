@@ -14,8 +14,11 @@ const SignInPage = lazy(() => import("../pages/SignInPage/Index"));
 const SignInPage2 = lazy(() => import("../pages/SignInPage2/Index"));
 const UploadPhotos = lazy(() => import("../pages/UploadPhotos/Index"));
 const Chatbot = lazy(() => import("../pages/Chatbot/Index"));
-
-
+const GenderPreference = lazy(() => import("../pages/GenderPreference/Index"));
+const WeightPreference = lazy(() => import("../pages/WeightPreference/Index"));
+const StylePreferences = lazy(() => import("../pages/StylePreferences/Index"));
+const PreferencesShirts = lazy(() => import("../pages/PreferencesShirts/Index"));
+const PreferencesPants = lazy(() => import("../pages/PreferencesPants/Index"));
 // Route configuration
 const router = createBrowserRouter([
   {
@@ -109,6 +112,46 @@ const router = createBrowserRouter([
         <SwipeFitPage />
       </Suspense>
     ),
+  },
+  {
+    path: '/preferences/gender',
+    element: (
+      <Suspense fallback={<div>Loading Gender PageRevealEvent...</div>}>
+        <GenderPreference />
+      </Suspense>
+    )
+  }, 
+  {
+    path: '/preferences/weight',
+    element: (
+      <Suspense fallback={<div>Loading Weight PageRevealEvent...</div>}>
+        <WeightPreference />
+      </Suspense>
+    )
+  },
+  {
+    path: '/preferences/style',
+    element: (
+      <Suspense fallback={<div>Loading Style PageRevealEvent...</div>}>
+        <StylePreferences />
+      </Suspense>
+    )
+  },
+  {
+    path: '/preferences/shirts',
+    element: (
+      <Suspense fallback={<div>Loading Shirt PageRevealEvent...</div>}>
+        <PreferencesShirts />
+      </Suspense>
+    )
+  },
+  {
+    path: '/preferences/pants',
+    element: (
+      <Suspense fallback={<div>Loading Pants PageRevealEvent...</div>}>
+        <PreferencesPants />
+      </Suspense>
+    )
   }
 ]);
 
