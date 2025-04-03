@@ -9,7 +9,8 @@ const CartPage = lazy(() => import("../pages/CartPage/Index"));
 const CheckoutPage = lazy(() => import("../pages/CheckoutPage/Index"));
 const CardPaymentPage = lazy(() => import("../pages/CardPaymentPage/Index"));
 const OrderConfirmation = lazy(() => import("../pages/OrderConfirmation/Index"));
-
+const SignInPage = lazy(() => import("../pages/SignInPage/Index"));
+const SignInPage2 = lazy(() => import("../pages/SignInPage2/Index"));
 
 // Route configuration
 const router = createBrowserRouter([
@@ -65,6 +66,22 @@ const router = createBrowserRouter([
       </Suspense>
     ),
   },
+  {
+    path: "/sign-in",
+    element: (
+      <Suspense fallback={<div>Loading Sign In...</div>}>
+        <SignInPage />
+      </Suspense>
+    ),
+  },
+  {
+    path: "/sign-in2",
+    element: (
+      <Suspense fallback={<div>Loading Sign In 2...</div>}>
+        <SignInPage2 />
+      </Suspense>
+    ),
+  }
 ]);
 
 export default function RouterComponent() {
