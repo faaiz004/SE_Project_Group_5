@@ -14,22 +14,50 @@ const Chatbot = ({ closeChat }) => {
   const sendMessage = async (msg) => {
     if (!msg.trim()) return;
     const userMessage = { role: "user", content: msg };
+    // Append user message to state
     setMessages(prev => [...prev, userMessage]);
     setInput("");
 
     try {
-      // Replace the URL with your actual chatbot API endpoint
-      const response = await axios.post("http://localhost:8000/api/chatbot", { message: msg });
+      // Prepare the messages payload for the Llama API.
+      // We include a system prompt for context, your conversation history,
+      // and the new user message.
+      const payload = {
+        messages: [
+          { role: "system", content: "You are a helpful assistant to give recommendations about different pieces of clothing from various categories" },
+          ...messages,
+          userMessage
+        ],
+        model: "llama3.3-70b"  // Change this to the desired model if needed.
+      };
+
+      // Make a POST request to the Llama API endpoint
+      const response = await axios.post(
+        "https://api.llama-api.com/chat/completions",
+        payload,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer d7e7ad95-9f04-486b-b2f1-b7ef66cc5fce" // Replace with your actual API key.
+          }
+        }
+      );
+
+      // Append the bot's reply to the messages state
       const botMessage = { role: "bot", content: response.data.response };
       setMessages(prev => [...prev, botMessage]);
     } catch (error) {
       console.error("Error calling chatbot API:", error);
-      setMessages(prev => [...prev, { role: "bot", content: "Sorry, something went wrong." }]);
+      setMessages(prev => [
+        ...prev,
+        { role: "bot", content: "Sorry, something went wrong." }
+      ]);
     }
   };
 
   const selectCategory = (selectedCategory) => {
     setCategory(selectedCategory);
+    // You can trigger a new conversation or add context based on category selection
     setMessages(prev => [
       ...prev,
       { role: "user", content: `I want to know more about ${selectedCategory} clothing.` }
