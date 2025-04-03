@@ -92,7 +92,7 @@ const pastPurchases = [
   },
 ];
 
-export default function CreatePostForm() {
+export default function UploadPhotos() {
   const [selectedImage, setSelectedImage] = useState(null);
   const [caption, setCaption] = useState("");
   const [selectedItems, setSelectedItems] = useState([]);
