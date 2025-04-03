@@ -9,6 +9,7 @@ const CartPage = lazy(() => import("../pages/CartPage/Index"));
 const CheckoutPage = lazy(() => import("../pages/CheckoutPage/Index"));
 const CardPaymentPage = lazy(() => import("../pages/CardPaymentPage/Index"));
 const OrderConfirmation = lazy(() => import("../pages/OrderConfirmation/Index"));
+const MannequinPage = lazy(() => import("../pages/MannequinPage/Index"));
 
 
 // Route configuration
@@ -65,6 +66,14 @@ const router = createBrowserRouter([
       </Suspense>
     ),
   },
+  {
+    path: "/mannequin",
+    element: (
+      <Suspense fallback={<div>Loading Mannequin Page...</div>}>
+        <MannequinPage />
+      </Suspense>
+    ),
+  }
 ]);
 
 export default function RouterComponent() {

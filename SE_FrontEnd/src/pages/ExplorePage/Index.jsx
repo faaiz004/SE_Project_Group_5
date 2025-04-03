@@ -16,7 +16,7 @@ const ExplorePage = () => {
         console.log('Adding to cart:', product);
         // Add your cart logic here
     };
-
+    
     return (
         <Box sx={root}>
             <Box sx={ImageBox}>
