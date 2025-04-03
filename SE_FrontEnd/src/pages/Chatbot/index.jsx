@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import { InferenceClient } from '@huggingface/inference';
 import { Box, Typography, TextField, Button, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import useStyles from './Styles';
+
+// Initialize the InferenceClient with your API key
+const client = new InferenceClient(import.meta.env.VITE_HUGGINGFACE_API_KEY);
+
 
 const Chatbot = ({ closeChat }) => {
   const classes = useStyles();
@@ -10,65 +14,71 @@ const Chatbot = ({ closeChat }) => {
   const [input, setInput] = useState("");
   const [category, setCategory] = useState(null);
 
-  // Handler to send message to LLM API via your backend
+
+  // Handler to send message using the Hugging Face InferenceClient
   const sendMessage = async (msg) => {
     if (!msg.trim()) return;
     const userMessage = { role: "user", content: msg };
-    // Append user message to state
-    setMessages(prev => [...prev, userMessage]);
+    // Create new messages array including the user message
+    const newMessages = [...messages, userMessage];
+    setMessages(newMessages);
     setInput("");
 
     try {
-      // Prepare the messages payload for the Llama API.
-      // We include a system prompt for context, your conversation history,
-      // and the new user message.
+      // Build the payload for the chat completion API
       const payload = {
+        provider: "fireworks-ai",
+        model: "meta-llama/Llama-3.2-11B-Vision-Instruct",
         messages: [
-          { role: "system", content: "You are a helpful assistant to give recommendations about different pieces of clothing from various categories" },
-          ...messages,
-          userMessage
+          {
+            role: "system",
+            content: "You are a helpful assistant to give recommendations about clothing."
+          },
+          ...newMessages
         ],
-        model: "llama3.3-70b"  // Change this to the desired model if needed.
+        max_tokens: 500,  // Adjust as needed
+        // You can also add other parameters like temperature if supported
+        // temperature: 0.7,
       };
 
-      // Make a POST request to the Llama API endpoint
-      const response = await axios.post(
-        "https://api.llama-api.com/chat/completions",
-        payload,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer d7e7ad95-9f04-486b-b2f1-b7ef66cc5fce" // Replace with your actual API key.
-          }
-        }
-      );
+      console.log("Payload:", payload);
 
-      // Append the bot's reply to the messages state
-      const botMessage = { role: "bot", content: response.data.response };
+      // Send the request using the InferenceClient
+      const chatCompletion = await client.chatCompletion(payload);
+      console.log("API Response:", chatCompletion);
+
+      // Extract the content from the response object
+      const botMessage = {
+        role: "assistant",
+        content: chatCompletion.choices?.[0]?.message?.content || "No response received."
+      };
+
       setMessages(prev => [...prev, botMessage]);
     } catch (error) {
-      console.error("Error calling chatbot API:", error);
+      console.error("Error calling Hugging Face API:", error);
       setMessages(prev => [
         ...prev,
-        { role: "bot", content: "Sorry, something went wrong." }
+        { role: "assistant", content: "Sorry, something went wrong." }
       ]);
     }
   };
 
   const selectCategory = (selectedCategory) => {
     setCategory(selectedCategory);
-    // You can trigger a new conversation or add context based on category selection
-    setMessages(prev => [
-      ...prev,
-      { role: "user", content: `I want to know more about ${selectedCategory} clothing.` }
-    ]);
+    const categoryMessage = {
+      role: "user",
+      content: `I want to know more about ${selectedCategory} clothing.`
+    };
+    setMessages(prev => [...prev, categoryMessage]);
   };
 
   return (
     <Box sx={classes.chatbotBox}>
       {/* Header with Title and Close Button */}
       <Box sx={classes.header}>
-        <Typography variant="h5" sx={classes.title}>Chat with Stylist</Typography>
+        <Typography variant="h5" sx={classes.title}>
+          Chat with Stylist
+        </Typography>
         <IconButton onClick={closeChat} sx={classes.closeButton}>
           <CloseIcon />
         </IconButton>
@@ -88,7 +98,10 @@ const Chatbot = ({ closeChat }) => {
       {/* Messages Display */}
       <Box sx={classes.messagesContainer}>
         {messages.map((msg, idx) => (
-          <Typography key={idx} sx={msg.role === "user" ? classes.userMessage : classes.botMessage}>
+          <Typography
+            key={idx}
+            sx={msg.role === "user" ? classes.userMessage : classes.botMessage}
+          >
             {msg.content}
           </Typography>
         ))}
@@ -102,7 +115,12 @@ const Chatbot = ({ closeChat }) => {
           placeholder="Type your message..."
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          onKeyPress={(e) => { if (e.key === 'Enter') sendMessage(input); }}
+          onKeyPress={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              sendMessage(input);
+            }
+          }}
           sx={classes.textField}
         />
         <Button variant="contained" onClick={() => sendMessage(input)} sx={classes.sendButton}>
