@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useNavigate } from "react-router-dom"
 import {
   Box,
   Typography,
@@ -29,6 +30,7 @@ function PreferencesPants() {
   const [showError, setShowError] = useState(false)
 
   const pantsImages = [pants1, pants2, pants3, pants4]
+  const navigate = useNavigate()
 
   const pants = Array.from({ length: 9 }, (_, i) => ({
     id: i + 1,
@@ -168,6 +170,9 @@ function PreferencesPants() {
                 backgroundColor: "rgba(63, 81, 181, 0.04)",
               },
             }}
+            onClick={() => {
+              navigate("/preferences/shirts")
+            }}
           >
             Back
           </Button>
@@ -186,6 +191,9 @@ function PreferencesPants() {
                 backgroundColor: "#c5cae9",
                 color: "#9fa8da",
               },
+            }}
+            onClick={() => {
+              navigate("/explore")
             }}
           >
             Finish

@@ -82,7 +82,7 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: "/sign-in2",
+    path: "/sign-up",
     element: (
       <Suspense fallback={<div>Loading Sign In 2...</div>}>
         <SignInPage2 />

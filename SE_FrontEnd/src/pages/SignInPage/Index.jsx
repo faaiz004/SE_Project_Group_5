@@ -67,7 +67,7 @@ function SignInPage() {
 
         <Box sx={buttonContainer}>
           {/* When Sign Up is clicked, navigate to /sign-in2 */}
-          <Button variant="contained" sx={signInButton} onClick={() => navigate("/sign-in2")}>
+          <Button variant="contained" sx={signInButton} onClick={() => navigate("/sign-up")}>
             Sign Up
           </Button>
           <Button variant="contained" sx={googleButton}>

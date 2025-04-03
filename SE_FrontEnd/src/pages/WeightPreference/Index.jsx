@@ -1,5 +1,5 @@
-
 import { useState } from "react"
+import { useNavigate } from "react-router-dom"
 import {
   Box,
   Typography,
@@ -10,33 +10,30 @@ import {
   Paper,
   ToggleButtonGroup,
   ToggleButton,
-  Stack,
+  Stack
 } from "@mui/material"
 import { Download, ArrowBack } from "@mui/icons-material"
 
-
 function WeightPreference() {
-  const [shirtSize, setShirtSize] = useState("medium")
-  const [pantsSize, setPantsSize] = useState("medium")
-  const [weightClass, setWeightClass] = useState("average")
+  const [shirtSize, setShirtSize] = useState(null)
+  const [pantsSize, setPantsSize] = useState(null)
+  const [weightClass, setWeightClass] = useState(null)
 
-  const handleShirtSizeChange = () => {
-    if (newSize !== null) {
-      setShirtSize(newSize)
-    }
+  const navigate = useNavigate()
+
+  const handleShirtSizeChange = (event, newSize) => {
+    if (newSize !== null) setShirtSize(newSize)
   }
 
-  const handlePantsSizeChange = () => {
-    if (newSize !== null) {
-      setPantsSize(newSize)
-    }
+  const handlePantsSizeChange = (event, newSize) => {
+    if (newSize !== null) setPantsSize(newSize)
   }
 
-  const handleWeightClassChange = () => {
-    if (newClass !== null) {
-      setWeightClass(newClass)
-    }
+  const handleWeightClassChange = (event, newClass) => {
+    if (newClass !== null) setWeightClass(newClass)
   }
+
+  const isFormComplete = shirtSize && pantsSize && weightClass
 
   return (
     <Box
@@ -48,7 +45,7 @@ function WeightPreference() {
         p: 2,
       }}
     >
-      {/* Top section with progress, back button, and download */}
+      {/* Top section */}
       <Box sx={{ display: "flex", alignItems: "center", mb: 4 }}>
         <Box sx={{ flexGrow: 1, mx: 2 }}>
           <LinearProgress
@@ -70,10 +67,10 @@ function WeightPreference() {
         </IconButton>
       </Box>
 
-      {/* Step indicator and Skip button */}
+      {/* Step indicator */}
       <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 4 }}>
         <Box sx={{ width: "33%" }}>
-          <IconButton sx={{ color: "#000", visibility: "hidden" }} aria-label="go back">
+          <IconButton sx={{ color: "#000" }} onClick={() => navigate("/preferences/gender")}>
             <ArrowBack />
           </IconButton>
         </Box>
@@ -89,13 +86,13 @@ function WeightPreference() {
               fontWeight: 500,
               textTransform: "none",
             }}
+            onClick={() => navigate("/preferences/style")}
           >
             Skip
           </Button>
         </Box>
       </Box>
 
-      {/* Main content */}
       <Container maxWidth="md" sx={{ flexGrow: 1 }}>
         <Stack spacing={4}>
           <Box>
@@ -108,29 +105,21 @@ function WeightPreference() {
           </Box>
 
           <Typography variant="h6" align="center" color="text.secondary" sx={{ mb: 4 }}>
-            We'll use this info to show better
-            <br />
-            outfit fits for you.
+            We'll use this info to show better <br /> outfit fits for you.
           </Typography>
 
-          {/* Size selections */}
+          {/* Shirt size */}
           <Box>
             <Typography variant="h5" sx={{ fontWeight: 600, mb: 2 }}>
               Shirt Size
             </Typography>
-            <Paper
-              elevation={0}
-              sx={{
-                borderRadius: 3,
-                overflow: "hidden",
-                border: "1px solid #e0e0e0",
-              }}
-            >
+            <Paper elevation={0} sx={{ borderRadius: 3, overflow: "hidden", border: "1px solid #e0e0e0" }}>
               <ToggleButtonGroup
                 value={shirtSize}
                 exclusive
                 onChange={handleShirtSizeChange}
                 aria-label="shirt size"
+                fullWidth
                 sx={{
                   width: "100%",
                   "& .MuiToggleButtonGroup-grouped": {
@@ -139,41 +128,32 @@ function WeightPreference() {
                     flex: 1,
                     py: 2,
                     "&.Mui-selected": {
-                      backgroundColor: "rgba(63, 81, 181, 0.1)",
+                      backgroundColor: "rgba(63, 81, 181, 0.15)",
+                      color: "#3f51b5",
+                      fontWeight: 600,
                     },
                   },
                 }}
               >
-                <ToggleButton value="small" aria-label="small">
-                  <Typography variant="h6">Small</Typography>
-                </ToggleButton>
-                <ToggleButton value="medium" aria-label="medium">
-                  <Typography variant="h6">Medium</Typography>
-                </ToggleButton>
-                <ToggleButton value="large" aria-label="large">
-                  <Typography variant="h6">Large</Typography>
-                </ToggleButton>
+                <ToggleButton value="small">Small</ToggleButton>
+                <ToggleButton value="medium">Medium</ToggleButton>
+                <ToggleButton value="large">Large</ToggleButton>
               </ToggleButtonGroup>
             </Paper>
           </Box>
 
+          {/* Pants size */}
           <Box>
             <Typography variant="h5" sx={{ fontWeight: 600, mb: 2 }}>
               Pants Size
             </Typography>
-            <Paper
-              elevation={0}
-              sx={{
-                borderRadius: 3,
-                overflow: "hidden",
-                border: "1px solid #e0e0e0",
-              }}
-            >
+            <Paper elevation={0} sx={{ borderRadius: 3, overflow: "hidden", border: "1px solid #e0e0e0" }}>
               <ToggleButtonGroup
                 value={pantsSize}
                 exclusive
                 onChange={handlePantsSizeChange}
                 aria-label="pants size"
+                fullWidth
                 sx={{
                   width: "100%",
                   "& .MuiToggleButtonGroup-grouped": {
@@ -182,41 +162,32 @@ function WeightPreference() {
                     flex: 1,
                     py: 2,
                     "&.Mui-selected": {
-                      backgroundColor: "rgba(63, 81, 181, 0.1)",
+                      backgroundColor: "rgba(63, 81, 181, 0.15)",
+                      color: "#3f51b5",
+                      fontWeight: 600,
                     },
                   },
                 }}
               >
-                <ToggleButton value="small" aria-label="small">
-                  <Typography variant="h6">Small</Typography>
-                </ToggleButton>
-                <ToggleButton value="medium" aria-label="medium">
-                  <Typography variant="h6">Medium</Typography>
-                </ToggleButton>
-                <ToggleButton value="large" aria-label="large">
-                  <Typography variant="h6">Large</Typography>
-                </ToggleButton>
+                <ToggleButton value="small">Small</ToggleButton>
+                <ToggleButton value="medium">Medium</ToggleButton>
+                <ToggleButton value="large">Large</ToggleButton>
               </ToggleButtonGroup>
             </Paper>
           </Box>
 
+          {/* Weight class */}
           <Box>
             <Typography variant="h5" sx={{ fontWeight: 600, mb: 2 }}>
               Weight Class
             </Typography>
-            <Paper
-              elevation={0}
-              sx={{
-                borderRadius: 3,
-                overflow: "hidden",
-                border: "1px solid #e0e0e0",
-              }}
-            >
+            <Paper elevation={0} sx={{ borderRadius: 3, overflow: "hidden", border: "1px solid #e0e0e0" }}>
               <ToggleButtonGroup
                 value={weightClass}
                 exclusive
                 onChange={handleWeightClassChange}
                 aria-label="weight class"
+                fullWidth
                 sx={{
                   width: "100%",
                   "& .MuiToggleButtonGroup-grouped": {
@@ -225,23 +196,58 @@ function WeightPreference() {
                     flex: 1,
                     py: 2,
                     "&.Mui-selected": {
-                      backgroundColor: "rgba(63, 81, 181, 0.1)",
+                      backgroundColor: "rgba(63, 81, 181, 0.15)",
+                      color: "#3f51b5",
+                      fontWeight: 600,
                     },
                   },
                 }}
               >
-                <ToggleButton value="light" aria-label="light">
-                  <Typography variant="h6">Light</Typography>
-                </ToggleButton>
-                <ToggleButton value="average" aria-label="average">
-                  <Typography variant="h6">Average</Typography>
-                </ToggleButton>
-                <ToggleButton value="heavy" aria-label="heavy">
-                  <Typography variant="h6">Heavy</Typography>
-                </ToggleButton>
+                <ToggleButton value="light">Light</ToggleButton>
+                <ToggleButton value="average">Average</ToggleButton>
+                <ToggleButton value="heavy">Heavy</ToggleButton>
               </ToggleButtonGroup>
             </Paper>
           </Box>
+
+          {/* Navigation buttons */}
+          <Stack direction="row" spacing={2} justifyContent="center" mt={4}>
+            <Button
+              variant="outlined"
+              onClick={() => navigate("/preferences/gender")}
+              sx={{
+                px: 4,
+                py: 1.5,
+                borderColor: "#3f51b5",
+                color: "#3f51b5",
+                "&:hover": {
+                  borderColor: "#303f9f",
+                  backgroundColor: "rgba(63, 81, 181, 0.04)",
+                },
+              }}
+            >
+              Back
+            </Button>
+            <Button
+              variant="contained"
+              onClick={() => navigate("/preferences/style")}
+              disabled={!isFormComplete}
+              sx={{
+                px: 4,
+                py: 1.5,
+                backgroundColor: "#3f51b5",
+                "&:hover": {
+                  backgroundColor: "#303f9f",
+                },
+                "&.Mui-disabled": {
+                  backgroundColor: "#c5cae9",
+                  color: "#9fa8da",
+                },
+              }}
+            >
+              Next
+            </Button>
+          </Stack>
         </Stack>
       </Container>
     </Box>
