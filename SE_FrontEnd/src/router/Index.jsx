@@ -9,9 +9,8 @@ const CartPage = lazy(() => import("../pages/CartPage/Index"));
 const CheckoutPage = lazy(() => import("../pages/CheckoutPage/Index"));
 const CardPaymentPage = lazy(() => import("../pages/CardPaymentPage/Index"));
 const OrderConfirmation = lazy(() => import("../pages/OrderConfirmation/Index"));
-const SignInPage = lazy(() => import("../pages/SignInPage/Index"));
-const SignInPage2 = lazy(() => import("../pages/SignInPage2/Index"));
-const ChatbotPage = lazy(() => import("../pages/Chatbot/Index")); // Add Chatbot
+const MannequinPage = lazy(() => import("../pages/MannequinPage/Index"));
+
 
 // Route configuration
 const router = createBrowserRouter([
@@ -88,6 +87,14 @@ const router = createBrowserRouter([
     element: (
       <Suspense fallback={<div>Loading Chatbot...</div>}>
         <ChatbotPage />
+      </Suspense>
+    ),
+  },
+  {
+    path: '/upload-photo',
+    element: (
+      <Suspense fallback={<div>Loading Upload Photo...</div>}>
+        <UploadPhoto />
       </Suspense>
     ),
   }
