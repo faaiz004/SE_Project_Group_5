@@ -8,6 +8,8 @@ import Posts from '../../Layouts/StyleFeed/Posts';
 import Recommendations from '../../Layouts/StyleFeed/Recommendations';
 import { mainComp, postsBox, recommendationsBox, rootStyleFeed } from './Styles';
 
+
+
 const StyleFeedPage = () => {
   return (
     <Box sx={{ ...rootStyleFeed, overflow: 'hidden' }}>

@@ -82,6 +82,7 @@ const router = createBrowserRouter([
       </Suspense>
     ),
   }
+
 ]);
 
 export default function RouterComponent() {
