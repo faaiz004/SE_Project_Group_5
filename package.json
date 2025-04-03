@@ -1,10 +1,7 @@
 {
   "dependencies": {
-<<<<<<< HEAD
     "react-material-ui-carousel": "^3.4.2",
-=======
     "axios": "^1.8.4",
->>>>>>> 0ffc761 (updated chatbot)
     "react-router-dom": "^7.4.1"
   }
 }
