@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
@@ -17,7 +17,13 @@ import {
 } from "./Style";
 
 function LoginPage() {
-    const navigate = useNavigate(); // Initialize useNavigate hook
+  const navigate = useNavigate(); // Initialize useNavigate hook
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  // Check if both email and password are filled
+  const isFormValid = email !== "" && password !== "";
+
   return (
     <Box sx={pageContainer}>
       <Box sx={cardContainer}>
@@ -28,6 +34,8 @@ function LoginPage() {
           variant="outlined"
           fullWidth
           sx={inputField}
+          value={email}
+          onChange={(e) => setEmail(e.target.value)} // Update email state
         />
         <TextField
           label="Password"
@@ -35,9 +43,16 @@ function LoginPage() {
           type="password"
           fullWidth
           sx={inputField}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)} // Update password state
         />
 
-        <Button variant="contained" sx={continueButton} onClick={() => navigate("/explore")}>
+        <Button
+          variant="contained"
+          sx={continueButton}
+          onClick={() => navigate("/explore")}
+          disabled={!isFormValid} // Disable button if form is not valid
+        >
           Continue
         </Button>
 
