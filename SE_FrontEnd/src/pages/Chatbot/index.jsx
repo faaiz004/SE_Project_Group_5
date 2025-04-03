@@ -1,4 +1,3 @@
-// SE_FrontEnd/src/pages/Chatbot/Index.jsx
 import React, { useState } from 'react';
 import axios from 'axios';
 import { Box, Typography, TextField, Button } from '@mui/material';
@@ -9,7 +8,7 @@ const Chatbot = () => {
   const [messages, setMessages] = useState([]); // { role: "user" | "bot", content: "..." }
   const [input, setInput] = useState("");
 
-  // Handler to send message to LLM API via your backend
+  // Handler to send message to LLaMA API
   const sendMessage = async (msg) => {
     if (!msg.trim()) return;
 
@@ -19,12 +18,22 @@ const Chatbot = () => {
     setInput("");
 
     try {
-      // Replace the URL with your actual chatbot API endpoint
-      const response = await axios.post("http://localhost:8000/api/chatbot", { message: msg });
+      // Call LLaMA API
+      const response = await axios.post(
+        "http://localhost:8000/llama/chat",  // LLaMA API endpoint
+        { prompt: msg },
+        {
+          headers: {
+            "Authorization": `Bearer d7e7ad95-9f04-486b-b2f1-b7ef66cc5fce`,  // Your API Key
+            "Content-Type": "application/json"
+          }
+        }
+      );
+
       const botMessage = { role: "bot", content: response.data.response };
       setMessages(prev => [...prev, botMessage]);
     } catch (error) {
-      console.error("Error calling chatbot API:", error);
+      console.error("Error calling LLaMA API:", error);
       setMessages(prev => [...prev, { role: "bot", content: "Sorry, something went wrong." }]);
     }
   };
