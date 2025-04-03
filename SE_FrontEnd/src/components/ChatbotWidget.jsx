@@ -1,47 +1,31 @@
-// SE_FrontEnd/src/components/ChatbotWidget.jsx
 import React, { useState } from 'react';
-import Chatbot from '../pages/Chatbot/Index'; // Import your Chatbot page
-import { Box } from '@mui/material';
-import chatIcon from '../assets/react.svg'; // Replace with your chatbot icon image
+import Chatbot from '../pages/Chatbot/index';
+import { Box, IconButton } from '@mui/material';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import { ChatbotContainer, ChatbotWindow } from '../pages/Chatbot/Styles';
 
 const ChatbotWidget = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleChat = () => setIsOpen(!isOpen);
+  const closeChat = () => setIsOpen(false);
 
   return (
-    <>
-      {/* Floating Icon */}
-      <Box 
-        onClick={toggleChat} 
-        sx={{
-          position: 'fixed',
-          bottom: 20,
-          right: 20,
-          width: 60,
-          height: 60,
-          borderRadius: '50%',
-          backgroundImage: `url(${chatIcon})`,
-          backgroundSize: 'cover',
-          cursor: 'pointer',
-          zIndex: 1000,
-        }}
-      />
+    <ChatbotContainer>
+      {/* Toggle Button */}
+      <IconButton
+        onClick={toggleChat}
+        sx={{ backgroundColor: '#27374D', color: 'white', borderRadius: '50%', p: 1, mr: 1 }}
+      >
+        {isOpen ? <ArrowBackIosIcon /> : <ArrowForwardIosIcon />}
+      </IconButton>
 
-      {/* Conditionally render the Chatbot popup */}
-      {isOpen && (
-        <Box 
-          sx={{
-            position: 'fixed',
-            bottom: 90,
-            right: 20,
-            zIndex: 1000,
-          }}
-        >
-          <Chatbot />
-        </Box>
-      )}
-    </>
+      {/* Chatbot Window */}
+      <ChatbotWindow isOpen={isOpen}>
+        <Chatbot closeChat={closeChat} />
+      </ChatbotWindow>
+    </ChatbotContainer>
   );
 };
 
