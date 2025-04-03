@@ -10,12 +10,15 @@ import {
 } from './Styles';
 import SearchBar from '../../Layouts/ExplorePage/SearchBar';
 import ExploreClothes from '../../Layouts/ExplorePage/ExploreClothes';
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 
 const ExplorePage = () => {
     const handleAddToCart = (product) => {
         console.log('Adding to cart:', product);
         // Add your cart logic here
     };
+
+    const navigate = useNavigate(); // Initialize useNavigate hook
     
     return (
         <Box sx={root}>
@@ -54,7 +57,7 @@ const ExplorePage = () => {
                             <GroupAdd sx={{ color: "white", fontSize: 30 }} />
                         </IconButton>
                         <IconButton>
-                            <ShoppingCart sx={{ color: "white", fontSize: 30 }} />
+                            <ShoppingCart sx={{ color: "white", fontSize: 30 }} onClick={() => navigate("/cart")}/>
                         </IconButton>
                         <IconButton>
                             <Person sx={{ color: "white", fontSize: 30 }} />
