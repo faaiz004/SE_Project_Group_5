@@ -5,6 +5,7 @@ export const pageContainer = {
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#fafafa",
+    fontFamily: "sans-serif", // Added to match previous code
   };
   
   export const cardContainer = {
@@ -16,23 +17,29 @@ export const pageContainer = {
     display: "flex",
     flexDirection: "column",
     gap: "1rem",
+    fontFamily: "sans-serif", // Added to match previous code
+    border: "7px solid #F1C40F", // Added yellow border
   };
+  
   
   export const welcomeHeading = {
     textAlign: "center",
     fontSize: "1.5rem",
     fontWeight: 600,
     marginBottom: "0.5rem",
+    fontFamily: "sans-serif", // Added to match previous code
   };
   
   export const inputField = {
     marginBottom: "1rem",
+    fontFamily: "sans-serif", // Added to match previous code
   };
   
   export const continueButton = {
     backgroundColor: "#F1C40F",
-    color: "#000",
+    color: "#fff",
     fontWeight: "bold",
+    fontFamily: "sans-serif", // Added to match previous code
     "&:hover": {
       backgroundColor: "#D4AC0D",
     },
@@ -45,7 +52,8 @@ export const pageContainer = {
     marginTop: "0.5rem",
     color: "#000",
     textDecoration: "none",
+    fontFamily: "sans-serif", // Added to match previous code
     "&:hover": {
       textDecoration: "underline",
     },
-  };  
+  };
