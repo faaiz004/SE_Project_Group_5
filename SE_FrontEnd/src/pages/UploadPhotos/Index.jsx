@@ -19,9 +19,9 @@ import {
 } from "@mui/icons-material"
 import CheckIcon from '@mui/icons-material/Check';
 
-import blue_denim from "../../assets/MannequinPage/blue_denim.jpg"
-import red_hoodie from "../../assets/MannequinPage/red_hoodie.jpg"
-import { red } from "@mui/material/colors";
+import blue_denim from "../../assets/Mannequin/blue_denim.jpg"
+import red_hoodie from "../../assets/Mannequin/red_hoodie.jpg"
+
 
 // Sample data for past purchases
 const pastPurchases = [
