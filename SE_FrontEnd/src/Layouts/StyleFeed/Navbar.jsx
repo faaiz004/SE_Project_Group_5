@@ -6,8 +6,13 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
+import { useNavigate } from 'react-router-dom';
+import ExploreIcon from '@mui/icons-material/Explore';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import AddCircleIcon from '@mui/icons-material/AddCircle'; // Import Add icon
 
 export default function Navbar() {
+  const navigate = useNavigate();
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar
@@ -19,22 +24,49 @@ export default function Navbar() {
         }}
       >
         <Toolbar>
-        <IconButton
-        size="large"
-        edge="start"
-        color="inherit"
-        aria-label="menu"
-        sx={{ mr: 2, color: 'black' }} // Set icon color to black
-      >
-        <MenuIcon sx={{ fontSize: 32 }} /> {/* Increase the size of the icon */}
-      </IconButton>
+          <IconButton
+            size="large"
+            edge="start"
+            color="inherit"
+            aria-label="menu"
+            sx={{ mr: 2, color: 'black' }}
+          >
+            <MenuIcon sx={{ fontSize: 32 }} />
+          </IconButton>
           <Typography
-            sx={{ flexGrow: 1, color: 'black', fontSize: 30, fontFamily: 'sans-serif', fontWeight: 700 }} // Set text color to black
+            sx={{ flexGrow: 1, color: 'black', fontSize: 30, fontFamily: 'sans-serif', fontWeight: 700 }}
           >
             Swipe-Fit
           </Typography>
-          <Button sx={{ color: 'black', fontSize: 18, fontWeight: 300, paddingRight: 5  }}>Explore</Button> {/* Set button text color to black */}
-          <Button sx={{ color: 'black', fontSize: 18, fontWeight: 300 , paddingRight: 5 }}>Shopping-Cart</Button> {/* Set button text color to black */}
+          
+          {/* Add Post Button - More Prominent */}
+          <IconButton 
+            sx={{ 
+              color: '#5F65C3', // Different color to make it stand out
+              mr: 2,
+              backgroundColor: 'rgba(95, 101, 195, 0.1)', // Light background
+              padding: 1.2, // Larger padding
+              '&:hover': {
+                backgroundColor: 'rgba(95, 101, 195, 0.2)',
+              }
+            }}
+            onClick={() => navigate('/upload-photos')}
+          >
+            <AddCircleIcon sx={{ fontSize: 32 }} /> {/* Slightly larger than other icons */}
+          </IconButton>
+          
+          <IconButton 
+            sx={{ color: 'black', mr: 2 }}
+            onClick={() => navigate('/explore')}
+          >
+            <ExploreIcon sx={{ fontSize: 28 }} />
+          </IconButton>
+          <IconButton 
+            sx={{ color: 'black' }}
+            onClick={() => navigate('/cart')}
+          >
+            <ShoppingCartIcon sx={{ fontSize: 28 }} />
+          </IconButton>
         </Toolbar>
       </AppBar>
     </Box>

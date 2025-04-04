@@ -98,7 +98,7 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: '/upload-photo',
+    path: '/upload-photos',
     element: (
       <Suspense fallback={<div>Loading Upload Photo...</div>}>
         <UploadPhotos />
