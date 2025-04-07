@@ -27,6 +27,10 @@ app.get('/', (req, res) => {
 // import userRoutes from './routes/users.js';
 // app.use('/users', userRoutes);
 
+
+import googleAuthRoutes from './routes/googleAuth.js';
+app.use('/api/auth', googleAuthRoutes);
+
 // 6. 404 handler (MUST BE AFTER ALL ROUTES)
 app.use((req, res, next) => {
   res.status(404).json({ error: 'Route not found' });

@@ -1,10 +1,8 @@
-// src/index.js
-import React from "react";
-import ReactDOM from "react-dom/client";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import React from 'react';
+import { Box, Typography, Button } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import { GoogleLogin } from '@react-oauth/google';
+import jwt_decode from 'jwt-decode';
 
 // Import your style objects
 import {
@@ -23,15 +21,15 @@ import {
   buttonContainer,
   signInButton,
   googleButton,
-} from "./Style";
+} from './Style';
 
-// Import your images (adjust these paths if necessary)
-import mannequin from "../../assets/SignInPage/mannequin.png";
-import girl1 from "../../assets/SignInPage/larki1.jpeg";
-import girl2 from "../../assets/SignInPage/larki2.png";
-import girl3 from "../../assets/SignInPage/larki3.png";
-import girl4 from "../../assets/SignInPage/larki4.png";
-import girl5 from "../../assets/SignInPage/larki5.png";
+// Import your images
+import mannequin from '../../assets/SignInPage/mannequin.png';
+import girl1 from '../../assets/SignInPage/larki1.jpeg';
+import girl2 from '../../assets/SignInPage/larki2.png';
+import girl3 from '../../assets/SignInPage/larki3.png';
+import girl4 from '../../assets/SignInPage/larki4.png';
+import girl5 from '../../assets/SignInPage/larki5.png';
 
 function Collage() {
   return (
@@ -46,7 +44,21 @@ function Collage() {
 }
 
 function SignInPage() {
-  const navigate = useNavigate(); // Initialize useNavigate hook
+  const navigate = useNavigate();
+
+  const handleGoogleLoginSuccess = (credentialResponse) => {
+    const decoded = jwt_decode(credentialResponse.credential);
+    console.log('Google login successful:', decoded);
+    // Perform further actions, such as sending the token to your backend
+    // and navigating the user to another page
+    navigate('/dashboard'); // Adjust the route as needed
+  };
+
+  const handleGoogleLoginFailure = () => {
+    console.log('Google login failed');
+    // Handle login failure (e.g., show an error message)
+  };
+
   return (
     <Box sx={pageContainer}>
       {/* Left side with overlapping collage images */}
@@ -66,13 +78,23 @@ function SignInPage() {
         <Box component="img" src={mannequin} alt="Wooden Mannequin" sx={mannequinImage} />
 
         <Box sx={buttonContainer}>
-          {/* When Sign Up is clicked, navigate to /sign-in2 */}
-          <Button variant="contained" sx={signInButton} onClick={() => navigate("/sign-up")}>
+          <Button variant="contained" sx={signInButton} onClick={() => navigate('/sign-up')}>
             Sign Up
           </Button>
-          <Button variant="contained" sx={googleButton}>
-            Continue with Google
-          </Button>
+          <GoogleLogin
+            onSuccess={handleGoogleLoginSuccess}
+            onError={handleGoogleLoginFailure}
+            render={(renderProps) => (
+              <Button
+                variant="contained"
+                sx={googleButton}
+                onClick={renderProps.onClick}
+                disabled={renderProps.disabled}
+              >
+                Continue with Google
+              </Button>
+            )}
+          />
         </Box>
       </Box>
     </Box>
