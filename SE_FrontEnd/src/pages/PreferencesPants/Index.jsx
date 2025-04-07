@@ -24,6 +24,7 @@ import pants1 from "../../assets/StylePreferences/larki1.jpeg"
 import pants2 from "../../assets/StylePreferences/larki2.png"
 import pants3 from "../../assets/StylePreferences/larki4.png"
 import pants4 from "../../assets/StylePreferences/larki5.png"
+import { signupUser } from "../../services/SignUp/Index"
 
 function PreferencesPants() {
   const [selectedPants, setSelectedPants] = useState([])
@@ -37,6 +38,14 @@ function PreferencesPants() {
     name: `Pants ${i + 1}`,
     image: pantsImages[i % 4],
   }))
+
+  const handleConvSignIn = async () => {
+    const credentials = JSON.parse(sessionStorage.getItem("user-credentials")) || {}
+    const signupRes = await signupUser({
+      ...credentials,
+    })
+    console.log("Signup Response:", signupRes)
+  }
 
   const handlePantsSelect = (pantsId) => {
     if (selectedPants.includes(pantsId)) {
@@ -192,9 +201,7 @@ function PreferencesPants() {
                 color: "#9fa8da",
               },
             }}
-            onClick={() => {
-              navigate("/explore")
-            }}
+            onClick={handleConvSignIn}
           >
             Finish
           </Button>

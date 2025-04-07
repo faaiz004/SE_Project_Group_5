@@ -9,14 +9,21 @@ import express from 'express';
 import cors from 'cors';
 const app = express();
 
-// 3. Basic middleware (ORDER MATTERS!)
-app.use(cors()); // Enable CORS first
+// 3. Database connection
+
+app.use(cors({
+  origin: '*', // or 'http://localhost:3000' for React frontend
+  credentials: true
+}));
 app.use(express.json()); // Parse JSON requests
 app.use(express.urlencoded({ extended: true })); // Parse form data
 
 // 4. Routes
 import cartRoutes from './routes/cart.js';
+import authRoutes from './routes/user.js';
+console.log(authRoutes);
 app.use('/api/cart', cartRoutes);
+app.use('/api/auth', authRoutes);
 
 // Basic test route
 app.get('/', (req, res) => {

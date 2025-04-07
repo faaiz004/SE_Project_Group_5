@@ -7,14 +7,24 @@ export default function GenderPreference() {
     const navigate = useNavigate()
     const handleSelectGender = (gender) => {
         setSelectedGender(gender)
+        const credentials = JSON.parse(sessionStorage.getItem('user-credentials')) || {};
+        const updatedCredentials = {
+          ...credentials,
+          gender,
+        };
+        // Save updated credentials
+        sessionStorage.setItem('user-credentials', JSON.stringify(updatedCredentials));
+        navigate("/preferences/weight")
     }
-
     useEffect(() => {
-        if (selectedGender) {
-            // Navigate to the next step in the process
-            navigate("/preferences/weight")
+        const credentials = JSON.parse(sessionStorage.getItem('user-credentials')) || {};
+        // Check if email and password are present
+        setSelectedGender(credentials?.gender || null)
+        if (!credentials.email || !credentials.password) {
+            navigate("/sign-up")
         }
-    }, [selectedGender])
+    }, [])
+
 
   return (
     <Box

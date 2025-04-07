@@ -29,6 +29,10 @@ function LoginPage() {
     e.preventDefault();
     if (isFormValid) {
       // Perform login action
+      sessionStorage.setItem('user-credentials', JSON.stringify({
+        email: email,
+        password: password,
+      }));
       navigate("/preferences/gender");
     }
   }
