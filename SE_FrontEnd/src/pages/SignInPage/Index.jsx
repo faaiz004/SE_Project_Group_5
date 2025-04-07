@@ -1,10 +1,8 @@
-// src/index.js
 import React from "react";
-import ReactDOM from "react-dom/client";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { Box, Typography, Button } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import { GoogleLogin } from "@react-oauth/google";
+import { jwtDecode } from 'jwt-decode';
 
 // Import your style objects
 import {
@@ -25,7 +23,7 @@ import {
   googleButton,
 } from "./Style";
 
-// Import your images (adjust these paths if necessary)
+// Import your images (adjust paths as needed)
 import mannequin from "../../assets/SignInPage/mannequin.png";
 import girl1 from "../../assets/SignInPage/larki1.jpeg";
 import girl2 from "../../assets/SignInPage/larki2.png";
@@ -46,7 +44,26 @@ function Collage() {
 }
 
 function SignInPage() {
-  const navigate = useNavigate(); // Initialize useNavigate hook
+  const navigate = useNavigate();
+
+  const handleGoogleLoginSuccess = (credentialResponse) => {
+    try {
+      const decoded = jwtDecode(credentialResponse.credential);
+      console.log("Google login successful:", decoded);
+      // Send the token to your backend if necessary and store authentication info,
+      // for example:
+      // localStorage.setItem("token", tokenFromBackend);
+      navigate("/preferences/gender"); // Adjust this route as needed
+    } catch (error) {
+      console.error("Error decoding Google token:", error);
+    }
+  };
+
+  const handleGoogleLoginFailure = () => {
+    console.log("Google login failed");
+    // Handle failure (e.g., display error message)
+  };
+
   return (
     <Box sx={pageContainer}>
       {/* Left side with overlapping collage images */}
@@ -66,13 +83,23 @@ function SignInPage() {
         <Box component="img" src={mannequin} alt="Wooden Mannequin" sx={mannequinImage} />
 
         <Box sx={buttonContainer}>
-          {/* When Sign Up is clicked, navigate to /sign-in2 */}
           <Button variant="contained" sx={signInButton} onClick={() => navigate("/sign-up")}>
             Sign Up
           </Button>
-          <Button variant="contained" sx={googleButton}>
-            Continue with Google
-          </Button>
+          <GoogleLogin
+            onSuccess={handleGoogleLoginSuccess}
+            onError={handleGoogleLoginFailure}
+            render={(renderProps) => (
+              <Button
+                variant="contained"
+                sx={googleButton}
+                onClick={renderProps.onClick}
+                disabled={renderProps.disabled}
+              >
+                Continue with Google
+              </Button>
+            )}
+          />
         </Box>
       </Box>
     </Box>

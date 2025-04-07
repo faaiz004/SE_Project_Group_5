@@ -1,16 +1,18 @@
-import RouterComponent from "./router/Index"
-import ChatbotWidget from './components/ChatbotWidget';
-import './App.css';
-import React from 'react';
-
+import React from "react";
+import { GoogleOAuthProvider } from "@react-oauth/google";
+import RouterComponent from "./router/Index";
+import ChatbotWidget from "./components/ChatbotWidget";
+import "./App.css";
 
 function App() {
+  const clientId = "504000425247-77r9cef35s7h8srtmmhnvfgh89qivlka.apps.googleusercontent.com"; // Replace with your actual Client ID
+
   return (
-    <div>
+    <GoogleOAuthProvider clientId={clientId}>
       <RouterComponent />
       <ChatbotWidget />
-    </div>
+    </GoogleOAuthProvider>
   );
 }
 
-export default App
+export default App;
