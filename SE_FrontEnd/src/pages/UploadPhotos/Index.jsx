@@ -97,15 +97,37 @@ export default function CreatePostForm() {
     )
   }
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    // Handle form submission logic here
-    console.log({
-      image: selectedImage,
-      caption,
-      taggedItems: selectedItems,
-    })
-  }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!selectedImage || !caption) return alert("Please upload an image and write a caption.");
+  
+    try {
+      // Step 1: Upload image to backend -> S3
+      const formData = new FormData();
+      formData.append("image", selectedImage); // Use selectedImage from state
+    
+      const uploadRes = await axios.post("http://localhost:5000/api/upload-image", formData);
+      const { imageUrl } = uploadRes.data;
+    
+      // Step 2: Send post data to backend
+      await axios.post("http://localhost:5000/api/create-post", {
+        imageUrl,
+        caption,
+        tags: selectedItems.map(item => item.name).join(', '), // Use selectedItems for tags
+      });
+    
+      // Clear inputs and redirect or show success
+      setSelectedImage(null);
+      setCaption('');
+      setSelectedItems([]);
+      alert("Post uploaded!");
+      navigate("/stylefeed"); // Assuming you want to navigate to the Style Feed page
+    } catch (err) {
+      console.error(err);
+      alert("Error uploading post.");
+    }
+  };
+  
 
   return (
     <Box component="form" onSubmit={handleSubmit} sx={{ 
