@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -11,29 +11,45 @@ import {
   CardActionArea,
   Button,
   Stack,
-} from "@mui/material"
-import { useNavigate } from "react-router-dom"
+} from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 // Import images
-import modernImg from "../../assets/StylePreferences/larki1.jpeg"
-import businessImg from "../../assets/StylePreferences/larki2.png"
-import oldMoneyImg from "../../assets/StylePreferences/larki4.png"
-import casualImg from "../../assets/StylePreferences/larki5.png"
+import modernImg from "../../assets/StylePreferences/larki1.jpeg";
+import businessImg from "../../assets/StylePreferences/larki2.png";
+import oldMoneyImg from "../../assets/StylePreferences/larki4.png";
+import casualImg from "../../assets/StylePreferences/larki5.png";
 
 function StylePreferences() {
-  const [selectedStyle, setSelectedStyle] = useState(null)
-  const navigate = useNavigate()
+  const [selectedStyle, setSelectedStyle] = useState(null);
+  const navigate = useNavigate();
+
+  // Preload style preference from sessionStorage if available
+  useEffect(() => {
+    const credentials = JSON.parse(sessionStorage.getItem("user-credentials")) || {};
+    if (credentials.stylePreference) {
+      setSelectedStyle(credentials.stylePreference);
+    }
+  }, []);
+
+  // Update sessionStorage with the new style preference
+  const updateSession = (newData) => {
+    const current = JSON.parse(sessionStorage.getItem("user-credentials")) || {};
+    const updated = { ...current, ...newData };
+    sessionStorage.setItem("user-credentials", JSON.stringify(updated));
+  };
 
   const handleStyleSelect = (style) => {
-    setSelectedStyle(style)
-  }
+    setSelectedStyle(style);
+    updateSession({ stylePreference: style });
+  };
 
   const styleOptions = [
     { id: "modern", name: "Modern", image: modernImg },
     { id: "business", name: "Business", image: businessImg },
     { id: "oldmoney", name: "Old Money", image: oldMoneyImg },
     { id: "casual", name: "Casual", image: casualImg },
-  ]
+  ];
 
   return (
     <Box
@@ -96,7 +112,10 @@ function StylePreferences() {
                 sx={{
                   borderRadius: 2,
                   overflow: "hidden",
-                  border: selectedStyle === style.id ? "2px solid #3f51b5" : "1px solid #e0e0e0",
+                  border:
+                    selectedStyle === style.id
+                      ? "2px solid #3f51b5"
+                      : "1px solid #e0e0e0",
                   transition: "all 0.3s ease",
                   cursor: "pointer",
                   height: "100%",
@@ -167,7 +186,7 @@ function StylePreferences() {
         </Stack>
       </Container>
     </Box>
-  )
+  );
 }
 
-export default StylePreferences
+export default StylePreferences;
