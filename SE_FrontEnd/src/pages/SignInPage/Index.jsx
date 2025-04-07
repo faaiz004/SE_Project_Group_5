@@ -1,8 +1,8 @@
-import React from 'react';
-import { Box, Typography, Button } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import { GoogleLogin } from '@react-oauth/google';
-import jwt_decode from 'jwt-decode';
+import React from "react";
+import { Box, Typography, Button } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import { GoogleLogin } from "@react-oauth/google";
+import { jwtDecode } from 'jwt-decode';
 
 // Import your style objects
 import {
@@ -21,15 +21,15 @@ import {
   buttonContainer,
   signInButton,
   googleButton,
-} from './Style';
+} from "./Style";
 
-// Import your images
-import mannequin from '../../assets/SignInPage/mannequin.png';
-import girl1 from '../../assets/SignInPage/larki1.jpeg';
-import girl2 from '../../assets/SignInPage/larki2.png';
-import girl3 from '../../assets/SignInPage/larki3.png';
-import girl4 from '../../assets/SignInPage/larki4.png';
-import girl5 from '../../assets/SignInPage/larki5.png';
+// Import your images (adjust paths as needed)
+import mannequin from "../../assets/SignInPage/mannequin.png";
+import girl1 from "../../assets/SignInPage/larki1.jpeg";
+import girl2 from "../../assets/SignInPage/larki2.png";
+import girl3 from "../../assets/SignInPage/larki3.png";
+import girl4 from "../../assets/SignInPage/larki4.png";
+import girl5 from "../../assets/SignInPage/larki5.png";
 
 function Collage() {
   return (
@@ -47,16 +47,21 @@ function SignInPage() {
   const navigate = useNavigate();
 
   const handleGoogleLoginSuccess = (credentialResponse) => {
-    const decoded = jwt_decode(credentialResponse.credential);
-    console.log('Google login successful:', decoded);
-    // Perform further actions, such as sending the token to your backend
-    // and navigating the user to another page
-    navigate('/dashboard'); // Adjust the route as needed
+    try {
+      const decoded = jwtDecode(credentialResponse.credential);
+      console.log("Google login successful:", decoded);
+      // Send the token to your backend if necessary and store authentication info,
+      // for example:
+      // localStorage.setItem("token", tokenFromBackend);
+      navigate("/preferences/gender"); // Adjust this route as needed
+    } catch (error) {
+      console.error("Error decoding Google token:", error);
+    }
   };
 
   const handleGoogleLoginFailure = () => {
-    console.log('Google login failed');
-    // Handle login failure (e.g., show an error message)
+    console.log("Google login failed");
+    // Handle failure (e.g., display error message)
   };
 
   return (
@@ -78,7 +83,7 @@ function SignInPage() {
         <Box component="img" src={mannequin} alt="Wooden Mannequin" sx={mannequinImage} />
 
         <Box sx={buttonContainer}>
-          <Button variant="contained" sx={signInButton} onClick={() => navigate('/sign-up')}>
+          <Button variant="contained" sx={signInButton} onClick={() => navigate("/sign-up")}>
             Sign Up
           </Button>
           <GoogleLogin
