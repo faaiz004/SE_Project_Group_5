@@ -32,7 +32,11 @@ export default function LoginPage() {
     try {
       const response = await loginConvention(email, password)
       if (response?.token) {
+<<<<<<< HEAD
         navigate("/explore")
+=======
+        navigate("/preferences/gender")
+>>>>>>> c24c37e (Complete auth integration)
       }
     } catch (error) {
       console.error("Login failed:", error)
@@ -54,10 +58,15 @@ export default function LoginPage() {
       )
 
       const { token, user } = response.data
+<<<<<<< HEAD
       const email = response.data.user.email
       if (token) {
         localStorage.setItem("jwt", token)
         localStorage.setItem("email", email)
+=======
+      if (token) {
+        localStorage.setItem("jwt", token)
+>>>>>>> c24c37e (Complete auth integration)
         navigate("/explore")
       }
     } catch (error) {
@@ -189,7 +198,11 @@ export default function LoginPage() {
             <Box sx={{ mt: 2, textAlign: "center" }}>
               <Typography variant="body2" color="text.secondary">
                 Don't have an account? {" "}
+<<<<<<< HEAD
                 <Link href="/sign-up" underline="hover" color="primary" fontWeight="medium">
+=======
+                <Link href="/signup" underline="hover" color="primary" fontWeight="medium">
+>>>>>>> c24c37e (Complete auth integration)
                   Sign up
                 </Link>
               </Typography>

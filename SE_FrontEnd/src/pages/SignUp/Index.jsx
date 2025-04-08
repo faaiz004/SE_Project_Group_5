@@ -87,7 +87,11 @@ export default function SignUp() {
             }}
           >
             <Palette fontSize="large" />
+<<<<<<< HEAD
             <Typography variant="h6">Swipe Fit</Typography>
+=======
+            <Typography variant="h6">StyleVerse</Typography>
+>>>>>>> c24c37e (Complete auth integration)
           </Box>
 
           <Box sx={{ position: "relative", zIndex: 2 }}>

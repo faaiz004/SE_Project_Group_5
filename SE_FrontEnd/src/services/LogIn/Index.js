@@ -10,6 +10,7 @@ export const loginConvention = async (email, password) => {
             },
         });
 
+<<<<<<< HEAD
         const { token, user } = response.data;
         const userEmail = user?.email 
 
@@ -17,6 +18,12 @@ export const loginConvention = async (email, password) => {
             localStorage.setItem('jwt', token);
             localStorage.setItem('email', userEmail); // Save email to localStorage
 
+=======
+        const { token } = response.data;
+
+        if (token) {
+            localStorage.setItem('jwt', token);
+>>>>>>> c24c37e (Complete auth integration)
         }
 
         return response.data;
