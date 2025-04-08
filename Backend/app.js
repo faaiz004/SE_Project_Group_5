@@ -7,7 +7,7 @@ dotenv.config();
 // 2. Core imports
 import express from 'express';
 import cors from 'cors';
-import mongoose from 'mongoose';
+
 
 const app = express();
 
@@ -26,6 +26,7 @@ app.use(express.urlencoded({ extended: true })); // Parse form data
 import uploadRoutes from './routes/upload.js';
 import postRoutes from './routes/posts.js';
 import cartRoutes from './routes/cart.js';
+import userRoutes from './routes/user.js';
 
 import googleAuthRoutes from './routes/googleAuth.js';
 
@@ -33,6 +34,7 @@ app.use('/api', uploadRoutes);
 app.use('/api', postRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/auth", googleAuthRoutes);
+app.use('/api/auth', userRoutes);
 
 
 // Basic test route
