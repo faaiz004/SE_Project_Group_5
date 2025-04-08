@@ -2,32 +2,31 @@ import mongoose from 'mongoose';
 
 
 const userSchema = new mongoose.Schema({
-  username: { type: String, required: false, unique: true },
+  username: { type: String},
   email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
+  password: { type: String },
   likedItems: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Product' }],
   ownedProducts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Product' }],
-  gender: { type: String, required: true },
+  gender: { type: String},
   shirtSize: {
     type: String,
     enum: ['small', 'medium', 'large'],
-    required: true,
   },
   pantSize: {
     type: String,
     enum: ['small', 'medium', 'large'],
-    required: true,
+
   },
   weightClass: {
     type: String,
     enum: ['light', 'medium', 'heavy'],
-    required: true,
+
   },
   stylePreference : {
     type: String,
     enum: ['modern', 'business', 'casual', 'oldmoney'],
-    required: true,
   }
 });
 
-export default mongoose.model('User', userSchema);
+const User = mongoose.models.User || mongoose.model('User', userSchema);
+export default User;

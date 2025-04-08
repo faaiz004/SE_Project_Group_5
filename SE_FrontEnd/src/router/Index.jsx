@@ -10,8 +10,8 @@ const CheckoutPage = lazy(() => import("../pages/CheckoutPage/Index"));
 const CardPaymentPage = lazy(() => import("../pages/CardPaymentPage/Index"));
 const OrderConfirmation = lazy(() => import("../pages/OrderConfirmation/Index"));
 const SwipeFitPage = lazy(() => import("../pages/SwipeFitPage/index"));
-const SignInPage = lazy(() => import("../pages/SignInPage/Index"));
-const SignInPage2 = lazy(() => import("../pages/SignInPage2/Index"));
+const LandingPage = lazy(() => import("../pages/LandingPage/Index"));
+const SignUpPage = lazy(() => import("../pages/SignUp/Index"));
 const UploadPhotos = lazy(() => import("../pages/UploadPhotos/Index"));
 const Chatbot = lazy(() => import("../pages/Chatbot/Index"));
 const GenderPreference = lazy(() => import("../pages/GenderPreference/Index"));
@@ -19,11 +19,16 @@ const WeightPreference = lazy(() => import("../pages/WeightPreference/Index"));
 const StylePreferences = lazy(() => import("../pages/StylePreferences/Index"));
 const PreferencesShirts = lazy(() => import("../pages/PreferencesShirts/Index"));
 const PreferencesPants = lazy(() => import("../pages/PreferencesPants/Index"));
+const SignInPage = lazy(() => import("../pages/LoginPage/Index"));
 // Route configuration
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Navigate to="/explore" replace />,
+    element: (
+      <Suspense fallback={<div>Loading...</div>}>
+        <LandingPage />
+      </Suspense>
+    )
   },
   {
     path: "/explore",
@@ -74,18 +79,10 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: "/sign-in",
-    element: (
-      <Suspense fallback={<div>Loading Sign In...</div>}>
-        <SignInPage />
-      </Suspense>
-    ),
-  },
-  {
     path: "/sign-up",
     element: (
       <Suspense fallback={<div>Loading Sign In 2...</div>}>
-        <SignInPage2 />
+        <SignUpPage />
       </Suspense>
     ),
   },
@@ -152,6 +149,14 @@ const router = createBrowserRouter([
         <PreferencesPants />
       </Suspense>
     )
+  },
+  {
+    path: "/sign-in",
+    element: (
+      <Suspense fallback={<div>Loading Sign In...</div>}>
+        <SignInPage />
+      </Suspense>
+    ),
   }
 ]);
 

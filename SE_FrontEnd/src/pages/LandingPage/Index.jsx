@@ -2,7 +2,7 @@ import React from "react";
 import { Box, Typography, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
-import { jwtDecode } from 'jwt-decode';
+import axios from 'axios';
 
 // Import your style objects
 import {
@@ -43,25 +43,40 @@ function Collage() {
   );
 }
 
-function SignInPage() {
+function LandingPage() {
   const navigate = useNavigate();
 
-  const handleGoogleLoginSuccess = (credentialResponse) => {
+  const handleGoogleLoginSuccess = async (credentialResponse) => {
     try {
-      const decoded = jwtDecode(credentialResponse.credential);
-      console.log("Google login successful:", decoded);
-      // Send the token to your backend if necessary and store authentication info,
-      // for example:
-      // localStorage.setItem("token", tokenFromBackend);
-      navigate("/preferences/gender"); // Adjust this route as needed
+      const googleToken = credentialResponse.credential;
+      console.log("Received Google token:", googleToken);
+
+      // Send this Google token to your backend for verification via the updated route
+      const response = await axios.post(
+        'http://localhost:8000/api/auth/google',  // Updated URL
+        { token: googleToken },
+        {
+          headers: { 'Content-Type': 'application/json' },
+        }
+      );
+
+      // Extract your app's token and user information
+      const { token, user } = response.data;
+      if (token) {
+        // Save your JWT in local storage
+        localStorage.setItem('jwt', token);
+      }
+      
+      console.log("Backend response:", response.data);
+      navigate("/preferences/gender"); // Proceed as needed
     } catch (error) {
-      console.error("Error decoding Google token:", error);
+      console.error("Google login error:", error.response?.data || error.message);
     }
   };
 
   const handleGoogleLoginFailure = () => {
     console.log("Google login failed");
-    // Handle failure (e.g., display error message)
+    // Handle error display as needed
   };
 
   return (
@@ -106,4 +121,4 @@ function SignInPage() {
   );
 }
 
-export default SignInPage;
+export default LandingPage;

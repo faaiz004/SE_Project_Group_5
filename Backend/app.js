@@ -31,7 +31,6 @@ import postRoutes from './routes/posts.js';
 import cartRoutes from './routes/cart.js';
 <<<<<<< HEAD
 import authRoutes from './routes/user.js';
-console.log(authRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/auth', authRoutes);
 =======
