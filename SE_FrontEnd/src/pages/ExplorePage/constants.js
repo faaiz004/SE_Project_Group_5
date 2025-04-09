@@ -16,10 +16,18 @@ const outfitsData = [
   { id: 9, category: "Vintage", imageUrl: img1 },
 ];
 
-export function fetchOutfits() {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(outfitsData);
-    }, 1000);
-  });
+export async function fetchOutfits() {
+  try {
+    const response = await fetch('http://localhost:8000/api/clothes'); // adjust the URL if needed
+    if (!response.ok) {
+      throw new Error(`Error: ${response.statusText}`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching outfits:", error);
+    throw error;
+  }
 }
+
+
