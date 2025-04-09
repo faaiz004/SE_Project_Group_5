@@ -1,19 +1,11 @@
 import jwt from 'jsonwebtoken';
-<<<<<<< HEAD
-import User from '../../models/user.js';
-=======
 import User from '../../models/User.js';
->>>>>>> c24c37e (Complete auth integration)
 
 const JWT_SECRET = process.env.JWT_SECRET || 'yoursecretkey';
 
 export const submitPreferences = async (req, res) => {
   try {
-<<<<<<< HEAD
     // Extract and verify token
-=======
-    // 🔐 Extract and verify token
->>>>>>> c24c37e (Complete auth integration)
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -26,25 +18,12 @@ export const submitPreferences = async (req, res) => {
     try {
       decoded = jwt.verify(token, JWT_SECRET);
     } catch (err) {
-<<<<<<< HEAD
+
       console.log('Invalid token:', err);
       return res.status(401).json({ error: 'Invalid token' });
     }
 
-    
-
-    // Use decoded.id since JWT was signed with { id: user._id }
-    const userId = decoded.id;
-
-    const { gender, shirtSize, pantSize, stylePreference } = req.body;
-
-    // Validate the necessary preference fields
-    if (!gender || !shirtSize || !pantSize || !stylePreference) {
-=======
-        console.log('Invalid token:', err);
-        return res.status(401).json({ error: 'Invalid token' });
-    }
-
+  
     // Use decoded.id since JWT was signed with { id: user._id }
     const userId = decoded.id;
 

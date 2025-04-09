@@ -1,6 +1,7 @@
 import React from 'react';
 import { Typography, Box, IconButton } from '@mui/material';
 import { Facebook, Twitter, Instagram, GroupAdd, ShoppingCart, Person } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
 import {
     ClothesBox,
     HeaderBox,
@@ -12,6 +13,7 @@ import SearchBar from '../../Layouts/ExplorePage/SearchBar';
 import ExploreClothes from '../../Layouts/ExplorePage/ExploreClothes';
 
 const ExplorePage = () => {
+    const navigate = useNavigate()
     const handleAddToCart = (product) => {
         console.log('Adding to cart:', product);
         // Add your cart logic here
@@ -65,12 +67,13 @@ const ExplorePage = () => {
                         gap: 1,
                         marginTop: 2,
                     }}>
-                        <IconButton>
-                            <GroupAdd sx={{ color: "white", fontSize: 30 }} />
-                        </IconButton>
-                        <IconButton>
-                            <ShoppingCart sx={{ color: "white", fontSize: 30 }} />
-                        </IconButton>
+                    <IconButton onClick={() => navigate('/stylefeed')}>
+                        <GroupAdd sx={{ color: "white", fontSize: 30 }} />
+                    </IconButton>
+                  
+                        <IconButton onClick={() => navigate('/cart')}>
+                        <ShoppingCart sx={{ color: "white", fontSize: 30 }} />
+                      </IconButton>
                         <IconButton>
                             <Person sx={{ color: "white", fontSize: 30 }} />
                         </IconButton>

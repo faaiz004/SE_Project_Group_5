@@ -62,17 +62,11 @@ function LandingPage() {
 
       // Extract your app's token and user information
       const { token, user } = response.data;
-<<<<<<< HEAD
       const email = response.data.user.email;
       if (token) {
         // Save your JWT in local storage
         localStorage.setItem('jwt', token);
         localStorage.setItem('email', email); 
-=======
-      if (token) {
-        // Save your JWT in local storage
-        localStorage.setItem('jwt', token);
->>>>>>> c24c37e (Complete auth integration)
       }
       
       console.log("Backend response:", response.data);

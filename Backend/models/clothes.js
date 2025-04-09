@@ -83,7 +83,7 @@ const clothesSchema = new mongoose.Schema(
 // clothesSchema.index({ price: 1 });
 
 // Create the Mongoose model from the schema
-const Clothes = mongoose.model('Clothes', clothesSchema);
+const Clothes = mongoose.models.Clothes || mongoose.model('Clothes', clothesSchema);
 
 // Export the model to be used elsewhere in your application
 export default Clothes;

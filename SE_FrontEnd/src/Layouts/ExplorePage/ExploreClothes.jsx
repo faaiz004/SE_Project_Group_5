@@ -10,6 +10,7 @@ import { useQuery } from "@tanstack/react-query";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { fetchOutfits } from "../../pages/ExplorePage/constants";
+import { useNavigate } from "react-router-dom";
 
 const root = {
   display: "flex",
@@ -25,6 +26,8 @@ export default function ExploreClothes() {
     queryKey: ["outfits"],
     queryFn: fetchOutfits,
   });
+
+  const navigate = useNavigate()
 
   // Create refs to store scroll containers
   const scrollContainerRefs = useRef({});
@@ -193,19 +196,20 @@ export default function ExploreClothes() {
                     }}
                   >
                     <Card
-                      sx={{
-                        borderRadius: 2,
-                        overflow: "hidden",
-                        boxShadow: 3,
-                        backgroundColor: "black",
-                        height: '100%',
-                        transition: 'transform 0.3s ease',
-                        '&:hover': {
-                          transform: 'scale(1.05)',
-                          zIndex: 1,
-                        }
-                      }}
-                    >
+                    sx={{
+                      borderRadius: 2,
+                      overflow: "hidden",
+                      boxShadow: 3,
+                      backgroundColor: "black",
+                      height: '100%',
+                      transition: 'transform 0.3s ease',
+                      '&:hover': {
+                        transform: 'scale(1.05)',
+                        zIndex: 1,
+                      }
+                    }}
+                    onClick={() => navigate('/mannequin')}  // ✅ fixed route and arrow function syntax
+                  >
                       <CardMedia
                         component="img"
                         height="250"
