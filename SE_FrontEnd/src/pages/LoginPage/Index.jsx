@@ -33,10 +33,14 @@ export default function LoginPage() {
       const response = await loginConvention(email, password)
       if (response?.token) {
 <<<<<<< HEAD
+<<<<<<< HEAD
         navigate("/explore")
 =======
         navigate("/preferences/gender")
 >>>>>>> c24c37e (Complete auth integration)
+=======
+        navigate("/explore")
+>>>>>>> cad588f (updated prefrences + login + posts)
       }
     } catch (error) {
       console.error("Login failed:", error)
