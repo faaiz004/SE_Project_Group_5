@@ -1,7 +1,7 @@
 // controllers/googleAuthController.js
 import { OAuth2Client } from 'google-auth-library';
 import jwt from 'jsonwebtoken';
-import User from '../../models/User.js';
+import User from '../../models/user';
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 const JWT_SECRET = process.env.JWT_SECRET || 'yoursecretkey';
@@ -11,7 +11,6 @@ export const googleAuth = async (req, res) => {
   if (!token) {
     return res.status(400).json({ error: 'Token is required' });
   }
-
   try {
     // Verify the token received from the frontend with Google
     const ticket = await client.verifyIdToken({
