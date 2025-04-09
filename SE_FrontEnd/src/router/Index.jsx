@@ -8,7 +8,9 @@ const StyleFeed = lazy(() => import("../pages/StyleFeed/Index"));
 const CartPage = lazy(() => import("../pages/CartPage/Index"));
 const CheckoutPage = lazy(() => import("../pages/CheckoutPage/Index"));
 const CardPaymentPage = lazy(() => import("../pages/CardPaymentPage/Index"));
-const OrderConfirmation = lazy(() => import("../pages/OrderConfirmation/Index"));
+const OrderConfirmation = lazy(() =>
+	import("../pages/OrderConfirmation/Index")
+);
 const SwipeFitPage = lazy(() => import("../pages/SwipeFitPage/index"));
 const LandingPage = lazy(() => import("../pages/LandingPage/Index"));
 const SignUpPage = lazy(() => import("../pages/SignUp/Index"));
@@ -17,7 +19,9 @@ const Chatbot = lazy(() => import("../pages/Chatbot/Index"));
 const GenderPreference = lazy(() => import("../pages/GenderPreference/Index"));
 const WeightPreference = lazy(() => import("../pages/WeightPreference/Index"));
 const StylePreferences = lazy(() => import("../pages/StylePreferences/Index"));
-const PreferencesShirts = lazy(() => import("../pages/PreferencesShirts/Index"));
+const PreferencesShirts = lazy(() =>
+	import("../pages/PreferencesShirts/Index")
+);
 const PreferencesPants = lazy(() => import("../pages/PreferencesPants/Index"));
 const SignInPage = lazy(() => import("../pages/LoginPage/Index"));
 // Route configuration
@@ -161,5 +165,5 @@ const router = createBrowserRouter([
 ]);
 
 export default function RouterComponent() {
-  return <RouterProvider router={router} />;
+	return <RouterProvider router={router} />;
 }
