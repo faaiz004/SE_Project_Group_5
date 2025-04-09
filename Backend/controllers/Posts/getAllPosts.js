@@ -21,7 +21,7 @@ const extractKeyFromUrl = (url) => {
 };
 
 // Controller to retrieve all posts with a signed image URL
-export const getPosts = async (req, res) => {
+export const getAllPosts = async (req, res) => {
   try {
     // Retrieve all posts, optionally populate user data
     const posts = await Post.find()

@@ -4,11 +4,9 @@ import { Box, Typography } from '@mui/material';
 import ShoppingBagIcon from '@mui/icons-material/ShoppingBag';
 
 import Navbar from '../../Layouts/StyleFeed/Navbar';
-import Posts from '../../Layouts/StyleFeed/Posts';
+import Posts from '../../Layouts/StyleFeed/Posts'; // Updated Posts component
 import Recommendations from '../../Layouts/StyleFeed/Recommendations';
 import { mainComp, postsBox, recommendationsBox, rootStyleFeed } from './Styles';
-
-
 
 const StyleFeedPage = () => {
   return (
