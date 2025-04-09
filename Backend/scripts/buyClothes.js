@@ -21,7 +21,7 @@ async function buyClothesForUser() {
     await connectDB();
 
     // Find the user by email
-    const user = await User.findOne({ email: "faaizumer9@outlook.com" });
+    const user = await User.findOne({ email: "saram.hassan1412@gmail.com" });
     if (!user) {
       throw new Error('User with email "faaizumer9@outlook.com" not found.');
     }

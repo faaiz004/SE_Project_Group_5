@@ -9,8 +9,9 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage }); // store uploaded file in memory
 
 // Route setup — notice `upload.single("image")` here
-router.post('/create', verifyToken, upload.single("image"), createPost);
-router.get('/getPosts', verifyToken, getPosts);
+router.post('/create' , upload.single("image"), createPost);
+router.get('/getPosts', getPosts);
+
 
 
 export default router;

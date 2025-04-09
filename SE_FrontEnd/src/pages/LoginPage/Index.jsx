@@ -32,7 +32,7 @@ export default function LoginPage() {
     try {
       const response = await loginConvention(email, password)
       if (response?.token) {
-        navigate("/preferences/gender")
+        navigate("/explore")
       }
     } catch (error) {
       console.error("Login failed:", error)
