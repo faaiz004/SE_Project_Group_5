@@ -175,7 +175,7 @@ export default function ExploreClothes() {
                       <CardMedia
                         component="img"
                         height="250"
-                        image={item.imageUrl}
+                        image={item.signedImageUrl}
                         alt={item.category}
                       />
                     </Card>
