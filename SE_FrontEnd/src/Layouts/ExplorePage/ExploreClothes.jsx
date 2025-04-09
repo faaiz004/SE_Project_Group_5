@@ -122,44 +122,44 @@ export default function ExploreClothes() {
               outline: "none",
             }}
           >
-                        {(() => {
-              const prefixMap = {
-                SF_BL: "Blazers",
-                SF_DS: "Dress Shirts",
-                SF_JN: "Jeans",
-                SF_PT: "Pants / Trousers",
-                SF_PS: "Polo Shirts",
-                SF_SR: "Shorts",
-                SF_TS: "T - Shirts",
-              };
+                      {(() => {
+            const prefixMap = {
+              SF_BL: "Blazers",
+              SF_DS: "Dress Shirts",
+              SF_JN: "Jeans",
+              SF_PT: "Pants / Trousers",
+              SF_PS: "Polo Shirts",
+              SF_SR: "Shorts",
+              SF_TS: "T - Shirts",
+            };
 
-              const firstItem = outfits[0];
-              let label = outfits[0].category;
+            const firstItem = outfits[0];
+            let label = outfits[0].category;
 
-              if (firstItem?.name) {
-                for (const prefix in prefixMap) {
-                  if (firstItem.name.startsWith(prefix)) {
-                    const type = firstItem.upper ? "Uppers" : "Lowers";
-                    label = `${prefixMap[prefix]} - ${type}`;
-                    break;
-                  }
+            if (firstItem?.name) {
+              for (const prefix in prefixMap) {
+                if (firstItem.name.startsWith(prefix)) {
+                  const type = firstItem.upper ? "Uppers" : "Lowers";
+                  label = `${prefixMap[prefix]} - ${type}`;
+                  break;
                 }
               }
+            }
 
-              return (
-                <Typography
-                  sx={{
-                    fontSize: 28,
-                    fontWeight: 600,
-                    color: "#27374D",
-                    fontFamily: "Inter, sans-serif",
-                    mb: 2,
-                  }}
-                >
-                  {label}
-                </Typography>
-              );
-            })()}
+            return (
+              <Typography
+                sx={{
+                  fontSize: 28,
+                  fontWeight: 600,
+                  color: "#27374D",
+                  fontFamily: "Inter, sans-serif",
+                  mb: 2,
+                }}
+              >
+                {label}
+              </Typography>
+            );
+          })()}
 
 
             <Box sx={{ display: "flex", alignItems: "center" }}>
