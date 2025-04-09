@@ -30,6 +30,17 @@ const clothesSchema = new mongoose.Schema(
       required: true,
       min: 0,
     },
+    
+    upper: {
+      type: Boolean,
+      default: false,
+    },
+
+    lower: {
+      type: Boolean,
+      default: false,
+    },
+    
     imageUrl: {
       type: String,
       trim: true,

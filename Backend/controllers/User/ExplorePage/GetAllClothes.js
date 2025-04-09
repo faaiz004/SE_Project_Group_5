@@ -44,6 +44,8 @@ export const getAllClothes = async (req, res) => {
           category: item.category,
           price: item.price,
           signedImageUrl: signedUrl,
+          upper: item.upper,
+            lower: item.lower,
         };
       })
     );
