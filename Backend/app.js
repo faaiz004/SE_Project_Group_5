@@ -28,6 +28,7 @@ import postRoutes from './routes/clothes.js';
 import cartRoutes from './routes/cart.js';
 import userRoutes from './routes/user.js';
 import clothesRoutes from './routes/clothes.js';
+import postsRoutes from './routes/posts.js';
 
 import googleAuthRoutes from './routes/googleAuth.js';
 
@@ -37,6 +38,7 @@ app.use("/api/cart", cartRoutes);
 app.use("/api/auth", googleAuthRoutes);
 app.use('/api/auth', userRoutes);
 app.use('/api/clothes', clothesRoutes);
+app.use('/api/posts', postsRoutes);
 
 
 // Basic test route
