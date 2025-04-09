@@ -45,18 +45,13 @@ export const submitPreferences = async (req, res) => {
         return res.status(401).json({ error: 'Invalid token' });
     }
 
-    const userId = decoded.userId;
+    // Use decoded.id since JWT was signed with { id: user._id }
+    const userId = decoded.id;
 
-    const {
-      gender,
-      shirtSize,
-      pantSize,
-      weightClass,
-      stylePreference,
-    } = req.body;
+    const { gender, shirtSize, pantSize, stylePreference } = req.body;
 
-    if (!gender || !shirtSize || !pantSize || !weightClass || !stylePreference) {
->>>>>>> c24c37e (Complete auth integration)
+    // Validate the necessary preference fields
+    if (!gender || !shirtSize || !pantSize || !stylePreference) {
       return res.status(400).json({ error: 'Missing preference fields.' });
     }
 
@@ -66,10 +61,6 @@ export const submitPreferences = async (req, res) => {
         gender,
         shirtSize,
         pantSize,
-<<<<<<< HEAD
-=======
-        weightClass,
->>>>>>> c24c37e (Complete auth integration)
         stylePreference,
       },
       { new: true }
