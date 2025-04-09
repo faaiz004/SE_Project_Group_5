@@ -2,6 +2,8 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { lazy, Suspense } from "react";
 import { Navigate } from "react-router-dom";
 
+import SwipeFitPage from "../pages/SwipeFitPage/index"
+
 // Lazy loaded components
 const ExplorePage = lazy(() => import("../pages/ExplorePage/Index"));
 const StyleFeed = lazy(() => import("../pages/StyleFeed/Index"));
@@ -11,7 +13,7 @@ const CardPaymentPage = lazy(() => import("../pages/CardPaymentPage/Index"));
 const OrderConfirmation = lazy(() =>
 	import("../pages/OrderConfirmation/Index")
 );
-const SwipeFitPage = lazy(() => import("../pages/SwipeFitPage/index"));
+// const SwipeFitPage = lazy(() => import("../pages/SwipeFitPage/index"));
 const LandingPage = lazy(() => import("../pages/LandingPage/Index"));
 const SignUpPage = lazy(() => import("../pages/SignUp/Index"));
 const UploadPhotos = lazy(() => import("../pages/UploadPhotos/Index"));
