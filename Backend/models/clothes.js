@@ -43,6 +43,17 @@ const clothesSchema = new mongoose.Schema(
       required: true,
       min: [0, 'Price cannot be negative'], // Ensure price is not negative
     },
+    
+    upper: {
+      type: Boolean,
+      default: false,
+    },
+
+    lower: {
+      type: Boolean,
+      default: false,
+    },
+    
     imageUrl: {
       type: String,
       trim: true,
