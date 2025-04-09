@@ -10,11 +10,13 @@ export const signupUser = async (userData) => {
       },
     });
 
-    const { token } = response.data;
+    const { token, user } = response.data;
+    const email = response.data.user.email;
 
     if (token) {
       // ✅ Save token to localStorage
       localStorage.setItem('jwt', token);
+      localStorage.setItem('email', email); // Save email to localStorage
     }
 
     return response.data;

@@ -24,9 +24,10 @@ app.use(express.urlencoded({ extended: true })); // Parse form data
 
 // 4. Routes
 import uploadRoutes from './routes/upload.js';
-import postRoutes from './routes/posts.js';
+import postRoutes from './routes/clothes.js';
 import cartRoutes from './routes/cart.js';
 import userRoutes from './routes/user.js';
+import clothesRoutes from './routes/clothes.js';
 
 import googleAuthRoutes from './routes/googleAuth.js';
 
@@ -35,6 +36,7 @@ app.use('/api', postRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/auth", googleAuthRoutes);
 app.use('/api/auth', userRoutes);
+app.use('/api/clothes', clothesRoutes);
 
 
 // Basic test route
