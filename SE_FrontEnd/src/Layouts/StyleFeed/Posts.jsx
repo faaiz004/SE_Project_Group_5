@@ -1,5 +1,6 @@
-// Posts.jsx
+// Layouts/StyleFeed/Posts.jsx
 import React from 'react';
+import { useQuery } from '@tanstack/react-query';
 import {
   Box,
   Card,
@@ -12,39 +13,24 @@ import {
   Button
 } from '@mui/material';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-
-// Use your own images or placeholders
-import sampleImage from '../../assets/StyleFeed/Group.png';
+import { getPosts } from '../../services/GetPosts/Index';
 
 const Posts = () => {
-  // 1) Array of multiple posts
-  const postData = [
-    {
-      id: 1,
-      name: 'Ashlyn Taylor',
-      avatar: sampleImage,
-      postImage: sampleImage,
-      likes: 1234,
-      price: 129.0,
-    },
-    {
-      id: 2,
-      name: 'John Doe',
-      avatar: sampleImage,
-      postImage: sampleImage,
-      likes: 567,
-      price: 99.0,
-    },
-    {
-      id: 3,
-      name: 'Jane Smith',
-      avatar: sampleImage,
-      postImage: sampleImage,
-      likes: 890,
-      price: 159.0,
-    },
-    // Add more posts as needed...
-  ];
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['posts'],
+    queryFn: getPosts,
+  });
+
+  if (isLoading) {
+    return <Typography>Loading posts...</Typography>;
+  }
+  if (error) {
+    return <Typography color="error">Error fetching posts: {error.message}</Typography>;
+  }
+
+  // Assume that your API returns an object with a "posts" property 
+  // that is an array of post objects.
+  const posts = data?.posts || [];
 
   return (
     <Box
@@ -53,28 +39,24 @@ const Posts = () => {
         maxWidth: '500px',
         height: 'calc(100vh - 120px)',
         overflowY: 'auto',
-        /* Hide scrollbar for Chrome, Safari and Opera */
-        '&::-webkit-scrollbar': {
-          display: 'none',
-        },
-        /* Hide scrollbar for Firefox */
+        '&::-webkit-scrollbar': { display: 'none' },
         scrollbarWidth: 'none',
-        paddingRight: 2, 
-        /* Optional: add right padding to avoid scrollbar overlap */
+        paddingRight: 2,
       }}
     >
-      {/* 2) Map over posts to create multiple cards */}
-      {postData.map((post) => (
+      {posts.map((post) => (
         <Card
-          key={post.id}
+          key={post._id}
           sx={{
             borderRadius: 5,
             boxShadow: 2,
-            marginBottom: 3, // spacing between cards
+            marginBottom: 3,
           }}
         >
           <CardHeader
-            avatar={<Avatar alt={post.name} src={post.avatar} />}
+            avatar={
+              <Avatar alt={post.user?.username || post.user?.email || "User"} src={post.user?.avatar || undefined} />
+            }
             title={
               <Typography
                 sx={{
@@ -84,15 +66,15 @@ const Posts = () => {
                   color: '#000',
                 }}
               >
-                {post.name}
+                {post.user?.username || post.user?.email || "Unknown"}
               </Typography>
             }
           />
 
           <CardMedia
             component="img"
-            image={post.postImage}
-            alt={post.name}
+            image={post.signedImageUrl}
+            alt={post.caption}
             sx={{
               width: '100%',
               height: 450,
@@ -134,10 +116,10 @@ const Posts = () => {
                     color: '#000',
                   }}
                 >
-                  {post.likes.toLocaleString()} Likes
+                  {post.likes ? post.likes.toLocaleString() : "0"} Likes
                 </Typography>
               </Box>
-
+              {/* Dummy Price */}
               <Typography
                 sx={{
                   fontFamily: 'Inter, sans-serif',
@@ -147,7 +129,7 @@ const Posts = () => {
                   marginRight: 2,
                 }}
               >
-                ${post.price.toFixed(2)}
+                $123.45
               </Typography>
             </Box>
 

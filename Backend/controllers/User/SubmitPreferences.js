@@ -22,6 +22,8 @@ export const submitPreferences = async (req, res) => {
       return res.status(401).json({ error: 'Invalid token' });
     }
 
+    
+
     // Use decoded.id since JWT was signed with { id: user._id }
     const userId = decoded.id;
 
