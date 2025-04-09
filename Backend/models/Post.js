@@ -27,8 +27,13 @@ const postSchema = new mongoose.Schema({
     default: 0
   },
   upper : {
-    
-  }
+    type: String,
+    required: true 
+  },
+  lower : {
+    type: String,
+    required: true 
+  },
 
 });
 
