@@ -1,7 +1,8 @@
 import express from 'express';
 import multer from 'multer';
 import { createPost } from '../controllers/Posts/pushPosts.js';
-import { getAllPosts } from '../controllers/Posts/getAllPosts.js';
+import { verifyToken } from '../middleware/authMiddleware.js';
+import { getPosts } from '../controllers/Posts/getAllPosts.js';
 
 const router = express.Router();
 const storage = multer.memoryStorage();
