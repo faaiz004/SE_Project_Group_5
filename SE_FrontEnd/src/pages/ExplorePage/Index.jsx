@@ -10,15 +10,12 @@ import {
 } from './Styles';
 import SearchBar from '../../Layouts/ExplorePage/SearchBar';
 import ExploreClothes from '../../Layouts/ExplorePage/ExploreClothes';
-import { useNavigate } from "react-router-dom"; // Import useNavigate
-import {  Feed } from '@mui/icons-material'; // Import Feed icon instead of GroupAdd and Person
+
 const ExplorePage = () => {
     const handleAddToCart = (product) => {
         console.log('Adding to cart:', product);
         // Add your cart logic here
     };
-
-    const navigate = useNavigate(); // Initialize useNavigate hook
     
     return (
         <Box sx={root}>
@@ -53,12 +50,15 @@ const ExplorePage = () => {
                         gap: 1,
                         marginTop: 2,
                     }}>
-                    <IconButton onClick={() => navigate("/stylefeed")}>
-                    <Feed sx={{ color: "white", fontSize: 30 }} /> {/* Using Feed icon for style feed */}
-                </IconButton>
-                <IconButton onClick={() => navigate("/cart")}>
-                    <ShoppingCart sx={{ color: "white", fontSize: 30 }} />
-                </IconButton>
+                        <IconButton>
+                            <GroupAdd sx={{ color: "white", fontSize: 30 }} />
+                        </IconButton>
+                        <IconButton>
+                            <ShoppingCart sx={{ color: "white", fontSize: 30 }} />
+                        </IconButton>
+                        <IconButton>
+                            <Person sx={{ color: "white", fontSize: 30 }} />
+                        </IconButton>
                     </Box>
                 </Box>
                 <Box sx={SearchBox}>
