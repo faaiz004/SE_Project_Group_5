@@ -213,7 +213,7 @@ export default function ExploreClothes() {
                         alt={item.category}
                         sx={{
                           backgroundColor: 'white', // Sets the background to white
-                          objectFit: 'cover' // Adjust as needed (e.g., 'contain')
+                          objectFit: 'contain' // Adjust as needed (e.g., 'contain')
                         }}
                       />
                     </Card>
