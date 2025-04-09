@@ -1,11 +1,11 @@
 import jwt from 'jsonwebtoken';
-import User from '../../models/User.js';
+import User from '../../models/user.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'yoursecretkey';
 
 export const submitPreferences = async (req, res) => {
   try {
-    // 🔐 Extract and verify token
+    // Extract and verify token
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -18,21 +18,17 @@ export const submitPreferences = async (req, res) => {
     try {
       decoded = jwt.verify(token, JWT_SECRET);
     } catch (err) {
-        console.log('Invalid token:', err);
-        return res.status(401).json({ error: 'Invalid token' });
+      console.log('Invalid token:', err);
+      return res.status(401).json({ error: 'Invalid token' });
     }
 
-    const userId = decoded.userId;
+    // Use decoded.id since JWT was signed with { id: user._id }
+    const userId = decoded.id;
 
-    const {
-      gender,
-      shirtSize,
-      pantSize,
-      weightClass,
-      stylePreference,
-    } = req.body;
+    const { gender, shirtSize, pantSize, stylePreference } = req.body;
 
-    if (!gender || !shirtSize || !pantSize || !weightClass || !stylePreference) {
+    // Validate the necessary preference fields
+    if (!gender || !shirtSize || !pantSize || !stylePreference) {
       return res.status(400).json({ error: 'Missing preference fields.' });
     }
 
@@ -42,7 +38,6 @@ export const submitPreferences = async (req, res) => {
         gender,
         shirtSize,
         pantSize,
-        weightClass,
         stylePreference,
       },
       { new: true }
