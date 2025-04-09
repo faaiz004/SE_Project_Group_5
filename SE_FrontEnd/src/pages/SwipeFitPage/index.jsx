@@ -1,69 +1,75 @@
-"use client"
-
-import React, { useState, useRef, useEffect, Suspense } from "react";
+import React, {
+	useState,
+	useRef,
+	useEffect,
+	Suspense,
+	useCallback,
+	useMemo,
+} from "react";
 import {
 	Box,
 	Typography,
-	Grid,
 	IconButton,
 	CircularProgress,
+	Button,
+	Alert,
+	Snackbar,
 } from "@mui/material";
-import { ArrowBack, ArrowForward } from "@mui/icons-material";
-import { Canvas } from "@react-three/fiber";
+import {
+	ArrowBack,
+	ArrowForward,
+	Favorite as FavoriteIcon,
+	Refresh as RefreshIcon,
+	ShoppingCart as ShoppingCartIcon,
+	Save as SaveIcon,
+} from "@mui/icons-material";
+import { Canvas, useFrame } from "@react-three/fiber";
 import {
 	OrbitControls,
 	Environment,
 	useGLTF,
 	useTexture,
+	Box as DreiBox,
+	Cylinder,
 } from "@react-three/drei";
-import * as THREE from "three"; // Needed for texture constants
-
-// --- Data Configuration ---
-// IMPORTANT: Replace placeholders with your actual file paths!
-// Ensure the .glb files exist in /public/models and are UV Unwrapped.
-// Ensure the .png/.jpg files exist in /public/textures.
+import * as THREE from "three";
 
 const UPPER_CLOTHING = [
 	{
 		name: "Blue Pattern Shirt",
-		textureUrl: "/textures/yellow.jpeg", // YOUR SHIRT TEXTURE IMAGE
-		geometryUrl: "/models/bomber_jacket.glb", // YOUR GENERIC SHIRT .GLB MODEL
-		scale: [1, 1, 1], // Adjust scale as needed
-		position: [0, -0.3, 0], // Adjust position as needed
+		textureUrl: "/textures/red.png",
+		geometryUrl: "/models/bomber_jacket.glb",
+		scale: [1, 1, 1],
+		position: [0, -0.3, 0],
 	},
 	{
 		name: "Red Stripe Shirt",
-		textureUrl: "/textures/texture.png", // YOUR SHIRT TEXTURE IMAGE
-		geometryUrl: "/models/bomber_jacket.glb", // YOUR GENERIC SHIRT .GLB MODEL
-		scale: [1, 1, 1], // Adjust scale as needed
-		position: [0, -0.3, 0], // Adjust position as needed
+		textureUrl: "/textures/texture.png",
+		geometryUrl: "/models/bomber_jacket.glb",
+		scale: [1, 1, 1],
+		position: [0, -0.3, 0],
 	},
-	// Add more upper clothing items...
 ];
 
 const LOWER_CLOTHING = [
 	{
 		name: "Denim Jeans",
-		textureUrl: "/textures/jeans.png", // YOUR PANTS TEXTURE IMAGE
-		geometryUrl: "/models/leg.glb", // YOUR GENERIC PANTS .GLB MODEL
-		scale: [1, 1, 1], // Adjust scale as needed
-		position: [0, -0.6, 0], // Adjust position as needed
+		textureUrl: "/textures/jeans.png",
+		geometryUrl: "/models/leg.glb",
+		scale: [1, 1, 1],
+		position: [0, -0.6, 0],
 	},
 	{
 		name: "Khaki Pants",
-		textureUrl: "/textures/red.png", // YOUR PANTS TEXTURE IMAGE
-		geometryUrl: "/models/leg.glb", // YOUR GENERIC PANTS .GLB MODEL
-		scale: [1, 1, 1], // Adjust scale as needed
-		position: [0, -0.6, 0], // Adjust position as needed
+		textureUrl: "/textures/red.png",
+		geometryUrl: "/models/leg.glb",
+		scale: [1, 1, 1],
+		position: [0, -0.6, 0],
 	},
-	// Add more lower clothing items...
 ];
 
 // --- Components ---
 
-/**
- * Loader component displayed while assets are loading (HTML/MUI based).
- */
 function CanvasLoader() {
 	return (
 		<Box
@@ -88,99 +94,317 @@ function CanvasLoader() {
 	);
 }
 
-/**
- * Renders a 3D model geometry and applies a dynamic texture to it.
- * Assumes the geometry from geometryUrl is UV unwrapped.
- */
-function ClothingModel({ geometryUrl, textureUrl, scale, position }) {
-	const { scene: geometryScene } = useGLTF(geometryUrl); // Load geometry (cached)
-	const texture = useTexture(textureUrl); // Load texture (cached)
+// Fallback using simple shapes if GLB fails
+function FallbackUpperClothing({ textureUrl, position }) {
+	const [fbTextureError, setFbTextureError] = useState(false);
+	const texture = useTexture(
+		textureUrl,
+		(tex) => {
+			tex.flipY = false;
+			tex.colorSpace = THREE.SRGBColorSpace;
+			tex.needsUpdate = true;
+		},
+		(error) => {
+			console.warn("Fallback texture failed to load:", error);
+			setFbTextureError(true);
+		}
+	);
 
-	// Configure texture properties
+	const materialProps = useMemo(
+		() => ({
+			map: fbTextureError ? null : texture,
+			roughness: 0.7,
+			metalness: 0.1,
+			color: fbTextureError ? "#888888" : "#ffffff",
+		}),
+		[texture, fbTextureError]
+	);
+
+	return (
+		<group position={position}>
+			{/* Torso */}
+			<DreiBox
+				args={[0.8, 0.5, 0.4]}
+				position={[0, 0.25, 0]}
+				castShadow
+				receiveShadow>
+				<meshStandardMaterial {...materialProps} />
+			</DreiBox>
+			{/* Left arm */}
+			<Cylinder
+				args={[0.1, 0.1, 0.6]}
+				position={[-0.5, 0.1, 0]}
+				rotation={[0, 0, Math.PI / 2]}
+				castShadow
+				receiveShadow>
+				<meshStandardMaterial {...materialProps} />
+			</Cylinder>
+			{/* Right arm */}
+			<Cylinder
+				args={[0.1, 0.1, 0.6]}
+				position={[0.5, 0.1, 0]}
+				rotation={[0, 0, Math.PI / 2]}
+				castShadow
+				receiveShadow>
+				<meshStandardMaterial {...materialProps} />
+			</Cylinder>
+		</group>
+	);
+}
+
+function FallbackLowerClothing({ textureUrl, position }) {
+	const [fbTextureError, setFbTextureError] = useState(false);
+	const texture = useTexture(
+		textureUrl,
+		(tex) => {
+			tex.flipY = false;
+			tex.colorSpace = THREE.SRGBColorSpace;
+			tex.needsUpdate = true;
+		},
+		(error) => {
+			console.warn("Fallback texture failed to load:", error);
+			setFbTextureError(true);
+		}
+	);
+
+	const materialProps = useMemo(
+		() => ({
+			map: fbTextureError ? null : texture,
+			roughness: 0.7,
+			metalness: 0.1,
+			color: fbTextureError ? "#888888" : "#ffffff",
+		}),
+		[texture, fbTextureError]
+	);
+
+	return (
+		<group position={position}>
+			{/* Left leg */}
+			<Cylinder
+				args={[0.15, 0.15, 1]}
+				position={[-0.2, -0.5, 0]}
+				castShadow
+				receiveShadow>
+				<meshStandardMaterial {...materialProps} />
+			</Cylinder>
+			{/* Right leg */}
+			<Cylinder
+				args={[0.15, 0.15, 1]}
+				position={[0.2, -0.5, 0]}
+				castShadow
+				receiveShadow>
+				<meshStandardMaterial {...materialProps} />
+			</Cylinder>
+		</group>
+	);
+}
+
+// Main model loading component with error handling and fallback
+function ClothingModel({ geometryUrl, textureUrl, scale, position, isUpper }) {
+	const [modelError, setModelError] = useState(false);
+	const [textureError, setTextureError] = useState(false);
+
+	// Reset errors when URLs change
 	useEffect(() => {
-		texture.flipY = false; // Standard for GLTF textures
-		texture.colorSpace = THREE.SRGBColorSpace; // Ensure correct color
-		texture.needsUpdate = true; // Ensure updates are applied
-	}, [texture]);
+		setModelError(false);
+		setTextureError(false);
+	}, [geometryUrl, textureUrl]);
 
-	// Use useRef for the mesh to potentially access it later if needed
-	const modelRef = useRef();
+	const { scene: geometryScene } = useGLTF(geometryUrl, undefined, (error) => {
+		console.error(`Failed to load model: ${geometryUrl}`, error);
+		setModelError(true);
+	});
 
-	// Memoize the cloned scene and texture application to avoid re-computation
-	// unless necessary props change.
-	const clonedScene = React.useMemo(() => {
-		const clone = geometryScene.clone(); // Clone base geometry
+	const texture = useTexture(
+		textureUrl,
+		(tex) => {
+			tex.flipY = false;
+			tex.colorSpace = THREE.SRGBColorSpace;
+			tex.needsUpdate = true;
+		},
+		(error) => {
+			console.error(`Failed to load texture: ${textureUrl}`, error);
+			setTextureError(true);
+		}
+	);
 
+	// If the primary model failed, render the fallback immediately
+	if (modelError) {
+		console.log(
+			`Rendering fallback for ${isUpper ? "upper" : "lower"} clothing.`
+		);
+		return isUpper ? (
+			<FallbackUpperClothing textureUrl={textureUrl} position={position} />
+		) : (
+			<FallbackLowerClothing textureUrl={textureUrl} position={position} />
+		);
+	}
+
+	// Memoize scene cloning and material application
+	const clonedScene = useMemo(() => {
+		// Don't proceed if the geometry hasn't loaded yet (useGLTF is async)
+		if (!geometryScene) return null;
+
+		const clone = geometryScene.clone();
 		clone.traverse((child) => {
 			if (child.isMesh) {
 				child.castShadow = true;
 				child.receiveShadow = true;
-				// Apply the new texture to the material's map
-				// Important: This assumes a standard material setup (like MeshStandardMaterial)
-				// where the 'map' property holds the main texture.
-				if (Array.isArray(child.material)) {
-					// Handle cases where a mesh might have multiple materials
-					child.material.forEach((material) => {
-						if (material.map !== undefined) {
-							material.map = texture;
-							// Set color to white to avoid tinting the texture, unless desired
-							// material.color?.set(0xffffff);
-							material.needsUpdate = true;
-						}
-					});
-				} else if (child.material && child.material.map !== undefined) {
-					child.material.map = texture;
-					// child.material.color?.set(0xffffff); // Optional: remove base color tint
-					child.material.needsUpdate = true;
-				}
-				// Handle potential transparency if using PNGs with alpha
-				if (
-					texture.format === THREE.RGBAFormat ||
-					textureUrl.endsWith(".png")
-				) {
-					if (Array.isArray(child.material)) {
-						child.material.forEach((material) => {
+
+				const applyTexture = (material) => {
+					// Only apply texture if it loaded successfully
+					if (!textureError && material.map !== undefined) {
+						material.map = texture;
+						if (
+							texture.format === THREE.RGBAFormat ||
+							textureUrl.endsWith(".png")
+						) {
 							material.transparent = true;
-							// material.alphaTest = 0.5; // Adjust if needed for sharp cutouts
-							material.needsUpdate = true;
-						});
-					} else if (child.material) {
-						child.material.transparent = true;
-						// child.material.alphaTest = 0.5;
-						child.material.needsUpdate = true;
+						}
+						// Ensure material updates
+						material.needsUpdate = true;
 					}
+				};
+
+				if (Array.isArray(child.material)) {
+					child.material.forEach(applyTexture);
+				} else if (child.material) {
+					applyTexture(child.material);
 				}
 			}
 		});
-
-		// Set scale and position on the cloned root
 		clone.scale.set(...scale);
 		clone.position.set(...position);
 		return clone;
-	}, [geometryScene, texture, scale, position, textureUrl]); // Depend on relevant props
+	}, [geometryScene, texture, scale, position, textureUrl, textureError]);
 
-	return <primitive ref={modelRef} object={clonedScene} dispose={null} />;
-	// dispose={null} prevents R3F from disposing the geometry/material when the component
-	// unmounts, which is desired since the texture is applied dynamically and the base
-	// geometry/material might be cached/reused by useGLTF.
+	// Render the primitive only if clonedScene is ready
+	// Using useMemo here is likely a micro-optimization, could return directly
+	return useMemo(() => {
+		if (!clonedScene) return null;
+		return <primitive object={clonedScene} dispose={null} />;
+	}, [clonedScene]);
 }
 
-/**
- * Main component holding the Canvas, controls, and state.
- */
+function SceneContent({ upperData, lowerData, setAutoRotate, isAutoRotating }) {
+	const groupRef = useRef();
+	const controlsRef = useRef();
+	const ROTATION_SPEED = 0.1;
+
+	useFrame((state, delta) => {
+		if (isAutoRotating && groupRef.current) {
+			groupRef.current.rotation.y += delta * ROTATION_SPEED;
+		}
+	});
+
+	useEffect(() => {
+		const controls = controlsRef.current;
+		if (controls) {
+			const handleStart = () => setAutoRotate(false);
+			const handleEnd = () => setAutoRotate(true);
+
+			controls.addEventListener("start", handleStart);
+			controls.addEventListener("end", handleEnd);
+			return () => {
+				// Cleanup listeners
+				if (controls?.removeEventListener) {
+					try {
+						controls.removeEventListener("start", handleStart);
+						controls.removeEventListener("end", handleEnd);
+					} catch (error) {
+						console.warn("Error removing OrbitControls listeners:", error);
+					}
+				}
+			};
+		}
+	}, [setAutoRotate]);
+	return (
+		<>
+			{/* Lighting */}
+			<ambientLight intensity={0.7} />
+			<directionalLight
+				position={[5, 8, 5]}
+				intensity={1.5}
+				castShadow
+				shadow-mapSize-width={2048}
+				shadow-mapSize-height={2048}
+				shadow-camera-far={50}
+				shadow-camera-left={-10}
+				shadow-camera-right={10}
+				shadow-camera-top={10}
+				shadow-camera-bottom={-10}
+				shadow-bias={-0.0005}
+			/>
+			<directionalLight position={[-5, 2, -2]} intensity={0.3} />
+			{/* Environment */}
+			<Environment preset="city" />
+			{/* Ground Plane */}
+			<mesh
+				receiveShadow
+				rotation={[-Math.PI / 2, 0, 0]}
+				position={[0, -1.5, 0]}>
+				<planeGeometry args={[20, 20]} />
+				<meshStandardMaterial color="#cccccc" side={THREE.DoubleSide} />
+			</mesh>
+			{/* Models Group */}
+			<group ref={groupRef}>
+				<ClothingModel
+					// Using a combination key for updates
+					key={`upper-${upperData.geometryUrl}-${upperData.textureUrl}`}
+					geometryUrl={upperData.geometryUrl}
+					textureUrl={upperData.textureUrl}
+					scale={upperData.scale}
+					position={upperData.position}
+					isUpper={true}
+				/>
+				<ClothingModel
+					key={`lower-${lowerData.geometryUrl}-${lowerData.textureUrl}`}
+					geometryUrl={lowerData.geometryUrl}
+					textureUrl={lowerData.textureUrl}
+					scale={lowerData.scale}
+					position={lowerData.position}
+					isUpper={false}
+				/>
+			</group>
+			{/* Controls */}
+			<OrbitControls
+				ref={controlsRef}
+				makeDefault
+				enablePan={true}
+				enableZoom={true}
+				target={[0, 0, 0]}
+				minDistance={2}
+				maxDistance={10}
+			/>
+		</>
+	);
+}
+
+// Main Component
 export default function ClothingViewer() {
 	const [upperIndex, setUpperIndex] = useState(0);
 	const [lowerIndex, setLowerIndex] = useState(0);
-	const [canvasKey, setCanvasKey] = useState(Date.now()); // For context loss recovery
+	const [canvasKey, setCanvasKey] = useState(Date.now());
+	const [isAutoRotating, setAutoRotate] = useState(true);
+	const [snackbarMessage, setSnackbarMessage] = useState(""); // Renamed from errorMessage
+	const [showSnackbar, setShowSnackbar] = useState(false); // Renamed from showError
+	const [snackbarSeverity, setSnackbarSeverity] = useState("success"); // For different message types
 
-	// Context loss handler
-	const handleContextLost = React.useCallback((e) => {
+	const handleContextLost = useCallback((e) => {
 		console.warn("WebGL context lost. Attempting to restore...");
 		e.preventDefault();
-		setCanvasKey(Date.now()); // Force canvas remount
+		setAutoRotate(false);
+		setCanvasKey(Date.now());
+		setSnackbarMessage("WebGL context lost. Attempting to reload viewer.");
+		setSnackbarSeverity("warning");
+		setShowSnackbar(true);
 	}, []);
 
-	// Navigation handlers
+	// Resume auto-rotate when clothes change
+	useEffect(() => {
+		setAutoRotate(true);
+	}, [upperIndex, lowerIndex]);
+
 	const handleUpperNext = () =>
 		setUpperIndex((prev) => (prev + 1) % UPPER_CLOTHING.length);
 	const handleUpperPrev = () =>
@@ -194,6 +418,50 @@ export default function ClothingViewer() {
 			(prev) => (prev - 1 + LOWER_CLOTHING.length) % LOWER_CLOTHING.length
 		);
 
+	// --- Action Handlers ---
+	const showNotification = (message, severity = "success") => {
+		setSnackbarMessage(message);
+		setSnackbarSeverity(severity);
+		setShowSnackbar(true);
+	};
+
+	const handleAddToFavorites = () => {
+		console.log("Added to favorites:", {
+			upper: UPPER_CLOTHING[upperIndex],
+			lower: LOWER_CLOTHING[lowerIndex],
+		});
+		showNotification("Added to favorites!");
+	};
+
+	const handleResetLook = () => {
+		setUpperIndex(0);
+		setLowerIndex(0);
+		showNotification("Look reset to default", "info");
+	};
+
+	const handleAddToCart = () => {
+		console.log("Added to cart:", {
+			upper: UPPER_CLOTHING[upperIndex],
+			lower: LOWER_CLOTHING[lowerIndex],
+		});
+		showNotification("Added to cart!");
+	};
+
+	const handleSaveOutfit = () => {
+		console.log("Saved outfit:", {
+			upper: UPPER_CLOTHING[upperIndex],
+			lower: LOWER_CLOTHING[lowerIndex],
+		});
+		showNotification("Outfit saved!");
+	};
+
+	const handleCloseSnackbar = (event, reason) => {
+		if (reason === "clickaway") {
+			return;
+		}
+		setShowSnackbar(false);
+	};
+
 	const currentUpperData = UPPER_CLOTHING[upperIndex];
 	const currentLowerData = LOWER_CLOTHING[lowerIndex];
 
@@ -203,167 +471,322 @@ export default function ClothingViewer() {
 				height: "100vh",
 				display: "flex",
 				flexDirection: "column",
-				bgcolor: "#f0f0f0",
+				bgcolor: "#f5f5f7" /* Slightly off-white bg */,
 			}}>
-			{/* Control UI */}
+			{/* Header */}
+			<Box
+				sx={{
+					p: { xs: 2, md: 3 },
+					textAlign: "center",
+					backgroundColor: "#fff",
+					borderBottom: "1px solid #eaeaea",
+				}}>
+				<Typography
+					variant="h4"
+					sx={{
+						fontWeight: 600,
+						color: "#333",
+						fontSize: { xs: "1.5rem", md: "2.125rem" },
+					}}>
+					SwipeFit Dressroom
+				</Typography>
+				<Typography
+					variant="body1"
+					sx={{
+						mt: 1,
+						color: "#666",
+						fontSize: { xs: "0.875rem", md: "1rem" },
+					}}>
+					Select items and see them combined in 3D
+				</Typography>
+			</Box>
+
+			{/* Main Content Area */}
+			<Box
+				sx={{
+					flexGrow: 1,
+					position: "relative",
+					display: "flex",
+					overflow: "hidden" /* Prevent layout shifts */,
+				}}>
+				{/* 3D Canvas Area */}
+				<Box
+					sx={{
+						flexGrow: 1,
+						position: "relative",
+						minHeight: "300px" /* Ensure canvas has space */,
+					}}>
+					<Suspense fallback={<CanvasLoader />}>
+						<Canvas
+							key={canvasKey}
+							shadows
+							camera={{ position: [0, 0.5, 4], fov: 50 }}
+							gl={{ preserveDrawingBuffer: true, antialias: true }} // Enable antialiasing
+							onCreated={({ gl }) => {
+								gl.domElement.addEventListener(
+									"webglcontextlost",
+									handleContextLost,
+									false
+								);
+								// Optional: Improve performance settings
+								// gl.setPixelRatio(window.devicePixelRatio > 1 ? 1.5 : 1);
+							}}
+							style={{
+								background: "linear-gradient(to bottom, #eef2f7, #ffffff)",
+							}} // Subtle gradient background
+						>
+							<SceneContent
+								upperData={currentUpperData}
+								lowerData={currentLowerData}
+								isAutoRotating={isAutoRotating}
+								setAutoRotate={setAutoRotate}
+							/>
+						</Canvas>
+					</Suspense>
+				</Box>
+
+				{/* Right Side Action Buttons (Desktop) */}
+				<Box
+					sx={{
+						width: { md: "90px" },
+						display: { xs: "none", md: "flex" },
+						flexDirection: "column",
+						alignItems: "center",
+						justifyContent: "center",
+						gap: 4,
+						p: 2,
+						borderLeft: "1px solid #eaeaea",
+						backgroundColor: "#fff",
+					}}>
+					{[
+						{
+							icon: <FavoriteIcon />,
+							label: "Favorites",
+							handler: handleAddToFavorites,
+						},
+						{ icon: <RefreshIcon />, label: "Reset", handler: handleResetLook },
+						{
+							icon: <ShoppingCartIcon />,
+							label: "Add Cart",
+							handler: handleAddToCart,
+						},
+						{
+							icon: <SaveIcon />,
+							label: "Save Look",
+							handler: handleSaveOutfit,
+						},
+					].map((action) => (
+						<Box
+							key={action.label}
+							sx={{
+								display: "flex",
+								flexDirection: "column",
+								alignItems: "center",
+							}}>
+							<IconButton
+								onClick={action.handler}
+								sx={{
+									width: "50px",
+									height: "50px",
+									border: "1px solid #eaeaea",
+									backgroundColor: "#f9f9f9",
+									"&:hover": { backgroundColor: "#f0f0f0" },
+								}}>
+								{action.icon}
+							</IconButton>
+							<Typography
+								variant="caption"
+								sx={{ mt: 0.5, textAlign: "center" }}>
+								{action.label}
+							</Typography>
+						</Box>
+					))}
+				</Box>
+			</Box>
+
+			{/* Selection Controls Footer */}
 			<Box
 				sx={{
 					p: 2,
-					backgroundColor: "rgba(255, 255, 255, 0.9)",
-					zIndex: 10,
-					boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
+					display: "flex",
+					justifyContent: "center",
+					alignItems: "center",
+					gap: { xs: 1, md: 2 },
+					flexWrap: "wrap",
+					backgroundColor: "#fff",
+					borderTop: "1px solid #eaeaea",
 				}}>
-				<Grid container spacing={1} justifyContent="center" alignItems="center">
-					{/* Upper Clothing Controls */}
-					<Grid
-						item
-						xs={12}
-						sm={5}
-						container
-						alignItems="center"
-						justifyContent="center">
-						<IconButton onClick={handleUpperPrev} size="small">
-							{" "}
-							<ArrowBack />{" "}
-						</IconButton>
-						<Typography
-							variant="body2"
-							sx={{
-								mx: 1,
-								textAlign: "center",
-								minWidth: "120px",
-								fontWeight: 500,
-							}}>
-							{currentUpperData.name}
-						</Typography>
-						<IconButton onClick={handleUpperNext} size="small">
-							{" "}
-							<ArrowForward />{" "}
-						</IconButton>
-					</Grid>
-					{/* Divider */}
-					<Grid
-						item
-						xs={12}
-						sm={1}
+				{/* Upper Clothing Selector */}
+				<Box
+					sx={{
+						display: "flex",
+						alignItems: "center",
+						p: 1,
+						px: { xs: 1, md: 3 },
+						border: "1px solid #eaeaea",
+						borderRadius: "8px",
+						backgroundColor: "#fff",
+						minWidth: { xs: "150px", sm: "220px" },
+					}}>
+					<Typography
+						variant="subtitle1"
 						sx={{
-							display: { xs: "block", sm: "block" },
+							mr: { xs: 1, md: 2 },
+							fontWeight: 500,
+							fontSize: { xs: "0.875rem", md: "1rem" },
+						}}>
+						Shirt:
+					</Typography>
+					<Typography
+						variant="body2"
+						sx={{
+							mr: 1,
+							flexGrow: 1,
 							textAlign: "center",
-							color: "grey.400",
-							fontWeight: 300,
-							my: { xs: 1, sm: 0 },
+							overflow: "hidden",
+							textOverflow: "ellipsis",
+							whiteSpace: "nowrap",
+							fontSize: { xs: "0.8rem", md: "0.875rem" },
 						}}>
-						|
-					</Grid>
-					{/* Lower Clothing Controls */}
-					<Grid
-						item
-						xs={12}
-						sm={5}
-						container
-						alignItems="center"
-						justifyContent="center">
-						<IconButton onClick={handleLowerPrev} size="small">
-							{" "}
-							<ArrowBack />{" "}
+						{currentUpperData.name}
+					</Typography>
+					<Box sx={{ display: "flex", alignItems: "center", ml: "auto" }}>
+						<IconButton
+							onClick={handleUpperPrev}
+							size="small"
+							sx={{ mr: 0.5 }}
+							aria-label="Previous Shirt">
+							<ArrowBack fontSize="small" />
 						</IconButton>
-						<Typography
-							variant="body2"
-							sx={{
-								mx: 1,
-								textAlign: "center",
-								minWidth: "120px",
-								fontWeight: 500,
-							}}>
-							{currentLowerData.name}
-						</Typography>
-						<IconButton onClick={handleLowerNext} size="small">
-							{" "}
-							<ArrowForward />{" "}
+						<IconButton
+							onClick={handleUpperNext}
+							size="small"
+							aria-label="Next Shirt">
+							<ArrowForward fontSize="small" />
 						</IconButton>
-					</Grid>
-				</Grid>
+					</Box>
+				</Box>
+				{/* Lower Clothing Selector */}
+				<Box
+					sx={{
+						display: "flex",
+						alignItems: "center",
+						p: 1,
+						px: { xs: 1, md: 3 },
+						border: "1px solid #eaeaea",
+						borderRadius: "8px",
+						backgroundColor: "#fff",
+						minWidth: { xs: "150px", sm: "220px" },
+					}}>
+					<Typography
+						variant="subtitle1"
+						sx={{
+							mr: { xs: 1, md: 2 },
+							fontWeight: 500,
+							fontSize: { xs: "0.875rem", md: "1rem" },
+						}}>
+						Pants:
+					</Typography>
+					<Typography
+						variant="body2"
+						sx={{
+							mr: 1,
+							flexGrow: 1,
+							textAlign: "center",
+							overflow: "hidden",
+							textOverflow: "ellipsis",
+							whiteSpace: "nowrap",
+							fontSize: { xs: "0.8rem", md: "0.875rem" },
+						}}>
+						{currentLowerData.name}
+					</Typography>
+					<Box sx={{ display: "flex", alignItems: "center", ml: "auto" }}>
+						<IconButton
+							onClick={handleLowerPrev}
+							size="small"
+							sx={{ mr: 0.5 }}
+							aria-label="Previous Pants">
+							<ArrowBack fontSize="small" />
+						</IconButton>
+						<IconButton
+							onClick={handleLowerNext}
+							size="small"
+							aria-label="Next Pants">
+							<ArrowForward fontSize="small" />
+						</IconButton>
+					</Box>
+				</Box>
 			</Box>
 
-			{/* 3D Canvas Area */}
-			<Box sx={{ flexGrow: 1, position: "relative" }}>
-				{/* Suspense wraps Canvas for asset loading fallback */}
-				<Suspense fallback={<CanvasLoader />}>
-					<Canvas
-						key={canvasKey} // Force remount on context loss
-						shadows // Enable shadows
-						camera={{ position: [0, 0.5, 4], fov: 50 }} // Adjust camera as needed
-						gl={{ preserveDrawingBuffer: true }} // Optional: If you need to screenshot
-						onCreated={({ gl }) => {
-							gl.domElement.addEventListener(
-								"webglcontextlost",
-								handleContextLost,
-								false
-							);
-							// Optional: Set background color if needed (though Box bgcolor works)
-							// gl.setClearColor('#f0f0f0');
-						}}>
-						{/* Lighting */}
-						<ambientLight intensity={0.7} />
-						<directionalLight
-							position={[5, 8, 5]} // Adjust light position
-							intensity={1.5} // Adjust intensity
-							castShadow
-							shadow-mapSize-width={2048} // Increase shadow map resolution
-							shadow-mapSize-height={2048}
-							shadow-camera-far={50}
-							shadow-camera-left={-10}
-							shadow-camera-right={10}
-							shadow-camera-top={10}
-							shadow-camera-bottom={-10}
-							shadow-bias={-0.0005} // Fine-tune shadow bias if needed
-						/>
-						{/* Optional: Add subtle fill light */}
-						<directionalLight position={[-5, 2, -2]} intensity={0.3} />
-
-						{/* Environment for reflections and ambient light */}
-						<Environment preset="city" />
-
-						{/* Ground Plane for Shadows */}
-						<mesh
-							receiveShadow
-							rotation={[-Math.PI / 2, 0, 0]}
-							position={[0, -1.5, 0]}>
-							<planeGeometry args={[20, 20]} />
-							{/* Use MeshStandardMaterial for more realistic ground, or shadowMaterial for invisible */}
-							<meshStandardMaterial color="#cccccc" side={THREE.DoubleSide} />
-							{/* <shadowMaterial opacity={0.3} /> */}
-						</mesh>
-
-						{/* Clothing Models - Keys ensure remount on change */}
-						<group>
-							<ClothingModel
-								key={`upper-${upperIndex}-${currentUpperData.textureUrl}`}
-								geometryUrl={currentUpperData.geometryUrl}
-								textureUrl={currentUpperData.textureUrl}
-								scale={currentUpperData.scale}
-								position={currentUpperData.position}
-							/>
-							<ClothingModel
-								key={`lower-${lowerIndex}-${currentLowerData.textureUrl}`}
-								geometryUrl={currentLowerData.geometryUrl}
-								textureUrl={currentLowerData.textureUrl}
-								scale={currentLowerData.scale}
-								position={currentLowerData.position}
-							/>
-						</group>
-
-						{/* Camera Controls */}
-						<OrbitControls
-							enablePan={true}
-							enableZoom={true}
-							target={[0, 0, 0]} // Target the center of the outfit
-							minDistance={2} // Prevent zooming too close
-							maxDistance={10} // Prevent zooming too far
-						/>
-					</Canvas>
-				</Suspense>
+			{/* Bottom Action Buttons (Mobile) */}
+			<Box
+				sx={{
+					display: { xs: "flex", md: "none" },
+					justifyContent: "space-around",
+					p: 1.5,
+					gap: 1,
+					borderTop: "1px solid #eaeaea",
+					backgroundColor: "#fff",
+				}}>
+				<Button
+					variant="contained"
+					startIcon={<FavoriteIcon />}
+					onClick={handleAddToFavorites}
+					size="small"
+					sx={{
+						flex: 1,
+						py: 1,
+						backgroundColor: "#4a90e2",
+						"&:hover": { backgroundColor: "#3a80d2" },
+						fontSize: "0.75rem",
+					}}>
+					Favorite
+				</Button>
+				<Button
+					variant="outlined"
+					startIcon={<ShoppingCartIcon />}
+					onClick={handleAddToCart}
+					size="small"
+					sx={{
+						flex: 1,
+						py: 1,
+						borderColor: "#ccc",
+						color: "#555",
+						fontSize: "0.75rem",
+					}}>
+					Add Cart
+				</Button>
+				<Button
+					variant="outlined"
+					startIcon={<SaveIcon />}
+					onClick={handleSaveOutfit}
+					size="small"
+					sx={{
+						flex: 1,
+						py: 1,
+						borderColor: "#ccc",
+						color: "#555",
+						fontSize: "0.75rem",
+					}}>
+					Save
+				</Button>
 			</Box>
+
+			{/* Notification Snackbar */}
+			<Snackbar
+				open={showSnackbar}
+				autoHideDuration={3000}
+				onClose={handleCloseSnackbar}
+				anchorOrigin={{ vertical: "bottom", horizontal: "center" }}>
+				{/* Wrap Alert for onClose propagation */}
+				<Alert
+					onClose={handleCloseSnackbar}
+					severity={snackbarSeverity}
+					variant="filled"
+					sx={{ width: "100%" }}>
+					{snackbarMessage}
+				</Alert>
+			</Snackbar>
 		</Box>
 	);
 }

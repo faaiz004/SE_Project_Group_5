@@ -32,15 +32,7 @@ export default function LoginPage() {
     try {
       const response = await loginConvention(email, password)
       if (response?.token) {
-<<<<<<< HEAD
-<<<<<<< HEAD
         navigate("/explore")
-=======
-        navigate("/preferences/gender")
->>>>>>> c24c37e (Complete auth integration)
-=======
-        navigate("/explore")
->>>>>>> cad588f (updated prefrences + login + posts)
       }
     } catch (error) {
       console.error("Login failed:", error)
@@ -52,7 +44,6 @@ export default function LoginPage() {
     try {
       const googleToken = credentialResponse.credential
       console.log("Received Google token:", googleToken)
-
       const response = await axios.post(
         "http://localhost:8000/api/auth/google",
         { token: googleToken },
@@ -62,21 +53,23 @@ export default function LoginPage() {
       )
 
       const { token, user } = response.data
-<<<<<<< HEAD
       const email = response.data.user.email
       if (token) {
         localStorage.setItem("jwt", token)
         localStorage.setItem("email", email)
-=======
       if (token) {
         localStorage.setItem("jwt", token)
         localStorage.setItem("email", email)
         navigate("/explore")
       }
-    } catch (error) {
+    } 
+  }
+    catch (error) {
       console.error("Google login error:", error.response?.data || error.message)
     }
+  
   }
+
 
   return (
     <Box
@@ -202,11 +195,7 @@ export default function LoginPage() {
             <Box sx={{ mt: 2, textAlign: "center" }}>
               <Typography variant="body2" color="text.secondary">
                 Don't have an account? {" "}
-<<<<<<< HEAD
                 <Link href="/sign-up" underline="hover" color="primary" fontWeight="medium">
-=======
-                <Link href="/signup" underline="hover" color="primary" fontWeight="medium">
->>>>>>> c24c37e (Complete auth integration)
                   Sign up
                 </Link>
               </Typography>

@@ -18,7 +18,7 @@ const outfitsData = [
 
 export async function fetchOutfits() {
   try {
-    const response = await fetch('http://localhost:8000/api/clothes'); // adjust the URL if needed
+    const response = await fetch('http://localhost:8000/api/clothes/getClothes'); // adjust the URL if needed
     if (!response.ok) {
       throw new Error(`Error: ${response.statusText}`);
     }

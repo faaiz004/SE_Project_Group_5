@@ -1,7 +1,7 @@
 // controllers/googleAuthController.js
 import { OAuth2Client } from 'google-auth-library';
 import jwt from 'jsonwebtoken';
-import User from '../../models/user';
+import User from '../../models/User.js';
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 const JWT_SECRET = process.env.JWT_SECRET || 'yoursecretkey';
