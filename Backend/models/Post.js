@@ -26,14 +26,7 @@ const postSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
-  upper : {
-    type: String,
-    required: true 
-  },
-  lower : {
-    type: String,
-    required: true 
-  },
+  
 
 });
 
