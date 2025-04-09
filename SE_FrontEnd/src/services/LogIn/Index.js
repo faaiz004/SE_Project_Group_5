@@ -10,10 +10,13 @@ export const loginConvention = async (email, password) => {
             },
         });
 
-        const { token } = response.data;
+        const { token, user } = response.data;
+        const userEmail = user?.email 
 
         if (token) {
             localStorage.setItem('jwt', token);
+            localStorage.setItem('email', userEmail); // Save email to localStorage
+
         }
 
         return response.data;

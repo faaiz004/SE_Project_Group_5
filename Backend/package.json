@@ -5,7 +5,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon server.js",
-    "seed": "node ./scripts/bulkPushClothes.js"
+    "seed": "node ./scripts/bulkPushClothes.js",
+    "update": "node ./scripts/updateClothes.js",
+    "buy": "node ./scripts/buyClothes.js"
   },
   "keywords": [],
   "author": "",
