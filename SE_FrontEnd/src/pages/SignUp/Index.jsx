@@ -87,7 +87,7 @@ export default function SignUp() {
             }}
           >
             <Palette fontSize="large" />
-            <Typography variant="h6">StyleVerse</Typography>
+            <Typography variant="h6">Swipe Fit</Typography>
           </Box>
 
           <Box sx={{ position: "relative", zIndex: 2 }}>
