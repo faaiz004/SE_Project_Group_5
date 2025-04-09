@@ -48,7 +48,7 @@ function StylePreferences() {
     { id: "modern", name: "Modern", image: modernImg },
     { id: "business", name: "Business", image: businessImg },
     { id: "oldmoney", name: "Old Money", image: oldMoneyImg },
-    { id: "casual", name: "Casual", image: casualImg },
+    { id: "Casual", name: "Casual", image: casualImg },
   ];
 
   return (

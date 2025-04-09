@@ -1,4 +1,5 @@
-import { useState } from "react"
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { 
   Box, 
   Button, 
@@ -9,125 +10,68 @@ import {
   Chip,
   IconButton,
   InputBase
-} from "@mui/material"
+} from "@mui/material";
 import { 
   CloudUpload,
   Search,
   Favorite,
   ChatBubbleOutline,
   FilterList
-} from "@mui/icons-material"
+} from "@mui/icons-material";
 import CheckIcon from '@mui/icons-material/Check';
 
-import blue_denim from "../../assets/Mannequin/blue_denim.jpg"
-import red_hoodie from "../../assets/Mannequin/red_hoodie.jpg"
-
-
-// Sample data for past purchases
-const pastPurchases = [
-  {
-    id: 1,
-    name: "Red Hoodie",
-    price: "$49.99",
-    size: "M",
-    image: blue_denim,
-  },
-  {
-    id: 2,
-    name: "Blue Jeans",
-    price: "$30.99",
-    size: "32",
-    image: red_hoodie,
-  },
-  {
-    id: 3,
-    name: "White Sneakers",
-    price: "$10",
-    size: "10",
-    image: blue_denim,
-  },
-  {
-    id: 4,
-    name: "Black T Shirt",
-    price: "$24.99",
-    size: "L",
-    image: blue_denim,
-  },
-  {
-    id: 5,
-    name: "Denim Jacket",
-    price: "$78.99",
-    size: "M",
-    image: red_hoodie,
-  }
-]
+// Import API function which calls your getPurchasedClothes endpoint
+import { getPurchases } from "../../services/GetPurchases/Index";
 
 export default function CreatePostForm() {
-  const [selectedImage, setSelectedImage] = useState(null)
-  const [caption, setCaption] = useState("")
-  const [selectedItems, setSelectedItems] = useState([3, 5]) // Pre-select White Sneakers and Denim Jacket
-  const [searchTerm, setSearchTerm] = useState("")
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [caption, setCaption] = useState("");
+  const [selectedItems, setSelectedItems] = useState([]); // initially nothing selected
+  const [searchTerm, setSearchTerm] = useState("");
+
+  // Use react-query to fetch purchased clothes (from your secure API)
+  const { data: purchasedData, isLoading, error } = useQuery({
+    queryKey: ["purchasedClothes"],
+    queryFn: getPurchases,
+  });
+  
+
+  console.log("Purchased Data:", purchasedData);
+
+  // Use API data if available; otherwise fallback to an empty array.
+  // The API is expected to return an object like { email: "...", clothes: [...] }
+  const pastPurchases = purchasedData?.clothes || [];
 
   // Filter purchases based on search term
   const filteredPurchases = pastPurchases.filter((item) => {
-    const searchLower = searchTerm.toLowerCase()
-    return (
-      item.name.toLowerCase().includes(searchLower) ||
-      item.size.toLowerCase().includes(searchLower) ||
-      item.price.toLowerCase().includes(searchLower)
-    )
-  })
+    const searchLower = searchTerm.toLowerCase();
+    return item.name.toLowerCase().includes(searchLower);
+  });
 
-  // Get selected items details
-  const selectedItemsDetails = pastPurchases.filter(item => 
-    selectedItems.includes(item.id)
-  )
+  // Get details of selected items from the fetched clothes (using _id)
+  const selectedItemsDetails = pastPurchases.filter(item =>
+    selectedItems.includes(item._id)
+  );
 
   const handleImageUpload = (e) => {
-    const file = e.target.files?.[0]
+    const file = e.target.files?.[0];
     if (file) {
-      const imageUrl = URL.createObjectURL(file)
-      setSelectedImage(imageUrl)
-    }
-  }
-
-  const toggleItemSelection = (id) => {
-    setSelectedItems((prev) => 
-      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
-    )
-  }
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!selectedImage || !caption) return alert("Please upload an image and write a caption.");
-  
-    try {
-      // Step 1: Upload image to backend -> S3
-      const formData = new FormData();
-      formData.append("image", selectedImage); // Use selectedImage from state
-    
-      const uploadRes = await axios.post("http://localhost:5000/api/upload-image", formData);
-      const { imageUrl } = uploadRes.data;
-    
-      // Step 2: Send post data to backend
-      await axios.post("http://localhost:5000/api/create-post", {
-        imageUrl,
-        caption,
-        tags: selectedItems.map(item => item.name).join(', '), // Use selectedItems for tags
-      });
-    
-      // Clear inputs and redirect or show success
-      setSelectedImage(null);
-      setCaption('');
-      setSelectedItems([]);
-      alert("Post uploaded!");
-      navigate("/stylefeed"); // Assuming you want to navigate to the Style Feed page
-    } catch (err) {
-      console.error(err);
-      alert("Error uploading post.");
+      const imageUrl = URL.createObjectURL(file);
+      setSelectedImage(imageUrl);
     }
   };
-  
+
+  const toggleItemSelection = (id) => {
+    setSelectedItems((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+    );
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Implement your form submission logic here
+    // For example, you may send the new post data to your backend.
+  };
 
   return (
     <Box component="form" onSubmit={handleSubmit} sx={{ 
@@ -250,69 +194,69 @@ export default function CreatePostForm() {
               }} />
             </Box>
             
-            <Box sx={{ 
-              display: 'flex',
-              flexWrap: 'wrap',
-              gap: 2
-            }}>
-              {filteredPurchases.map((item) => (
-                <Box 
-                  key={item.id} 
-                  sx={{ 
-                    width: 100,
-                    cursor: 'pointer',
-                    position: 'relative'
-                  }}
-                  onClick={() => toggleItemSelection(item.id)}
-                >
-                  <Box sx={{ 
-                    position: 'relative',
-                    width: '100%',
-                    height: 100,
-                    borderRadius: 1,
-                    overflow: 'hidden',
-                    border: '1px solid #ddd',
-                    mb: 1
-                  }}>
-                    <Box
-                      component="img"
-                      src={item.image}
-                      alt={item.name}
-                      sx={{
-                        width: '100%',
-                        height: '100%',
-                        objectFit: 'cover'
-                      }}
-                    />
-                    {selectedItems.includes(item.id) && (
-                      <Box sx={{
-                        position: 'absolute',
-                        top: 0,
-                        right: 0,
-                        backgroundColor: '#1976d2',
-                        borderRadius: '0 0 0 8px',
-                        width: 24,
-                        height: 24,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                      }}>
-                        <CheckIcon sx={{ color: 'white', fontSize: 16 }} />
-                      </Box>
-                    )}
+            {isLoading ? (
+              <Typography variant="body1">Loading purchases...</Typography>
+            ) : error ? (
+              <Typography variant="body1" color="error">Error loading purchases.</Typography>
+            ) : (
+              <Box sx={{ 
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: 2
+              }}>
+                {filteredPurchases.map((item) => (
+                  <Box 
+                    key={item._id} 
+                    sx={{ 
+                      width: 100,
+                      cursor: 'pointer',
+                      position: 'relative'
+                    }}
+                    onClick={() => toggleItemSelection(item._id)}
+                  >
+                    <Box sx={{ 
+                      position: 'relative',
+                      width: '100%',
+                      height: 100,
+                      borderRadius: 1,
+                      overflow: 'hidden',
+                      border: '1px solid #ddd',
+                      mb: 1
+                    }}>
+                      <Box
+                        component="img"
+                        src={item.signedImageUrl}
+                        alt={item.name}
+                        sx={{
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover'
+                        }}
+                      />
+                      {selectedItems.includes(item._id) && (
+                        <Box sx={{
+                          position: 'absolute',
+                          top: 0,
+                          right: 0,
+                          backgroundColor: '#1976d2',
+                          borderRadius: '0 0 0 8px',
+                          width: 24,
+                          height: 24,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center'
+                        }}>
+                          <CheckIcon sx={{ color: 'white', fontSize: 16 }} />
+                        </Box>
+                      )}
+                    </Box>
+                    <Typography variant="body2" noWrap>
+                      {item.name}
+                    </Typography>
                   </Box>
-                  <Typography variant="body2" noWrap>
-                    {item.name}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {item.price}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {item.size}
-                  </Typography>
-                </Box>
-              ))}
-            </Box>
+                ))}
+              </Box>
+            )}
           </Box>
         </Paper>
 
@@ -384,7 +328,7 @@ export default function CreatePostForm() {
             {/* Post Caption */}
             <Box sx={{ px: 2, pb: 1 }}>
               <Typography variant="subtitle1" fontWeight="bold">
-                Your captson
+                Your caption
               </Typography>
               <Typography variant="body1" color="text.secondary">
                 {caption || "Your caption will appear here..."}
@@ -395,8 +339,8 @@ export default function CreatePostForm() {
             <Box sx={{ px: 2, pb: 2, display: 'flex', flexWrap: 'wrap', gap: 1 }}>
               {selectedItemsDetails.map(item => (
                 <Chip 
-                  key={item.id} 
-                  label={`${item.name} (${item.size})`} 
+                  key={item._id} 
+                  label={item.name}
                   variant="outlined"
                   sx={{ borderRadius: 1 }}
                 />
@@ -425,5 +369,5 @@ export default function CreatePostForm() {
         </Paper>
       </Box>
     </Box>
-  )
+  );
 }

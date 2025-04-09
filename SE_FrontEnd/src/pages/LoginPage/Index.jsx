@@ -54,8 +54,10 @@ export default function LoginPage() {
       )
 
       const { token, user } = response.data
+      const email = response.data.user.email
       if (token) {
         localStorage.setItem("jwt", token)
+        localStorage.setItem("email", email)
         navigate("/explore")
       }
     } catch (error) {
