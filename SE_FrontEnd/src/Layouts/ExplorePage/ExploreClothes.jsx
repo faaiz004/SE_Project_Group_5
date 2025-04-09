@@ -28,45 +28,45 @@ export default function ExploreClothes() {
 
   // Create refs to store scroll containers
   const scrollContainerRefs = useRef({});
-  
+
   // Better trackpad scrolling implementation
   useEffect(() => {
     const containers = scrollContainerRefs.current;
     const eventListeners = [];
-    
+
     // Process each container
     Object.entries(containers).forEach(([category, container]) => {
       if (!container) return;
-      
+
       // Function that handles both trackpad and mouse wheel
       const handleScroll = (event) => {
         // For trackpads, we want both horizontal and vertical gestures to work
         const scrollX = Math.abs(event.deltaX);
         const scrollY = Math.abs(event.deltaY);
-        
+
         // If this is primarily a horizontal scroll, let the browser handle it
         if (scrollX > scrollY && scrollX > 0) return;
-        
+
         // Otherwise, convert vertical scrolling to horizontal
         event.preventDefault();
-        
+
         // Netflix-like smooth scrolling - adjust scrollAmount for right feel
         const direction = event.deltaY > 0 ? 1 : -1;
         const scrollAmount = direction * Math.min(Math.abs(event.deltaY) * 2.5, 250);
-        
+
         container.scrollBy({
           left: scrollAmount,
           behavior: 'smooth'
         });
       };
-      
+
       // Add the event listener
       container.addEventListener('wheel', handleScroll, { passive: false });
-      
+
       // Store the listener details for cleanup
       eventListeners.push({ container, handler: handleScroll });
     });
-    
+
     // Cleanup function that removes all event listeners
     return () => {
       eventListeners.forEach(({ container, handler }) => {
@@ -78,12 +78,18 @@ export default function ExploreClothes() {
   if (isLoading) return <Typography>Loading outfits...</Typography>;
   if (isError) return <Typography>Error: {error.message}</Typography>;
 
+  // Minimal addition: classify each outfit as either Upper or Lower.
   const categoriesMap = data.reduce((acc, outfit) => {
-    if (!acc[outfit.category]) acc[outfit.category] = [];
-    acc[outfit.category].push(outfit);
+
+    console.log(outfit)
+    const outfitType = outfit.upper === true ? "Upper" : "Lower";
+    const key = `${outfit.category} - ${outfitType}`;
+    if (!acc[key]) acc[key] = [];
+    acc[key].push(outfit);
     return acc;
   }, {});
   const categoriesArr = Object.entries(categoriesMap);
+  
 
   // Handle arrow button clicks
   const handleScroll = (category, direction) => {
@@ -91,7 +97,6 @@ export default function ExploreClothes() {
     if (container) {
       // Netflix-like scrolling - show more items at once
       const scrollAmount = container.clientWidth * 0.75; // 75% of container width
-      
       container.scrollBy({
         left: direction === 'left' ? -scrollAmount : scrollAmount,
         behavior: 'smooth'
@@ -101,10 +106,10 @@ export default function ExploreClothes() {
 
   return (
     <Box sx={root}>
-      {categoriesArr.map(([categoryName, outfits]) => {
+      {categoriesArr.map(([groupName, outfits]) => {
         return (
           <Box
-            key={categoryName}
+            key={groupName}
             tabIndex={0}
             sx={{
               width: "90%",
@@ -123,24 +128,22 @@ export default function ExploreClothes() {
                 mb: 2,
               }}
             >
-              {categoryName}
+              {groupName}
             </Typography>
 
             <Box sx={{ display: "flex", alignItems: "center" }}>
-              <IconButton
-                onClick={() => handleScroll(categoryName, 'left')}
-              >
+              <IconButton onClick={() => handleScroll(groupName, 'left')}>
                 <ArrowBackIosNewIcon />
               </IconButton>
 
               {/* Horizontal scrollable container */}
               <Box
-                ref={el => scrollContainerRefs.current[categoryName] = el}
+                ref={el => scrollContainerRefs.current[groupName] = el}
                 sx={{
                   display: "flex",
                   flex: 1,
                   gap: 4,
-                  overflow: "auto", // Changed from "hidden" to support native scrolling
+                  overflow: "auto", // Supports native scrolling
                   scrollBehavior: "smooth",
                   "&::-webkit-scrollbar": { display: "none" },
                   msOverflowStyle: "none",
@@ -183,9 +186,7 @@ export default function ExploreClothes() {
                 ))}
               </Box>
 
-              <IconButton
-                onClick={() => handleScroll(categoryName, 'right')}
-              >
+              <IconButton onClick={() => handleScroll(groupName, 'right')}>
                 <ArrowForwardIosIcon />
               </IconButton>
             </Box>
