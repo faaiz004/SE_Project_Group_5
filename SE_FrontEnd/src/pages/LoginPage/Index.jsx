@@ -66,7 +66,7 @@ export default function LoginPage() {
 =======
       if (token) {
         localStorage.setItem("jwt", token)
->>>>>>> c24c37e (Complete auth integration)
+        localStorage.setItem("email", email)
         navigate("/explore")
       }
     } catch (error) {
