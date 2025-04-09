@@ -1,6 +1,6 @@
 // controllers/postController.js
 import Post from '../../models/Post.js';
-import User from '../../models/User.js';
+import User from '../../models/user.js';
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { v4 as uuidv4 } from 'uuid';
 
