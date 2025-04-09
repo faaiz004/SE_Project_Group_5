@@ -81,7 +81,7 @@ export default function ExploreClothes() {
   // Minimal addition: classify each outfit as either Upper or Lower.
   const categoriesMap = data.reduce((acc, outfit) => {
     console.log(outfit);
-    const outfitType = outfit.upper === true ? "Upper" : "Lower";
+    const outfitType = outfit.upper === true ? "Uppers" : "Lowers";
     const key = `${outfit.category} - ${outfitType}`;
     if (!acc[key]) acc[key] = [];
     acc[key].push(outfit);
@@ -122,17 +122,45 @@ export default function ExploreClothes() {
               outline: "none",
             }}
           >
-            <Typography
-              sx={{
-                fontSize: 28,
-                fontWeight: 600,
-                color: "#27374D",
-                fontFamily: "Inter, sans-serif",
-                mb: 2,
-              }}
-            >
-              {groupName}
-            </Typography>
+                        {(() => {
+              const prefixMap = {
+                SF_BL: "Blazers",
+                SF_DS: "Dress Shirts",
+                SF_JN: "Jeans",
+                SF_PT: "Pants / Trousers",
+                SF_PS: "Polo Shirts",
+                SF_SR: "Shorts",
+                SF_TS: "T - Shirts",
+              };
+
+              const firstItem = outfits[0];
+              let label = outfits[0].category;
+
+              if (firstItem?.name) {
+                for (const prefix in prefixMap) {
+                  if (firstItem.name.startsWith(prefix)) {
+                    const type = firstItem.upper ? "Uppers" : "Lowers";
+                    label = `${prefixMap[prefix]} - ${type}`;
+                    break;
+                  }
+                }
+              }
+
+              return (
+                <Typography
+                  sx={{
+                    fontSize: 28,
+                    fontWeight: 600,
+                    color: "#27374D",
+                    fontFamily: "Inter, sans-serif",
+                    mb: 2,
+                  }}
+                >
+                  {label}
+                </Typography>
+              );
+            })()}
+
 
             <Box sx={{ display: "flex", alignItems: "center" }}>
               <IconButton onClick={() => handleScroll(groupName, 'left')}>
