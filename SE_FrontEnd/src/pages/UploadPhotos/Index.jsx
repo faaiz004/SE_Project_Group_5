@@ -1,38 +1,27 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { 
-  Box, 
-  Button, 
-  TextField, 
-  Typography,
-  Paper,
-  Avatar,
-  Chip,
-  IconButton,
-  InputBase
+  Box, Button, TextField, Typography,
+  Paper, Avatar, Chip, IconButton, InputBase
 } from "@mui/material";
 import { 
-  CloudUpload,
-  Search,
-  Favorite,
-  ChatBubbleOutline,
-  FilterList
+  CloudUpload, Search, Favorite, ChatBubbleOutline, FilterList
 } from "@mui/icons-material";
 import CheckIcon from '@mui/icons-material/Check';
 
-// Import API functions for fetching purchases and creating posts
+// Import API functions
 import { getPurchases } from "../../services/GetPurchases/Index";
-import { createPost } from "../../services/UploadPosts/Index"; // make sure this service appends email from localStorage
+import { createPost } from "../../services/UploadPosts/index";
 
 export default function CreatePostForm() {
-  // States for image preview and actual File object
+  // State to hold image preview URL and actual File object
   const [selectedImagePreview, setSelectedImagePreview] = useState(null);
   const [selectedImageFile, setSelectedImageFile] = useState(null);
   const [caption, setCaption] = useState("");
-  const [selectedItems, setSelectedItems] = useState([]); // for tagging purchased items
+  const [selectedItems, setSelectedItems] = useState([]); // Array of tagged clothes IDs
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Fetch purchased clothes using React Query
+  // Fetch purchased clothes via React Query
   const { data: purchasedData, isLoading, error } = useQuery({
     queryKey: ["purchasedClothes"],
     queryFn: getPurchases,
@@ -46,12 +35,12 @@ export default function CreatePostForm() {
     return item.name.toLowerCase().includes(searchLower);
   });
 
-  // Get details of selected items (based on _id)
+  // Get details of selected items by matching _id
   const selectedItemsDetails = pastPurchases.filter(item =>
     selectedItems.includes(item._id)
   );
 
-  // Handle image file upload: both preview URL and store file
+  // Handle image upload: create a preview and store the File object
   const handleImageUpload = (e) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -61,25 +50,23 @@ export default function CreatePostForm() {
     }
   };
 
-  // Toggle selection for tagging items
+  // Toggle item selection for tagging purchased clothes
   const toggleItemSelection = (id) => {
     setSelectedItems((prev) =>
       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
     );
   };
 
-  // Set up React Query mutation for post creation
+  // Set up React Query mutation for creating a post
   const queryClient = useQueryClient();
   const postMutation = useMutation({
     mutationFn: createPost,
     onSuccess: (data) => {
       console.log("Post created successfully!", data);
-      // Clear form fields on success
       setCaption("");
       setSelectedImagePreview(null);
       setSelectedImageFile(null);
       setSelectedItems([]);
-      // Optionally, invalidate/refetch posts list
       queryClient.invalidateQueries(["posts"]);
       alert("Post created successfully!");
     },
@@ -96,19 +83,17 @@ export default function CreatePostForm() {
       alert("Please select an image and provide a caption.");
       return;
     }
-    // Note: Currently, tagged items are only shown in the preview.
-    // To send tag data, you might extend the backend later.
-    postMutation.mutate({ image: selectedImageFile, caption });
+    console.log("📷 Selected image file:", selectedImageFile);
+    console.log("📝 Caption:", caption);
+    console.log("🛠️ Tagged clothes IDs:", selectedItems);
+
+    // Trigger mutation with image, caption, and tagged clothes array
+    postMutation.mutate({ image: selectedImageFile, caption, clothes: selectedItems });
   };
 
   return (
-    <Box component="form" onSubmit={handleSubmit} sx={{ 
-      py: 4, px: 2, backgroundColor: '#f8f8f8', minHeight: '100vh'
-    }}>
-      <Box sx={{ 
-        display: 'flex', flexDirection: 'row', justifyContent: 'center',
-        gap: 3, flexWrap: 'nowrap'
-      }}>
+    <Box component="form" onSubmit={handleSubmit} sx={{ py: 4, px: 2, backgroundColor: '#f8f8f8', minHeight: '100vh' }}>
+      <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', gap: 3, flexWrap: 'nowrap' }}>
         {/* Left Section: Input Form */}
         <Paper sx={{ p: 4, borderRadius: 2, width: '500px', flexShrink: 0 }}>
           <Typography variant="h4" component="h1" align="center" fontWeight="500" gutterBottom sx={{ mb: 4 }}>
@@ -120,9 +105,16 @@ export default function CreatePostForm() {
               component="label"
               htmlFor="image-upload"
               sx={{
-                width: 160, height: 160, borderRadius: '50%', border: '1px solid #e0e0e0',
-                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                cursor: 'pointer', transition: 'background-color 0.3s',
+                width: 160,
+                height: 160,
+                borderRadius: '50%',
+                border: '1px solid #e0e0e0',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                transition: 'background-color 0.3s',
                 '&:hover': { backgroundColor: '#f5f5f5' }
               }}
             >
@@ -131,9 +123,7 @@ export default function CreatePostForm() {
                   component="img"
                   src={selectedImagePreview}
                   alt="Preview"
-                  sx={{
-                    width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover'
-                  }}
+                  sx={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }}
                 />
               ) : (
                 <>
@@ -197,10 +187,7 @@ export default function CreatePostForm() {
                     sx={{ width: 100, cursor: 'pointer', position: 'relative' }}
                     onClick={() => toggleItemSelection(item._id)}
                   >
-                    <Box sx={{ 
-                      position: 'relative', width: '100%', height: 100,
-                      borderRadius: 1, overflow: 'hidden', border: '1px solid #ddd', mb: 1
-                    }}>
+                    <Box sx={{ position: 'relative', width: '100%', height: 100, borderRadius: 1, overflow: 'hidden', border: '1px solid #ddd', mb: 1 }}>
                       <Box
                         component="img"
                         src={item.signedImageUrl}
@@ -208,18 +195,12 @@ export default function CreatePostForm() {
                         sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
                       />
                       {selectedItems.includes(item._id) && (
-                        <Box sx={{
-                          position: 'absolute', top: 0, right: 0,
-                          backgroundColor: '#1976d2', borderRadius: '0 0 0 8px',
-                          width: 24, height: 24, display: 'flex', alignItems: 'center', justifyContent: 'center'
-                        }}>
+                        <Box sx={{ position: 'absolute', top: 0, right: 0, backgroundColor: '#1976d2', borderRadius: '0 0 0 8px', width: 24, height: 24, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                           <CheckIcon sx={{ color: 'white', fontSize: 16 }} />
                         </Box>
                       )}
                     </Box>
-                    <Typography variant="body2" noWrap>
-                      {item.name}
-                    </Typography>
+                    <Typography variant="body2" noWrap>{item.name}</Typography>
                   </Box>
                 ))}
               </Box>
@@ -236,13 +217,7 @@ export default function CreatePostForm() {
           </Typography>
           <Paper
             elevation={1}
-            sx={{
-              maxWidth: 500,
-              mx: 'auto',
-              borderRadius: 2,
-              overflow: 'hidden',
-              border: '1px solid #eee'
-            }}
+            sx={{ maxWidth: 500, mx: 'auto', borderRadius: 2, overflow: 'hidden', border: '1px solid #eee' }}
           >
             {/* Post Header */}
             <Box sx={{ p: 2, display: 'flex', alignItems: 'center' }}>
@@ -290,12 +265,7 @@ export default function CreatePostForm() {
             {/* Tagged Items */}
             <Box sx={{ px: 2, pb: 2, display: 'flex', flexWrap: 'wrap', gap: 1 }}>
               {selectedItemsDetails.map(item => (
-                <Chip
-                  key={item._id}
-                  label={item.name}
-                  variant="outlined"
-                  sx={{ borderRadius: 1 }}
-                />
+                <Chip key={item._id} label={item.name} variant="outlined" sx={{ borderRadius: 1 }} />
               ))}
             </Box>
           </Paper>
@@ -305,12 +275,7 @@ export default function CreatePostForm() {
               variant="contained"
               fullWidth
               size="large"
-              sx={{
-                py: 1.5,
-                backgroundColor: '#1a2027',
-                '&:hover': { backgroundColor: '#2c3540' },
-                borderRadius: 1
-              }}
+              sx={{ py: 1.5, backgroundColor: '#1a2027', '&:hover': { backgroundColor: '#2c3540' }, borderRadius: 1 }}
               disabled={postMutation.isLoading}
             >
               {postMutation.isLoading ? "Creating Post..." : "Create Post"}
