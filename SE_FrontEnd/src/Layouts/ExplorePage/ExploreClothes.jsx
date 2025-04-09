@@ -80,8 +80,7 @@ export default function ExploreClothes() {
 
   // Minimal addition: classify each outfit as either Upper or Lower.
   const categoriesMap = data.reduce((acc, outfit) => {
-
-    console.log(outfit)
+    console.log(outfit);
     const outfitType = outfit.upper === true ? "Upper" : "Lower";
     const key = `${outfit.category} - ${outfitType}`;
     if (!acc[key]) acc[key] = [];
@@ -89,7 +88,6 @@ export default function ExploreClothes() {
     return acc;
   }, {});
   const categoriesArr = Object.entries(categoriesMap);
-  
 
   // Handle arrow button clicks
   const handleScroll = (category, direction) => {
@@ -107,6 +105,11 @@ export default function ExploreClothes() {
   return (
     <Box sx={root}>
       {categoriesArr.map(([groupName, outfits]) => {
+        // New addition: Filter unique outfits by name (only one per image name is displayed)
+        const uniqueOutfits = outfits.filter((item, index, self) =>
+          index === self.findIndex((i) => i.name === item.name)
+        );
+
         return (
           <Box
             key={groupName}
@@ -152,7 +155,7 @@ export default function ExploreClothes() {
                   WebkitOverflowScrolling: "touch", // Smooth iOS scrolling
                 }}
               >
-                {outfits.map((item) => (
+                {uniqueOutfits.map((item) => (
                   <Box
                     key={item.id}
                     sx={{
@@ -180,6 +183,10 @@ export default function ExploreClothes() {
                         height="250"
                         image={item.signedImageUrl}
                         alt={item.category}
+                        sx={{
+                          backgroundColor: 'white', // Sets the background to white
+                          objectFit: 'cover' // Adjust as needed (e.g., 'contain')
+                        }}
                       />
                     </Card>
                   </Box>
