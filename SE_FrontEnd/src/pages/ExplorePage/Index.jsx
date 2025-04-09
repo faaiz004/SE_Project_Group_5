@@ -40,9 +40,24 @@ const ExplorePage = () => {
                             gap: 2,
                             marginTop: 2,
                         }}>
-                            <Instagram sx={{ color: "white", fontSize: 30, cursor: 'pointer' }} />
-                            <Twitter sx={{ color: "white", fontSize: 30, cursor: 'pointer' }} />
-                            <Facebook sx={{ color: "white", fontSize: 30, cursor: 'pointer' }} />
+<Box sx={{
+    display: "flex",
+    gap: 2,
+    marginTop: 0,
+}}>
+    <Instagram 
+        sx={{ color: "white", fontSize: 30, cursor: 'pointer' }}
+        onClick={() => window.open('https://www.instagram.com', '_blank')}
+    />
+    <Twitter 
+        sx={{ color: "white", fontSize: 30, cursor: 'pointer' }}
+        onClick={() => window.open('https://www.twitter.com', '_blank')}
+    />
+    <Facebook 
+        sx={{ color: "white", fontSize: 30, cursor: 'pointer' }}
+        onClick={() => window.open('https://www.facebook.com', '_blank')}
+    />
+</Box>
                         </Box>
                     </Box>
                     <Box sx={{
