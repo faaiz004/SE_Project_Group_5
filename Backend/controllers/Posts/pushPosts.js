@@ -10,10 +10,21 @@ const s3 = new S3Client({ region: process.env.AWS_REGION });
 export const createPost = async (req, res) => {
   try {
     console.log("🔥 Received createPost request");
-
-    const { caption, email } = req.body;
     console.log("📦 Request body:", req.body);
     console.log("📷 Uploaded file info:", req.file);
+    
+    const { caption, email } = req.body;
+
+    // Parse the clothes field if provided (it should be a JSON string)
+    let clothesArray = [];
+    if (req.body.clothes) {
+      try {
+        clothesArray = JSON.parse(req.body.clothes);
+        console.log("🛠️ Parsed clothes array:", clothesArray);
+      } catch (err) {
+        console.error("Error parsing clothes array:", err);
+      }
+    }
 
     if (!req.file || !caption || !email) {
       console.warn("⚠️ Missing fields - image:", !req.file, "caption:", !caption, "email:", !email);
@@ -29,7 +40,6 @@ export const createPost = async (req, res) => {
     const file = req.file;
     const extension = file.originalname.split('.').pop();
     const fileName = `posts/${uuidv4()}.${extension}`;
-
     console.log("📝 Uploading to S3 with key:", fileName);
 
     const command = new PutObjectCommand({
@@ -38,7 +48,6 @@ export const createPost = async (req, res) => {
       Body: file.buffer,
       ContentType: file.mimetype,
     });
-
     const s3Response = await s3.send(command);
     console.log("✅ S3 upload successful:", s3Response);
 
@@ -49,10 +58,10 @@ export const createPost = async (req, res) => {
       imageUrl,
       caption,
       user: user._id,
+      clothes: clothesArray, // store the tagged clothes array
     });
 
     console.log("📤 New post saved:", newPost);
-
     return res.status(201).json({ post: newPost });
   } catch (error) {
     console.error("❌ Error creating post:", error);
