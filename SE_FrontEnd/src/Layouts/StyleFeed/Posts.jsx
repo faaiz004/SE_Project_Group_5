@@ -28,8 +28,6 @@ const Posts = () => {
     return <Typography color="error">Error fetching posts: {error.message}</Typography>;
   }
 
-  // Assume that your API returns an object with a "posts" property 
-  // that is an array of post objects.
   const posts = data?.posts || [];
 
   return (
@@ -44,6 +42,7 @@ const Posts = () => {
         paddingRight: 2,
       }}
     >
+      {/* This displays posts */}
       {posts.map((post) => (
         <Card
           key={post._id}

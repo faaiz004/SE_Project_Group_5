@@ -29,31 +29,19 @@ export default function ExploreClothes() {
 
   const navigate = useNavigate()
 
-  // Create refs to store scroll containers
   const scrollContainerRefs = useRef({});
 
-  // Better trackpad scrolling implementation
+  {/* This effect is used to add a scroll event listener to each scrollable container. */}
   useEffect(() => {
     const containers = scrollContainerRefs.current;
     const eventListeners = [];
-
-    // Process each container
     Object.entries(containers).forEach(([category, container]) => {
       if (!container) return;
-
-      // Function that handles both trackpad and mouse wheel
       const handleScroll = (event) => {
-        // For trackpads, we want both horizontal and vertical gestures to work
         const scrollX = Math.abs(event.deltaX);
         const scrollY = Math.abs(event.deltaY);
-
-        // If this is primarily a horizontal scroll, let the browser handle it
         if (scrollX > scrollY && scrollX > 0) return;
-
-        // Otherwise, convert vertical scrolling to horizontal
         event.preventDefault();
-
-        // Netflix-like smooth scrolling - adjust scrollAmount for right feel
         const direction = event.deltaY > 0 ? 1 : -1;
         const scrollAmount = direction * Math.min(Math.abs(event.deltaY) * 2.5, 250);
 
@@ -63,25 +51,19 @@ export default function ExploreClothes() {
         });
       };
 
-      // Add the event listener
       container.addEventListener('wheel', handleScroll, { passive: false });
-
-      // Store the listener details for cleanup
       eventListeners.push({ container, handler: handleScroll });
     });
 
-    // Cleanup function that removes all event listeners
     return () => {
       eventListeners.forEach(({ container, handler }) => {
         container.removeEventListener('wheel', handler);
       });
     };
-  }, [data]); // Re-establish listeners when data changes
+  }, [data]); 
 
   if (isLoading) return <Typography>Loading outfits...</Typography>;
   if (isError) return <Typography>Error: {error.message}</Typography>;
-
-  // Minimal addition: classify each outfit as either Upper or Lower.
   const categoriesMap = data.reduce((acc, outfit) => {
     console.log(outfit);
     const outfitType = outfit.upper === true ? "Uppers" : "Lowers";
@@ -91,13 +73,10 @@ export default function ExploreClothes() {
     return acc;
   }, {});
   const categoriesArr = Object.entries(categoriesMap);
-
-  // Handle arrow button clicks
   const handleScroll = (category, direction) => {
     const container = scrollContainerRefs.current[category];
     if (container) {
-      // Netflix-like scrolling - show more items at once
-      const scrollAmount = container.clientWidth * 0.75; // 75% of container width
+      const scrollAmount = container.clientWidth * 0.75; 
       container.scrollBy({
         left: direction === 'left' ? -scrollAmount : scrollAmount,
         behavior: 'smooth'
@@ -107,8 +86,8 @@ export default function ExploreClothes() {
 
   return (
     <Box sx={root}>
+      {/* Map through the categories and outfits to create a scrollable view for each category */}
       {categoriesArr.map(([groupName, outfits]) => {
-        // New addition: Filter unique outfits by name (only one per image name is displayed)
         const uniqueOutfits = outfits.filter((item, index, self) =>
           index === self.findIndex((i) => i.name === item.name)
         );
@@ -125,7 +104,8 @@ export default function ExploreClothes() {
               outline: "none",
             }}
           >
-                      {(() => {
+            {/* Dynamic label based on the first outfit's name */}
+            {(() => {
             const prefixMap = {
               SF_BL: "Blazers",
               SF_DS: "Dress Shirts",
@@ -177,13 +157,13 @@ export default function ExploreClothes() {
                   display: "flex",
                   flex: 1,
                   gap: 4,
-                  overflow: "auto", // Supports native scrolling
+                  overflow: "auto", 
                   scrollBehavior: "smooth",
                   "&::-webkit-scrollbar": { display: "none" },
                   msOverflowStyle: "none",
                   scrollbarWidth: "none",
                   px: 2,
-                  WebkitOverflowScrolling: "touch", // Smooth iOS scrolling
+                  WebkitOverflowScrolling: "touch",
                 }}
               >
                 {uniqueOutfits.map((item) => (
@@ -208,7 +188,7 @@ export default function ExploreClothes() {
                         zIndex: 1,
                       }
                     }}
-                    onClick={() => navigate('/mannequin')}  // ✅ fixed route and arrow function syntax
+                    onClick={() => navigate('/mannequin')}  
                   >
                       <CardMedia
                         component="img"
@@ -216,8 +196,8 @@ export default function ExploreClothes() {
                         image={item.signedImageUrl}
                         alt={item.category}
                         sx={{
-                          backgroundColor: 'white', // Sets the background to white
-                          objectFit: 'contain' // Adjust as needed (e.g., 'contain')
+                          backgroundColor: 'white',
+                          objectFit: 'contain' 
                         }}
                       />
                     </Card>
