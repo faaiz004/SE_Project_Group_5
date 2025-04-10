@@ -21,3 +21,5 @@
 - Express.js API – Backend built with Node and Express for robust performance.
 
 - React Frontend with Vite – Lightning-fast and modern frontend experience.
+
+We have made our env file in the backend, and has not been uploaded to github for privacy purposes. So the APIs will not work.
