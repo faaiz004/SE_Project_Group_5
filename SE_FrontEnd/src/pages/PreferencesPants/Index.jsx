@@ -18,8 +18,6 @@ import {
   Chip,
 } from "@mui/material"
 import CheckCircleIcon from "@mui/icons-material/CheckCircle"
-
-// Pants images (replace with your actual pants image paths)
 import pants1 from "../../assets/StylePreferences/larki1.jpeg"
 import pants2 from "../../assets/StylePreferences/larki2.png"
 import pants3 from "../../assets/StylePreferences/larki4.png"

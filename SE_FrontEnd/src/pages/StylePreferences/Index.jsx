@@ -13,8 +13,6 @@ import {
   Stack,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-
-// Import images
 import modernImg from "../../assets/StylePreferences/larki1.jpeg";
 import businessImg from "../../assets/StylePreferences/larki2.png";
 import oldMoneyImg from "../../assets/StylePreferences/larki4.png";
@@ -24,7 +22,6 @@ function StylePreferences() {
   const [selectedStyle, setSelectedStyle] = useState(null);
   const navigate = useNavigate();
 
-  // Preload style preference from sessionStorage if available
   useEffect(() => {
     const credentials = JSON.parse(sessionStorage.getItem("user-credentials")) || {};
     if (credentials.stylePreference) {
@@ -32,7 +29,6 @@ function StylePreferences() {
     }
   }, []);
 
-  // Update sessionStorage with the new style preference
   const updateSession = (newData) => {
     const current = JSON.parse(sessionStorage.getItem("user-credentials")) || {};
     const updated = { ...current, ...newData };

@@ -19,7 +19,6 @@ function WeightPreference() {
   const [pantsSize, setPantsSize] = useState(null);
   const navigate = useNavigate();
 
-  // Load values from sessionStorage if already set
   useEffect(() => {
     const credentials = JSON.parse(sessionStorage.getItem('user-credentials')) || {};
 
@@ -67,7 +66,7 @@ function WeightPreference() {
         p: 2,
       }}
     >
-      {/* Top section */}
+      {}
       <Box sx={{ display: "flex", alignItems: "center", mb: 4 }}>
         <Box sx={{ flexGrow: 1, mx: 2 }}>
           <LinearProgress
@@ -89,7 +88,7 @@ function WeightPreference() {
         </IconButton>
       </Box>
 
-      {/* Step indicator */}
+      {}
       <Box
         sx={{
           display: "flex",
@@ -149,7 +148,7 @@ function WeightPreference() {
             We'll use this info to show better <br /> outfit fits for you.
           </Typography>
 
-          {/* Shirt size */}
+          {}
           <Box>
             <Typography variant="h5" sx={{ fontWeight: 600, mb: 2 }}>
               Shirt Size
@@ -190,7 +189,7 @@ function WeightPreference() {
             </Paper>
           </Box>
 
-          {/* Pants size */}
+          {}
           <Box>
             <Typography variant="h5" sx={{ fontWeight: 600, mb: 2 }}>
               Pants Size
@@ -230,7 +229,7 @@ function WeightPreference() {
               </ToggleButtonGroup>
             </Paper>
           </Box>
-          {/* Navigation buttons */}
+          {}
           <Stack direction="row" spacing={2} justifyContent="center" mt={4}>
             <Button
               variant="outlined"
