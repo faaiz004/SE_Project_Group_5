@@ -1,6 +1,3 @@
-// Styles.js
-import { Box } from '@mui/material';
-
 export const rootStyleFeed = {
   display: 'flex',
   flexDirection: 'column',
@@ -11,7 +8,6 @@ export const rootStyleFeed = {
 };
 
 export const mainComp = {
-  // Horizontal layout for feed + recommendations
   display: 'flex',
   flexDirection: 'row',
   justifyContent: 'space-around',

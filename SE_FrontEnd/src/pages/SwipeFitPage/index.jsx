@@ -68,7 +68,6 @@ const LOWER_CLOTHING = [
 	},
 ];
 
-// --- Components ---
 
 function CanvasLoader() {
 	return (
@@ -199,12 +198,10 @@ function FallbackLowerClothing({ textureUrl, position }) {
 	);
 }
 
-// Main model loading component with error handling and fallback
 function ClothingModel({ geometryUrl, textureUrl, scale, position, isUpper }) {
 	const [modelError, setModelError] = useState(false);
 	const [textureError, setTextureError] = useState(false);
 
-	// Reset errors when URLs change
 	useEffect(() => {
 		setModelError(false);
 		setTextureError(false);
@@ -228,7 +225,6 @@ function ClothingModel({ geometryUrl, textureUrl, scale, position, isUpper }) {
 		}
 	);
 
-	// If the primary model failed, render the fallback immediately
 	if (modelError) {
 		console.log(
 			`Rendering fallback for ${isUpper ? "upper" : "lower"} clothing.`
@@ -240,9 +236,7 @@ function ClothingModel({ geometryUrl, textureUrl, scale, position, isUpper }) {
 		);
 	}
 
-	// Memoize scene cloning and material application
 	const clonedScene = useMemo(() => {
-		// Don't proceed if the geometry hasn't loaded yet (useGLTF is async)
 		if (!geometryScene) return null;
 
 		const clone = geometryScene.clone();
@@ -252,7 +246,6 @@ function ClothingModel({ geometryUrl, textureUrl, scale, position, isUpper }) {
 				child.receiveShadow = true;
 
 				const applyTexture = (material) => {
-					// Only apply texture if it loaded successfully
 					if (!textureError && material.map !== undefined) {
 						material.map = texture;
 						if (
@@ -261,7 +254,6 @@ function ClothingModel({ geometryUrl, textureUrl, scale, position, isUpper }) {
 						) {
 							material.transparent = true;
 						}
-						// Ensure material updates
 						material.needsUpdate = true;
 					}
 				};
@@ -278,8 +270,7 @@ function ClothingModel({ geometryUrl, textureUrl, scale, position, isUpper }) {
 		return clone;
 	}, [geometryScene, texture, scale, position, textureUrl, textureError]);
 
-	// Render the primitive only if clonedScene is ready
-	// Using useMemo here is likely a micro-optimization, could return directly
+
 	return useMemo(() => {
 		if (!clonedScene) return null;
 		return <primitive object={clonedScene} dispose={null} />;
@@ -306,7 +297,6 @@ function SceneContent({ upperData, lowerData, setAutoRotate, isAutoRotating }) {
 			controls.addEventListener("start", handleStart);
 			controls.addEventListener("end", handleEnd);
 			return () => {
-				// Cleanup listeners
 				if (controls?.removeEventListener) {
 					try {
 						controls.removeEventListener("start", handleStart);
@@ -349,7 +339,6 @@ function SceneContent({ upperData, lowerData, setAutoRotate, isAutoRotating }) {
 			{/* Models Group */}
 			<group ref={groupRef}>
 				<ClothingModel
-					// Using a combination key for updates
 					key={`upper-${upperData.geometryUrl}-${upperData.textureUrl}`}
 					geometryUrl={upperData.geometryUrl}
 					textureUrl={upperData.textureUrl}
@@ -386,9 +375,9 @@ export default function ClothingViewer() {
 	const [lowerIndex, setLowerIndex] = useState(0);
 	const [canvasKey, setCanvasKey] = useState(Date.now());
 	const [isAutoRotating, setAutoRotate] = useState(true);
-	const [snackbarMessage, setSnackbarMessage] = useState(""); // Renamed from errorMessage
-	const [showSnackbar, setShowSnackbar] = useState(false); // Renamed from showError
-	const [snackbarSeverity, setSnackbarSeverity] = useState("success"); // For different message types
+	const [snackbarMessage, setSnackbarMessage] = useState(""); 
+	const [showSnackbar, setShowSnackbar] = useState(false); 
+	const [snackbarSeverity, setSnackbarSeverity] = useState("success"); 
 
 	const handleContextLost = useCallback((e) => {
 		console.warn("WebGL context lost. Attempting to restore...");
@@ -400,7 +389,6 @@ export default function ClothingViewer() {
 		setShowSnackbar(true);
 	}, []);
 
-	// Resume auto-rotate when clothes change
 	useEffect(() => {
 		setAutoRotate(true);
 	}, [upperIndex, lowerIndex]);
@@ -471,7 +459,7 @@ export default function ClothingViewer() {
 				height: "100vh",
 				display: "flex",
 				flexDirection: "column",
-				bgcolor: "#f5f5f7" /* Slightly off-white bg */,
+				bgcolor: "#f5f5f7" ,
 			}}>
 			{/* Header */}
 			<Box
@@ -507,21 +495,21 @@ export default function ClothingViewer() {
 					flexGrow: 1,
 					position: "relative",
 					display: "flex",
-					overflow: "hidden" /* Prevent layout shifts */,
+					overflow: "hidden" ,
 				}}>
 				{/* 3D Canvas Area */}
 				<Box
 					sx={{
 						flexGrow: 1,
 						position: "relative",
-						minHeight: "300px" /* Ensure canvas has space */,
+						minHeight: "300px",
 					}}>
 					<Suspense fallback={<CanvasLoader />}>
 						<Canvas
 							key={canvasKey}
 							shadows
 							camera={{ position: [0, 0.5, 4], fov: 50 }}
-							gl={{ preserveDrawingBuffer: true, antialias: true }} // Enable antialiasing
+							gl={{ preserveDrawingBuffer: true, antialias: true }} 
 							onCreated={({ gl }) => {
 								gl.domElement.addEventListener(
 									"webglcontextlost",
@@ -533,7 +521,7 @@ export default function ClothingViewer() {
 							}}
 							style={{
 								background: "linear-gradient(to bottom, #eef2f7, #ffffff)",
-							}} // Subtle gradient background
+							}} 
 						>
 							<SceneContent
 								upperData={currentUpperData}

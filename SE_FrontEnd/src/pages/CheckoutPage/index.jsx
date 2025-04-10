@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Box, Typography, Button, TextField, Radio, RadioGroup, FormControlLabel } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowBack } from '@mui/icons-material'; // Add this at the top
+import { ArrowBack } from '@mui/icons-material'; 
 
-
+{/* Importing the ArrowBack icon for the back button */}
 const CheckoutPage = () => {
   const [paymentMethod, setPaymentMethod] = useState('cod');
   const navigate = useNavigate();

@@ -2,14 +2,13 @@ export const formStyles = {
     display: "flex",
     flexDirection: "column",
     width: "100%",
-    gap: "2rem", // equivalent to space-y-8
-    minHeight: "100vh", // Ensures the form takes at least the full height of the viewport
+    gap: "2rem",
+    minHeight: "100vh", 
     alignItems: "center",
     justifyContent: "center",
   };
   
   export const gridContainerStyles = {
-    // Grid container styles (handled via Grid props for responsiveness)
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
@@ -20,20 +19,20 @@ export const formStyles = {
   export const leftSectionStyles = {
     display: "flex",
     flexDirection: "column",
-    gap: "1.5rem", // equivalent to space-y-6
+    gap: "1.5rem", 
   };
   
   export const rightSectionStyles = {
     display: "flex",
     flexDirection: "column",
-    gap: "1.5rem", // equivalent to space-y-6
+    gap: "1.5rem", 
   };
   
   export const imageUploadLabelStyles = {
-    width: "300px", // w-64
-    height: "300px", // h-64
+    width: "300px", 
+    height: "300px", 
     borderRadius: "50%",
-    border: "2px dashed #d1d5db", // border-dashed border-gray-300
+    border: "2px dashed #d1d5db", 
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
@@ -41,16 +40,16 @@ export const formStyles = {
     cursor: "pointer",
     transition: "background-color 0.2s ease",
     "&:hover": {
-      backgroundColor: "#f9fafb", // hover:bg-gray-50
+      backgroundColor: "#f9fafb", 
     },
   };
   
   export const imagePreviewContainerStyles = {
-    width: "300px", // w-64
-    height: "300px", // h-64
+    width: "300px", 
+    height: "300px",
     borderRadius: "50%",
     overflow: "hidden",
-    border: "2px solid #e5e7eb", // border-gray-200
+    border: "2px solid #e5e7eb", 
     position: "relative",
   };
   
@@ -64,7 +63,7 @@ export const formStyles = {
   export const captionSectionStyles = {
     display: "flex",
     flexDirection: "column",
-    gap: "0.5rem", // space-y-2
+    gap: "0.5rem",
     marginTop: "1rem",
   };
   
@@ -89,7 +88,7 @@ export const formStyles = {
   export const scrollAreaStyles = {
     width: "100%",
     whiteSpace: "nowrap",
-    paddingBottom: "1rem", // pb-4
+    paddingBottom: "1rem", 
   };
   
   export const cardStyles = (selected) => ({
@@ -97,24 +96,24 @@ export const formStyles = {
     flexShrink: 0,
     cursor: "pointer",
     transition: "all 0.2s ease",
-    ...(selected && { boxShadow: "0 0 0 2px #3b82f6" }), // ring-2 ring-primary
+    ...(selected && { boxShadow: "0 0 0 2px #3b82f6" }), 
   });
   
   export const cardContentStyles = {
-    padding: "16px", // p-4
+    padding: "16px", 
   };
   
   export const noItemsStyles = {
-    paddingTop: "2.5rem", // py-10
+    paddingTop: "2.5rem", 
     paddingBottom: "2.5rem",
     textAlign: "center",
     width: "100%",
-    color: "#6b7280", // text-gray-500
+    color: "#6b7280", 
   };
   
   export const submitButtonContainerStyles = {
     display: "flex",
-    justifyContent: "flex-end", // flex justify-end
-    marginBottom: "2rem", // mb-8
+    justifyContent: "flex-end", 
+    marginBottom: "2rem", 
   };
   

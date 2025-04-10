@@ -13,7 +13,7 @@ const ChatbotWidget = () => {
 
   return (
     <ChatbotContainer>
-      {/* Toggle Button */}
+      {}
       <IconButton
         onClick={toggleChat}
         sx={{ backgroundColor: '#27374D', color: 'white', borderRadius: '50%', p: 1, mr: 1 }}
@@ -21,7 +21,7 @@ const ChatbotWidget = () => {
         {isOpen ? <ArrowBackIosIcon /> : <ArrowForwardIosIcon />}
       </IconButton>
 
-      {/* Chatbot Window */}
+      {}
       <ChatbotWindow isOpen={isOpen}>
         <Chatbot closeChat={closeChat} />
       </ChatbotWindow>
