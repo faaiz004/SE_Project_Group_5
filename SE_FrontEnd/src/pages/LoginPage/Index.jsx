@@ -23,6 +23,7 @@ export default function LoginPage() {
   const isMobile = useMediaQuery(theme.breakpoints.down("md"))
   const navigate = useNavigate()
 
+
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
 
@@ -79,6 +80,7 @@ export default function LoginPage() {
         backgroundColor: "#fff",
       }}
     >
+      {/* Left side with branding */}
       <Box
         sx={{
           flex: 1,
@@ -112,7 +114,7 @@ export default function LoginPage() {
           </Typography>
         </Box>
       </Box>
-
+      {/* Right side with login form */}
       <Box
         sx={{
           flex: 1,

@@ -9,12 +9,13 @@ import MenuIcon from '@mui/icons-material/Menu';
 import { useNavigate } from 'react-router-dom';
 import ExploreIcon from '@mui/icons-material/Explore';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import AddCircleIcon from '@mui/icons-material/AddCircle'; // Import Add icon
+import AddCircleIcon from '@mui/icons-material/AddCircle';
 
 export default function Navbar() {
   const navigate = useNavigate();
   return (
     <Box sx={{ flexGrow: 1 }}>
+      {/* AppBar with Custom Styles */}
       <AppBar
         position="static"
         elevation={1}
@@ -42,17 +43,17 @@ export default function Navbar() {
           {/* Add Post Button - More Prominent */}
           <IconButton 
             sx={{ 
-              color: '#5F65C3', // Different color to make it stand out
+              color: '#5F65C3', 
               mr: 2,
-              backgroundColor: 'rgba(95, 101, 195, 0.1)', // Light background
-              padding: 1.2, // Larger padding
+              backgroundColor: 'rgba(95, 101, 195, 0.1)', 
+              padding: 1.2,
               '&:hover': {
                 backgroundColor: 'rgba(95, 101, 195, 0.2)',
               }
             }}
             onClick={() => navigate('/upload-photos')}
           >
-            <AddCircleIcon sx={{ fontSize: 32 }} /> {/* Slightly larger than other icons */}
+            <AddCircleIcon sx={{ fontSize: 32 }} /> 
           </IconButton>
           
           <IconButton 

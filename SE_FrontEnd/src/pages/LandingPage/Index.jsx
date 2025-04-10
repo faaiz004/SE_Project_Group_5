@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
 import axios from 'axios';
 
-// Import your style objects
 import {
   pageContainer,
   leftContainer,
@@ -23,7 +22,6 @@ import {
   googleButton,
 } from "./Style";
 
-// Import your images (adjust paths as needed)
 import mannequin from "../../assets/SignInPage/mannequin.png";
 import girl1 from "../../assets/SignInPage/larki1.jpeg";
 import girl2 from "../../assets/SignInPage/larki2.png";
@@ -31,6 +29,8 @@ import girl3 from "../../assets/SignInPage/larki3.png";
 import girl4 from "../../assets/SignInPage/larki4.png";
 import girl5 from "../../assets/SignInPage/larki5.png";
 
+
+{/* Collage component to display overlapping images */}
 function Collage() {
   return (
     <Box sx={collageContainer}>
@@ -46,39 +46,37 @@ function Collage() {
 function LandingPage() {
   const navigate = useNavigate();
 
+
+  // Handle Google login success
   const handleGoogleLoginSuccess = async (credentialResponse) => {
     try {
       const googleToken = credentialResponse.credential;
       console.log("Received Google token:", googleToken);
 
-      // Send this Google token to your backend for verification via the updated route
       const response = await axios.post(
-        'http://localhost:8000/api/auth/google',  // Updated URL
+        'http://localhost:8000/api/auth/google',  
         { token: googleToken },
         {
           headers: { 'Content-Type': 'application/json' },
         }
       );
-
-      // Extract your app's token and user information
       const { token, user } = response.data;
       const email = response.data.user.email;
       if (token) {
-        // Save your JWT in local storage
         localStorage.setItem('jwt', token);
         localStorage.setItem('email', email); 
       }
       
       console.log("Backend response:", response.data);
-      navigate("/preferences/gender"); // Proceed as needed
+      navigate("/preferences/gender"); 
     } catch (error) {
       console.error("Google login error:", error.response?.data || error.message);
     }
   };
 
+  // Handle error display as needed
   const handleGoogleLoginFailure = () => {
     console.log("Google login failed");
-    // Handle error display as needed
   };
 
   return (
@@ -98,7 +96,7 @@ function LandingPage() {
         </Typography>
 
         <Box component="img" src={mannequin} alt="Wooden Mannequin" sx={mannequinImage} />
-
+        {/* Collage images on the right side */}
         <Box sx={buttonContainer}>
           <Button variant="contained" sx={signInButton} onClick={() => navigate("/sign-up")}>
             Sign Up

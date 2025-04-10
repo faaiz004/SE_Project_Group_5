@@ -19,13 +19,11 @@ const Chatbot = ({ closeChat }) => {
   const sendMessage = async (msg) => {
     if (!msg.trim()) return;
     const userMessage = { role: "user", content: msg };
-    // Create new messages array including the user message
     const newMessages = [...messages, userMessage];
     setMessages(newMessages);
     setInput("");
 
     try {
-      // Build the payload for the chat completion API
       const payload = {
         provider: "fireworks-ai",
         model: "meta-llama/Llama-3.2-11B-Vision-Instruct",
@@ -36,18 +34,12 @@ const Chatbot = ({ closeChat }) => {
           },
           ...newMessages
         ],
-        max_tokens: 500,  // Adjust as needed
-        // You can also add other parameters like temperature if supported
-        // temperature: 0.7,
+        max_tokens: 500,
       };
 
       console.log("Payload:", payload);
-
-      // Send the request using the InferenceClient
       const chatCompletion = await client.chatCompletion(payload);
       console.log("API Response:", chatCompletion);
-
-      // Extract the content from the response object
       const botMessage = {
         role: "assistant",
         content: chatCompletion.choices?.[0]?.message?.content || "No response received."
@@ -92,7 +84,6 @@ const Chatbot = ({ closeChat }) => {
         <Button onClick={() => selectCategory("Eastern")} variant="contained" sx={classes.categoryButton}>
           Eastern
         </Button>
-        {/* Add more categories as needed */}
       </Box>
 
       {/* Messages Display */}

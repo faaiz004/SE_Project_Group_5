@@ -2,6 +2,8 @@ import { useEffect, useState } from "react"
 import { Box, Typography, Card, LinearProgress, Container, Grid, IconButton, Stack } from "@mui/material"
 import { Man, Woman, ThumbUp, ThumbDown, Download } from "@mui/icons-material"
 import { useNavigate } from "react-router-dom"
+
+
 export default function GenderPreference() {
     const [selectedGender, setSelectedGender] = useState(null)
     const navigate = useNavigate()
@@ -10,7 +12,6 @@ export default function GenderPreference() {
         const updatedCredentials = {
           gender,
         };
-        // Save updated credentials
         sessionStorage.setItem('user-credentials', JSON.stringify(updatedCredentials));
         navigate("/preferences/weight")
     }
