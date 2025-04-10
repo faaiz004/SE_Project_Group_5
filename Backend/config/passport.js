@@ -14,17 +14,14 @@ passport.use(
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
-        // Find an existing user by email
         let user = await User.findOne({ email: profile.emails[0].value });
         if (!user) {
-          // Create a new user if not found. Password is a placeholder.
           user = await User.create({
             username: profile.displayName,
             email: profile.emails[0].value,
             password: 'google-auth',
           });
         }
-        // Generate JWT token for the user
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
         return done(null, { user, token });
       } catch (error) {

@@ -12,7 +12,6 @@ export const googleAuth = async (req, res) => {
     return res.status(400).json({ error: 'Token is required' });
   }
   try {
-    // Verify the token received from the frontend with Google
     const ticket = await client.verifyIdToken({
       idToken: token,
       audience: process.env.GOOGLE_CLIENT_ID,
@@ -22,24 +21,21 @@ export const googleAuth = async (req, res) => {
     const email = payload.email;
     const name = payload.name;
 
-    // Check if the user exists, or create a new one
     let user = await User.findOne({ email });
     if (!user) {
       user = new User({
-        username: name,  // Adjust as needed; you could also store googleId
+        username: name, 
         email,
         googleId,
       });
       await user.save();
     } else {
-      // Optionally update user record if needed
       if (!user.googleId) {
         user.googleId = googleId;
         await user.save();
       }
     }
 
-    // Generate your own JWT token for further communication with your app
     const appToken = jwt.sign(
       { userId: user._id, email: user.email },
       JWT_SECRET,
