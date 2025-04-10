@@ -9,10 +9,10 @@ export const verifyToken = (req, res, next) => {
   }
 
   const token = authHeader.split(' ')[1];
-  const jwtToken = process.env.JWT_SECRET || 'yoursecretkey'; // ensure JWT_SECRET is in your .env
+  const jwtToken = process.env.JWT_SECRET || 'yoursecretkey'; 
   try {
-    const decoded = jwt.verify(token, jwtToken); // ensure JWT_SECRET is in your .env
-    req.user = decoded; // attach decoded user info to request
+    const decoded = jwt.verify(token, jwtToken); 
+    req.user = decoded; 
     next();
   } catch (err) {
     console.log('Token verification failed:', err);

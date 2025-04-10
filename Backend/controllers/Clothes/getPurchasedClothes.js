@@ -1,4 +1,3 @@
-// controllers/clothesController.js
 
 import User from '../../models/User.js';
 import Clothes from '../../models/clothes.js';

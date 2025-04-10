@@ -5,7 +5,6 @@ import jwt from 'jsonwebtoken';
 const JWT_SECRET = process.env.JWT_SECRET || 'yoursecretkey';
 const SALT_ROUNDS = 10;
 
-// -------------------- SIGNUP ----------------------
 export const signup = async (req, res) => {
   try {
     const { username, email, password } = req.body;
