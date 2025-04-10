@@ -3,8 +3,6 @@ import { lazy, Suspense } from "react";
 import { Navigate } from "react-router-dom";
 
 import SwipeFitPage from "../pages/SwipeFitPage/index"
-
-// Lazy loaded components
 const ExplorePage = lazy(() => import("../pages/ExplorePage/Index"));
 const StyleFeed = lazy(() => import("../pages/StyleFeed/Index"));
 const CartPage = lazy(() => import("../pages/CartPage/Index"));
@@ -13,7 +11,6 @@ const CardPaymentPage = lazy(() => import("../pages/CardPaymentPage/Index"));
 const OrderConfirmation = lazy(() =>
 	import("../pages/OrderConfirmation/Index")
 );
-// const SwipeFitPage = lazy(() => import("../pages/SwipeFitPage/index"));
 const LandingPage = lazy(() => import("../pages/LandingPage/Index"));
 const SignUpPage = lazy(() => import("../pages/SignUp/Index"));
 const UploadPhotos = lazy(() => import("../pages/UploadPhotos/Index"));
@@ -26,7 +23,6 @@ const PreferencesShirts = lazy(() =>
 );
 const PreferencesPants = lazy(() => import("../pages/PreferencesPants/Index"));
 const SignInPage = lazy(() => import("../pages/LoginPage/Index"));
-// Route configuration
 const router = createBrowserRouter([
   {
     path: "/",
@@ -93,7 +89,7 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: "/chatbot", // New chatbot route (if you prefer full-page view)
+    path: "/chatbot", 
     element: (
       <Suspense fallback={<div>Loading Chatbot...</div>}>
         <Chatbot />

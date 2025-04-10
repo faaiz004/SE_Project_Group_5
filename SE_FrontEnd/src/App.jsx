@@ -5,7 +5,7 @@ import ChatbotWidget from "./components/ChatbotWidget";
 import "./App.css";
 
 function App() {
-  const clientId = "504000425247-77r9cef35s7h8srtmmhnvfgh89qivlka.apps.googleusercontent.com"; // Replace with your actual Client ID
+  const clientId = "504000425247-77r9cef35s7h8srtmmhnvfgh89qivlka.apps.googleusercontent.com"; 
 
   return (
     <GoogleOAuthProvider clientId={clientId}>
