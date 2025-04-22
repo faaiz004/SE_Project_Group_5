@@ -5,7 +5,7 @@ import { Navigate } from "react-router-dom";
 import SwipeFitPage from "../pages/SwipeFitPage/index"
 const ExplorePage = lazy(() => import("../pages/ExplorePage/Index"));
 const StyleFeed = lazy(() => import("../pages/StyleFeed/Index"));
-const CartPage = lazy(() => import("../pages/CartPage/Index"));
+const CartPage = lazy(() => import("../pages/CartPage/index"));
 const CheckoutPage = lazy(() => import("../pages/CheckoutPage/Index"));
 const CardPaymentPage = lazy(() => import("../pages/CardPaymentPage/Index"));
 const OrderConfirmation = lazy(() =>
@@ -14,7 +14,7 @@ const OrderConfirmation = lazy(() =>
 const LandingPage = lazy(() => import("../pages/LandingPage/Index"));
 const SignUpPage = lazy(() => import("../pages/SignUp/Index"));
 const UploadPhotos = lazy(() => import("../pages/UploadPhotos/Index"));
-const Chatbot = lazy(() => import("../pages/Chatbot/Index"));
+const Chatbot = lazy(() => import("../pages/Chatbot/index"));
 const GenderPreference = lazy(() => import("../pages/GenderPreference/Index"));
 const WeightPreference = lazy(() => import("../pages/WeightPreference/Index"));
 const StylePreferences = lazy(() => import("../pages/StylePreferences/Index"));
