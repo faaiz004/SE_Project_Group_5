@@ -6,10 +6,10 @@ import SwipeFitPage from "../pages/SwipeFitPage/index"
 const ExplorePage = lazy(() => import("../pages/ExplorePage/Index"));
 const StyleFeed = lazy(() => import("../pages/StyleFeed/Index"));
 const CartPage = lazy(() => import("../pages/CartPage/index"));
-const CheckoutPage = lazy(() => import("../pages/CheckoutPage/Index"));
+const CheckoutPage = lazy(() => import("../pages/CheckoutPage/index"));
 const CardPaymentPage = lazy(() => import("../pages/CardPaymentPage/Index"));
 const OrderConfirmation = lazy(() =>
-	import("../pages/OrderConfirmation/Index")
+	import("../pages/OrderConfirmation/index")
 );
 const LandingPage = lazy(() => import("../pages/LandingPage/Index"));
 const SignUpPage = lazy(() => import("../pages/SignUp/Index"));
