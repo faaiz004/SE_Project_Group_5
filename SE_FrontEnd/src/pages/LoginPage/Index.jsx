@@ -15,7 +15,7 @@ import {
   Stack,
 } from "@mui/material"
 import { useNavigate } from "react-router-dom"
-import { loginConvention } from "../../services/Login/Index"
+import { loginConvention} from '../../services/LogIn/Index'
 import { GoogleLogin } from "@react-oauth/google"
 
 export default function LoginPage() {

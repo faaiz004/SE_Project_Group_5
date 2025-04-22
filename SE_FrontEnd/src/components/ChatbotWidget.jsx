@@ -21,7 +21,7 @@ const ChatbotWidget = () => {
         {isOpen ? <ArrowBackIosIcon /> : <ArrowForwardIosIcon />}
       </IconButton>
 
-      {}
+      
       <ChatbotWindow isOpen={isOpen}>
         <Chatbot closeChat={closeChat} />
       </ChatbotWindow>
