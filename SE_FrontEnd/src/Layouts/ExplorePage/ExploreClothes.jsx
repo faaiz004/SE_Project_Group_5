@@ -1,10 +1,10 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef } from "react";
 import {
   Box,
   Typography,
   Card,
   CardMedia,
-  IconButton,
+  Button,
   Skeleton,
 } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
@@ -30,33 +30,22 @@ export default function ExploreClothes() {
   const navigate = useNavigate();
   const scrollContainerRefs = useRef({});
 
-  // Simple left/right scroll handler
   const handleScroll = (groupName, direction) => {
     const container = scrollContainerRefs.current[groupName];
     if (!container) return;
-    const scrollAmount = container.clientWidth * 0.8;
+    const amount = container.clientWidth * 0.8;
     container.scrollBy({
-      left: direction === "left" ? -scrollAmount : scrollAmount,
+      left: direction === "left" ? -amount : amount,
       behavior: "smooth",
     });
   };
 
-  // --- SKELETON LOADER ---
   if (isLoading) {
-    const skeletonCategories = [0, 1]; // show two groups
+    const skeletonCategories = [0, 1];
     return (
       <Box sx={root}>
         {skeletonCategories.map((_, idx) => (
-          <Box
-            key={idx}
-            sx={{
-              width: "90%",
-              maxWidth: 1200,
-              mb: 4,
-              mx: "auto",
-              outline: "none",
-            }}
-          >
+          <Box key={idx} sx={{ width: "90%", maxWidth: 1200, mb: 4, mx: "auto" }}>
             <Skeleton variant="text" width={200} height={32} sx={{ mb: 2 }} />
             <Box sx={{ display: "flex", gap: 4, px: 2 }}>
               {[...Array(4)].map((__, i) => (
@@ -64,7 +53,7 @@ export default function ExploreClothes() {
                   key={i}
                   variant="rectangular"
                   width="22%"
-                  height={280}
+                  height={320}
                   sx={{ borderRadius: 2 }}
                 />
               ))}
@@ -75,9 +64,11 @@ export default function ExploreClothes() {
     );
   }
 
-  if (isError) return <Typography>Error: {error.message}</Typography>;
+  if (isError) {
+    return <Typography>Error: {error.message}</Typography>;
+  }
 
-  // Group by “category - Uppers/Lowers”
+  // Group outfits into "Category – Uppers/Lowers"
   const categoriesMap = data.reduce((acc, outfit) => {
     const type = outfit.upper ? "Uppers" : "Lowers";
     const key = `${outfit.category} - ${type}`;
@@ -90,13 +81,12 @@ export default function ExploreClothes() {
     <Box sx={root}>
       {categoriesArr.map(([groupName, outfits]) => {
         // de-duplicate by name
-        const uniqueOutfits = outfits.filter(
-          (item, idx, self) =>
-            idx === self.findIndex((i) => i.name === item.name)
+        const unique = outfits.filter(
+          (o, i, arr) => arr.findIndex((x) => x.name === o.name) === i
         );
 
-        // Build a nicer label
-        const first = uniqueOutfits[0] || {};
+        // Build a human-friendly label
+        const first = unique[0] || {};
         const prefixMap = {
           SF_BL: "Blazers",
           SF_DS: "Dress Shirts",
@@ -104,14 +94,12 @@ export default function ExploreClothes() {
           SF_PT: "Pants / Trousers",
           SF_PS: "Polo Shirts",
           SF_SR: "Shorts",
-          SF_TS: "T - Shirts",
+          SF_TS: "T‑Shirts",
         };
         let label = first.category || "";
         for (const pre in prefixMap) {
           if (first.name?.startsWith(pre)) {
-            label = `${prefixMap[pre]} - ${
-              first.upper ? "Uppers" : "Lowers"
-            }`;
+            label = `${prefixMap[pre]} - ${first.upper ? "Uppers" : "Lowers"}`;
             break;
           }
         }
@@ -120,13 +108,7 @@ export default function ExploreClothes() {
           <Box
             key={groupName}
             tabIndex={0}
-            sx={{
-              width: "90%",
-              maxWidth: 1200,
-              mb: 4,
-              mx: "auto",
-              outline: "none",
-            }}
+            sx={{ width: "90%", maxWidth: 1200, mb: 4, mx: "auto" }}
           >
             <Typography
               sx={{
@@ -140,9 +122,10 @@ export default function ExploreClothes() {
             </Typography>
 
             <Box sx={{ display: "flex", alignItems: "center" }}>
-              <IconButton onClick={() => handleScroll(groupName, "left")}>
-                <ArrowBackIosNewIcon />
-              </IconButton>
+              <ArrowBackIosNewIcon
+                onClick={() => handleScroll(groupName, "left")}
+                sx={{ cursor: "pointer" }}
+              />
 
               <Box
                 ref={(el) => (scrollContainerRefs.current[groupName] = el)}
@@ -150,23 +133,21 @@ export default function ExploreClothes() {
                   display: "flex",
                   flex: 1,
                   gap: 4,
-                  overflow: "auto",
+                  overflowX: "auto",
                   scrollBehavior: "smooth",
+                  px: 2,
                   "&::-webkit-scrollbar": { display: "none" },
                   msOverflowStyle: "none",
                   scrollbarWidth: "none",
-                  px: 2,
-                  WebkitOverflowScrolling: "touch",
                 }}
               >
-                {uniqueOutfits.map((item) => {
-                  // FALLBACK to imageUrl if there's no signedImageUrl
-                  const rawUrl = item.signedImageUrl || item.imageUrl || "";
-                  const imageUrl = rawUrl.replace(
+                {unique.map((item) => {
+                  // fix double‑thumbnails in URL
+                  const raw = item.signedImageUrl || item.imageUrl || "";
+                  const imageUrl = raw.replace(
                     "/thumbnails/thumbnails/",
                     "/thumbnails/"
                   );
-                  console.log("corrected imageUrl:", imageUrl);
 
                   return (
                     <Box
@@ -179,36 +160,70 @@ export default function ExploreClothes() {
                     >
                       <Card
                         sx={{
+                          display: "flex",
+                          flexDirection: "column",
                           borderRadius: 2,
                           overflow: "hidden",
                           boxShadow: 3,
-                          backgroundColor: "black",
-                          height: "100%",
+                          bgcolor: "#fff",
                           transition: "transform 0.3s ease",
                           "&:hover": { transform: "scale(1.05)", zIndex: 1 },
                         }}
-                        onClick={() => navigate("/mannequin")}
                       >
-                        <CardMedia
-                          component="img"
-                          height="250"
-                          image={imageUrl}
-                          alt={item.category}
-                          imgProps={{ loading: "lazy" }}
-                          sx={{
-                            backgroundColor: "white",
-                            objectFit: "contain",
-                          }}
-                        />
+                        {/* image with padding around */}
+                        <Box sx={{ px: 1, pt: 1 }}>
+                          <CardMedia
+                            component="img"
+                            src={imageUrl}
+                            alt={item.category}
+                            height="260"
+                            imgProps={{ loading: "lazy" }}
+                            sx={{ objectFit: "contain" }}
+                            onClick={() => navigate("/mannequin")}
+                          />
+                        </Box>
+
+                        {/* always‑visible button strip */}
+                        <Box sx={{ px: 1, py: 1, display: "flex", gap: 1 }}>
+                          <Button
+                            fullWidth
+                            onClick={() => {
+                              /* addToCart logic */
+                            }}
+                            sx={{
+                              bgcolor: "#2D333A",
+                              color: "#fff",
+                              textTransform: "none",
+                              fontSize: 16,
+                              "&:hover": { bgcolor: "#1f2428" },
+                            }}
+                          >
+                            Add to Cart
+                          </Button>
+                          <Button
+                            fullWidth
+                            onClick={() => navigate(`/clothes/${item._id}`)}
+                            sx={{
+                              bgcolor: "#2D333A",
+                              color: "#fff",
+                              textTransform: "none",
+                              fontSize: 16,
+                              "&:hover": { bgcolor: "#1f2428" },
+                            }}
+                          >
+                            Save
+                          </Button>
+                        </Box>
                       </Card>
                     </Box>
                   );
                 })}
               </Box>
 
-              <IconButton onClick={() => handleScroll(groupName, "right")}>
-                <ArrowForwardIosIcon />
-              </IconButton>
+              <ArrowForwardIosIcon
+                onClick={() => handleScroll(groupName, "right")}
+                sx={{ cursor: "pointer" }}
+              />
             </Box>
           </Box>
         );
