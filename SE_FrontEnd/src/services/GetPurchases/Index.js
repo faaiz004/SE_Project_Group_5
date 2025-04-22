@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const API_BASE_URL = 'http://localhost:8000/api/clothes'; // or /api/clothes if that’s the correct base
+// Use environment variable for dynamic base URL
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 export const getPurchases = async () => {
     const token = localStorage.getItem('jwt');
@@ -11,7 +12,7 @@ export const getPurchases = async () => {
     }
 
     try {
-        const response = await axios.post(`${API_BASE_URL}/purchased`, { email }, {
+        const response = await axios.post(`${API_BASE_URL}/clothes/purchased`, { email }, {
             headers: {
                 Authorization: `Bearer ${token}`,
                 'Content-Type': 'application/json',
@@ -20,7 +21,7 @@ export const getPurchases = async () => {
 
         return response.data;
     } catch (error) {
-        console.error('Failed to fetch changes:', error.response?.data || error.message);
+        console.error('Failed to fetch purchases:', error.response?.data || error.message);
         throw error;
     }
 };

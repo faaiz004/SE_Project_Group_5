@@ -1,9 +1,9 @@
-// services/Posts/index.js
-console.trace("🚨 getPosts() imported from here");
-
 import axios from "axios";
 
-const API_POSTS_URL = "http://localhost:8000/api/posts/getAll";
+// Use environment variable for API base URL
+const API_BASE_URL = import.meta.env.VITE_API_URL;
+
+const API_POSTS_URL = `${API_BASE_URL}/posts/getAll`;
 
 export const getPosts = async () => {
   const token = localStorage.getItem("jwt");
@@ -17,7 +17,7 @@ export const getPosts = async () => {
         Authorization: `Bearer ${token}`,
       },
     });
-    return response.data; // Expected to be an object or array of posts
+    return response.data;
   } catch (error) {
     console.error("Error retrieving posts:", error.response?.data || error.message);
     throw error;
