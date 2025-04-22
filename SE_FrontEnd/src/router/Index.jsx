@@ -1,6 +1,5 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { lazy, Suspense } from "react";
-import { Navigate } from "react-router-dom";
 
 import SwipeFitPage from "../pages/SwipeFitPage/index"
 const ExplorePage = lazy(() => import("../pages/ExplorePage/Index"));

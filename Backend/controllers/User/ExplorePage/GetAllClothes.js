@@ -1,53 +1,29 @@
-import Clothes from "../../../models/clothes.js";
+import Clothes from '../../../models/clothes.js';
 
-import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-
-const s3 = new S3Client({ region: process.env.AWS_REGION });
-
-const generateSignedUrl = async (key) => {
-  const command = new GetObjectCommand({
-    Bucket: process.env.AWS_BUCKET_NAME,
-    Key: key,
-  });
-  return await getSignedUrl(s3, command, { expiresIn: 3600 }); 
-};
-
-const extractKeyFromUrl = (url) => {
-  const parts = url.split('.amazonaws.com/');
-  return parts.length === 2 ? parts[1] : url;
-};
-
+// Get all clothes, optionally filtered by category
 export const getAllClothes = async (req, res) => {
   try {
     const filter = req.query.category ? { category: req.query.category } : {};
-
     const clothesItems = await Clothes.find(filter);
 
-    const clothesWithSignedUrls = await Promise.all(
-      clothesItems.map(async (item) => {
-        let signedUrl = null;
-        if (item.imageUrl) {
-          const key = extractKeyFromUrl(item.imageUrl);
-          signedUrl = await generateSignedUrl(key);
-        }
-        return {
-          _id: item._id,
-          name: item.name,
-          brand: item.brand,
-          size: item.size,
-          category: item.category,
-          price: item.price,
-          signedImageUrl: signedUrl,
-          upper: item.upper,
-            lower: item.lower,
-        };
-      })
-    );
+    const clothesResponse = clothesItems.map(item => {
+      const clothing = item.toObject();
+      return {
+        _id: clothing._id,
+        name: clothing.name,
+        brand: clothing.brand,
+        size: clothing.size,
+        category: clothing.category,
+        price: clothing.price,
+        upper: clothing.upper,
+        lower: clothing.lower,
+        imageUrl: clothing.imageUrl || null,
+      };
+    });
 
-    res.status(200).json(clothesWithSignedUrls);
+    res.status(200).json(clothesResponse);
   } catch (error) {
-    console.error("Error fetching clothes:", error);
-    res.status(500).json({ error: "Server error." });
+    console.error('Error fetching clothes:', error);
+    res.status(500).json({ error: 'Server error.' });
   }
 };
