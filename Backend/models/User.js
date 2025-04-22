@@ -7,6 +7,7 @@ const userSchema = new mongoose.Schema({
   likedItems: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Clothes' }],
   ownedProducts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Clothes' }],
   savedOutfits: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Post' }],
+  savedClothes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Clothes' }],
   gender: { type: String },
   shirtSize: {
     type: String,

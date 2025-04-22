@@ -23,6 +23,7 @@ const PreferencesShirts = lazy(() =>
 const PreferencesPants = lazy(() => import("../pages/PreferencesPants/Index"));
 const SignInPage = lazy(() => import("../pages/LoginPage/Index"));
 const SavedOutfits = lazy(() => import('../pages/SavedOutfits/Index'));
+const AccountPage = lazy(() => import('../pages/Account/index'));
 
 const router = createBrowserRouter([
   {
@@ -166,6 +167,14 @@ const router = createBrowserRouter([
     element: (
       <Suspense fallback={<div>Loading Sign In...</div>}>
         <SignInPage />
+      </Suspense>
+    ),
+  },
+  {
+    path: "/account",
+    element: (
+      <Suspense fallback={<div>Loading Account...</div>}>
+        <AccountPage />
       </Suspense>
     ),
   }

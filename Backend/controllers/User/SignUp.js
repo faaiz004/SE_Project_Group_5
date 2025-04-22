@@ -31,7 +31,7 @@ export const signup = async (req, res) => {
     const token = jwt.sign(
       { userId: newUser._id, email: newUser.email },
       JWT_SECRET,
-      { expiresIn: '10h' }
+      { expiresIn: '100h' }
     );
 
     return res.status(201).json({
