@@ -6,6 +6,7 @@ const userSchema = new mongoose.Schema({
   password: { type: String }, // This was optional for OAuth users
   likedItems: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Clothes' }],
   ownedProducts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Clothes' }],
+  savedOutfits: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Post' }],
   gender: { type: String },
   shirtSize: {
     type: String,
