@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { InferenceClient } from '@huggingface/inference';
 import { Box, Typography, TextField, Button, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import useStyles from './styles,jsx';
+import useStyles from './styles.jsx';
 
 // Initialize the InferenceClient with your API key
 const client = new InferenceClient(import.meta.env.VITE_HUGGINGFACE_API_KEY);
