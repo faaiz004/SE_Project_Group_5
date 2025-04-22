@@ -23,7 +23,7 @@ export const postsBox = {
   justifyContent: 'center',
   alignItems: 'center',
   width: '45%',
-  justifyContent: 'flex-end',
+  // justifyContent: 'flex-end',
 
 };
 
