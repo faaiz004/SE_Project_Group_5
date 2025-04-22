@@ -3,7 +3,7 @@ import Chatbot from '../pages/Chatbot/index';
 import { Box, IconButton } from '@mui/material';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
-import { ChatbotContainer, ChatbotWindow } from '../pages/Chatbot/Styles';
+import { ChatbotContainer, ChatbotWindow } from '../pages/Chatbot/styles.jsx';
 
 const ChatbotWidget = () => {
   const [isOpen, setIsOpen] = useState(false);
