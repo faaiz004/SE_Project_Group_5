@@ -21,7 +21,7 @@ export const submitPreferences = async (preferencesData) => {
                 },
             }
         );
-
+        console.log("Preferences submitted successfully:", response.data);
         return response.data;
     } catch (error) {
         console.error('Submitting preferences failed:', error.response?.data || error.message);

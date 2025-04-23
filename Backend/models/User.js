@@ -11,7 +11,7 @@ const userSchema = new mongoose.Schema({
   gender: { type: String },
   shirtSize: {
     type: String,
-    enum: ['s', 'm', 'l'],
+    enum: ['small', 'medium', 'large'],
   },
   pantSize: {
     type: String,
