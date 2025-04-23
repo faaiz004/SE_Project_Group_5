@@ -23,7 +23,7 @@ export const submitPreferences = async (req, res) => {
     }
 
   
-    const userId = decoded.id;
+    const userId = decoded.userId;
 
     const { gender, shirtSize, pantSize, stylePreference } = req.body;
 
