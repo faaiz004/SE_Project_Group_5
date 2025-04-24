@@ -2,10 +2,10 @@ import User from '../../models/User.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'yoursecretkey';
-const SALT_ROUNDS = 10;
 
 export const signup = async (req, res) => {
+  const JWT_SECRET = process.env.JWT_SECRET
+  const SALT_ROUNDS = 10;
   try {
     const { username, email, password } = req.body;
 
@@ -31,7 +31,7 @@ export const signup = async (req, res) => {
     const token = jwt.sign(
       { userId: newUser._id, email: newUser.email },
       JWT_SECRET,
-      { expiresIn: '100h' }
+      { expiresIn: '168h' }
     );
 
     return res.status(201).json({

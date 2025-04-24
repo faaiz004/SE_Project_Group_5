@@ -14,9 +14,9 @@ export const verifyToken = (req, res, next) => {
 
   const token = authHeader.split(' ')[1];
 
-  const jwtToken = process.env.JWT_SECRET || 'yoursecretkey'
+  const jwtToken = process.env.JWT_SECRET 
 
-  console.log('JWT Token:', jwtToken);
+  // console.log('JWT Token:', jwtToken);
 
   if (!jwtToken) {
     console.error('JWT_SECRET is missing in environment variables.');

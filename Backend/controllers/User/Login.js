@@ -2,9 +2,9 @@ import User from '../../models/User.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'yoursecretkey';
 
 export const login = async (req, res) => {
+  const JWT_SECRET = process.env.JWT_SECRET 
   try {
     const { email, password } = req.body;
     
@@ -21,11 +21,11 @@ export const login = async (req, res) => {
     if (!isValid) {
       return res.status(401).json({ error: 'Invalid credentials. Incorrect password.' });
     }
-
+    // console.log("JWT_SECRET", JWT_SECRET)
     const token = jwt.sign(
       { userId: user._id, email: user.email },
       JWT_SECRET,
-      { expiresIn: '100h' }
+      { expiresIn: '168h' }
     );
 
     return res.status(200).json({
@@ -35,7 +35,7 @@ export const login = async (req, res) => {
         id: user._id,
         username: user.username,
         email: user.email,
-        preferencesCompleted: newUser.preferencesCompleted 
+        preferencesCompleted: user.preferencesCompleted 
       },
     });
   } catch (err) {

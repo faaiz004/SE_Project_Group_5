@@ -20,6 +20,8 @@ export default function SearchBar() {
   const handleSearch = async () => {
     if (!query.trim()) return;
 
+    
+
     setLoading(true);
     try {
       const res = await fetch("https://api.openai.com/v1/chat/completions", {

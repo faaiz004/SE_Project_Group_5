@@ -1,7 +1,3 @@
-// app.js
-
-// 1. Load environment variables
-import axios from 'axios';
 import dotenv from 'dotenv';
 dotenv.config();
 
