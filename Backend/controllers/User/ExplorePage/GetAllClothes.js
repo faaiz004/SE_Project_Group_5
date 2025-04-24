@@ -18,6 +18,7 @@ export const getAllClothes = async (req, res) => {
         upper: clothing.upper,
         lower: clothing.lower,
         imageUrl: clothing.imageUrl || null,
+        
       };
     });
 

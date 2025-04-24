@@ -8,6 +8,7 @@ const apiClient = axios.create({
 
 /* Attach JWT automatically */
 apiClient.interceptors.request.use(cfg => {
+  // localStorage.setItem('jwt', 'Checking token');
   const token = localStorage.getItem('jwt');
   if (token) cfg.headers.Authorization = `Bearer ${token}`;
   return cfg;
@@ -17,11 +18,11 @@ apiClient.interceptors.request.use(cfg => {
 apiClient.interceptors.response.use(
   res => res,
   err => {
-    console.log('--- Interceptor Triggered ---');
-    console.log('API error:', err);
-
-    if (err.response?.status === 401) {
-      console.warn('401 - Unauthorized');
+    // console.log('--- Interceptor Triggered ---');
+    // console.log('API error:', err);
+    // console.log('Response data:', err.response);
+    if (err.response?.status == 403) {
+      // console.warn('401 - Unauthorized');
       window.dispatchEvent(new Event('force-login'));
     }
     return Promise.reject(err);
