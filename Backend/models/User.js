@@ -25,6 +25,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     enum: ['Modern', 'Old_Money', 'Smart_Casual', 'Casual_Everyday'],
   },
+  preferencesCompleted: {
+    type: Boolean,
+    default: false
+  }
 }, {
   timestamps: true,
 });

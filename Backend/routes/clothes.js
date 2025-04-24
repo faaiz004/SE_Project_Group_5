@@ -8,8 +8,8 @@ import { purchaseClothes } from '../controllers/Clothes/purchaseClothes.js';
 const router = express.Router();
 
 // Existing Routes
-router.post('/purchased', getPurchasedClothes);
-router.get('/getClothes', getAllClothes);
+router.post('/purchased', verifyToken, getPurchasedClothes);
+router.get('/getClothes', verifyToken, getAllClothes);
 
 // New Routes (Protected with verifyToken)
 router.post('/saveClothes/:clothesId', verifyToken, saveClothes);

@@ -16,7 +16,7 @@ import {
 } from "@mui/material"
 import { Email, Lock, ArrowForward, Palette, Brush, Style } from "@mui/icons-material"
 import { useNavigate } from "react-router-dom"
-import { signupUser } from "../../services/SignUp/Index"
+import { signupUser } from "../../api/authService" 
 
 export default function SignUp() {
   const theme = useTheme()

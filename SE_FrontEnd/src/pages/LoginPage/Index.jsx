@@ -16,7 +16,7 @@ import {
   LinearProgress,
 } from "@mui/material"
 import { useNavigate } from "react-router-dom"
-import { loginConvention } from '../../services/LogIn/Index'
+import {loginConvention} from "../../api/authService"
 import { GoogleLogin } from "@react-oauth/google"
 
 export default function LoginPage() {
@@ -37,10 +37,7 @@ export default function LoginPage() {
     setError("")
     setIsLoading(true)
     try {
-      const response = await loginConvention(email, password)
-      if (response?.token) {
-        navigate("/explore")
-      }
+      await loginConvention(email, password)
     } catch (err) {
       const msg = err.response?.data?.error?.includes("Invalid credentials")
         ? "Incorrect email or password."

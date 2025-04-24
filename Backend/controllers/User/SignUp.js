@@ -41,6 +41,7 @@ export const signup = async (req, res) => {
         id: newUser._id,
         username: newUser.username,
         email: newUser.email,
+        preferencesCompleted: newUser.preferencesCompleted 
       },
     });
   } catch (err) {

@@ -13,7 +13,7 @@ import {
   Button
 } from '@mui/material';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import { getPosts } from '../../services/GetPosts/Index';
+import { getPosts } from '../../api/postService';
 
 const Posts = () => {
   const { data, isLoading, error } = useQuery({

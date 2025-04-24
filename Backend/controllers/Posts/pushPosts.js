@@ -18,7 +18,7 @@ export const createPost = async (req, res) => {
     if (req.body.clothes) {
       try {
         clothesArray = JSON.parse(req.body.clothes);
-        console.log("🛠️ Parsed clothes array:", clothesArray);
+        console.log("Parsed clothes array:", clothesArray);
       } catch (err) {
         console.error("Error parsing clothes array:", err);
       }

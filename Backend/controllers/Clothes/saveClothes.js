@@ -1,5 +1,5 @@
 import User from '../../models/User.js';
-import Clothes from '../../models/Clothes.js';
+import Clothes from '../../models/clothes.js';
 
 // Save Clothes to User's savedClothes
 export const saveClothes = async (req, res) => {

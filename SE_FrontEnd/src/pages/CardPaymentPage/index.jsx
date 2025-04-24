@@ -9,7 +9,7 @@ import {
 } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowBack } from '@mui/icons-material';
-import { purchaseClothes } from '../../services/PurchaseClothes/Index';
+import {purchaseClothes} from '../../api/clothesService'; // Adjust the import path as necessary
 
 const CardPaymentPage = () => {
   const navigate = useNavigate();

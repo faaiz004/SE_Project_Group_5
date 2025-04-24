@@ -26,7 +26,7 @@ import pants1 from "../../assets/StylePreferences/larki1.jpeg"
 import pants2 from "../../assets/StylePreferences/larki2.png"
 import pants3 from "../../assets/StylePreferences/larki4.png"
 import pants4 from "../../assets/StylePreferences/larki5.png"
-import { submitPreferences } from "../../services/SubmitPreferences/Index"
+import { submitPreferences } from "../../api/authService"
 
 export default function PreferencesPants() {
   const [selectedPants, setSelectedPants] = useState([])

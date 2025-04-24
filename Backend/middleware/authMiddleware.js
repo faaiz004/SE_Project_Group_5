@@ -20,7 +20,7 @@ export const verifyToken = (req, res, next) => {
 
   if (!jwtToken) {
     console.error('JWT_SECRET is missing in environment variables.');
-    return res.status(500).json({ error: 'Server configuration error.' });
+    return res.status(403).json({ error: 'Invalid or expired token.' });
   }
 
   try {

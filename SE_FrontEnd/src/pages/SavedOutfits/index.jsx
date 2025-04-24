@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, IconButton } from '@mui/material';
-import Bookmark        from '@mui/icons-material/Bookmark';
-import { fetchSaved } from '../../services/posts';
+import {fetchSaved} from '../../api/postService';
 
 export default function SavedOutfits() {
   const [posts, setPosts] = useState([]);

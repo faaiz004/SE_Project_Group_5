@@ -42,7 +42,7 @@ import {
   Edit as EditIcon
 } from '@mui/icons-material';
 import { useQuery } from '@tanstack/react-query';
-import { getSavedClothes } from '../../services/S_U_Posts/Index';
+import {getSavedClothes} from '../../api/clothes';
 import { styles } from './styles';
 
 export default function Account() {

@@ -1,3 +1,4 @@
+// src/Layouts/ExplorePage/ExploreClothes.jsx
 import React, { useRef, useState, useEffect } from "react";
 import {
   Box,
@@ -10,12 +11,12 @@ import {
 import { useQuery, useMutation } from "@tanstack/react-query";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
-import { fetchOutfits } from "../../pages/ExplorePage/constants";
+import { fetchOutfits } from "../../api/clothesService";
 import {
   saveClothes,
   unsaveClothes,
   getSavedClothes
-} from "../../services/S_U_Posts/Index";
+} from "../../api/clothesService";
 import { useNavigate } from "react-router-dom";
 
 const root = {
@@ -33,17 +34,18 @@ export default function ExploreClothes() {
     queryFn: fetchOutfits,
   });
 
+  // ← guard against undefined
+  const outfits = Array.isArray(data) ? data : [];
+
   const navigate = useNavigate();
   const scrollContainerRefs = useRef({});
   const [savedStates, setSavedStates] = useState({});
   const [cartItems, setCartItems] = useState([]);
 
   useEffect(() => {
-    // Load cart from sessionStorage
     const existingCart = JSON.parse(sessionStorage.getItem("cart")) || [];
     setCartItems(existingCart);
 
-    // Fetch saved clothes
     const fetchSaved = async () => {
       try {
         const saved = await getSavedClothes();
@@ -80,9 +82,7 @@ export default function ExploreClothes() {
   };
 
   const handleAddToCart = (item, imageUrl) => {
-    // **NEW GUARD**: if already in cart, do nothing
     if (cartItems.some((ci) => ci.productId === item._id)) return;
-
     const entry = {
       productId: item._id,
       name: item.name,
@@ -93,7 +93,6 @@ export default function ExploreClothes() {
       imageUrl,
       quantity: 1,
     };
-
     const updated = [...cartItems, entry];
     sessionStorage.setItem("cart", JSON.stringify(updated));
     setCartItems(updated);
@@ -128,10 +127,12 @@ export default function ExploreClothes() {
       </Box>
     );
   }
-  if (isError) return <Typography>Error: {error.message}</Typography>;
+  if (isError) {
+    return <Typography>Error: {error.message}</Typography>;
+  }
 
   // Group into categories
-  const categoriesMap = data.reduce((acc, o) => {
+  const categoriesMap = outfits.reduce((acc, o) => {
     const type = o.upper ? "Uppers" : "Lowers";
     const key = `${o.category} - ${type}`;
     (acc[key] = acc[key] || []).push(o);

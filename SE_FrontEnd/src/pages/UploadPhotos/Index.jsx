@@ -9,8 +9,8 @@ import {
 } from "@mui/icons-material";
 import CheckIcon from '@mui/icons-material/Check';
 
-import { getPurchases } from "../../services/GetPurchases/Index";
-import { createPost } from "../../services/UploadPosts/Index";
+import {getPurchases} from "../../api/purchaseService";
+import { createPost } from "../../api/postService";
 
 export default function CreatePostForm() {
   const [selectedImagePreview, setSelectedImagePreview] = useState(null);
