@@ -42,11 +42,7 @@ import {
   Edit as EditIcon
 } from '@mui/icons-material';
 import { useQuery } from '@tanstack/react-query';
-<<<<<<< HEAD
 import {getSavedClothes} from '../../api/clothesService';
-=======
-import { getSavedClothes } from '../../api/clothesService';
->>>>>>> 558ee04579858aa71c753220f6e55ff363a3c36b
 import { styles } from './styles';
 import { unsaveClothes } from "../../api/clothesService";
 import { getUserPreferences, updateUserPreferences } from '../../api/clothesService'; // Import from the newly created userService.js
