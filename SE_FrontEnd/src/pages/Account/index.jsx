@@ -1,5 +1,5 @@
 // src/pages/Account/Index.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
@@ -42,12 +42,47 @@ import {
   Edit as EditIcon
 } from '@mui/icons-material';
 import { useQuery } from '@tanstack/react-query';
-import {getSavedClothes} from '../../api/clothes';
+import {getSavedClothes} from '../../api/clothesService';
 import { styles } from './styles';
+import { unsaveClothes } from "../../api/clothesService";
+import { getUserPreferences, updateUserPreferences } from '../../api/clothesService'; // Import from the newly created userService.js
+
 
 export default function Account() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('account');
+  const [cartItems, setCartItems] = useState(() => {
+    return JSON.parse(sessionStorage.getItem("cart")) || [];
+  });
+  
+  useEffect(() => {
+    sessionStorage.setItem("cart", JSON.stringify(cartItems));
+  }, [cartItems]);
+  
+  const handleAddToCart = (item) => {
+    if (cartItems.some(ci => ci.productId === item._id)) return;
+    const newItem = {
+      productId: item._id,
+      name: item.name,
+      brand: item.brand,
+      size: item.size,
+      category: item.category,
+      price: item.price,
+      imageUrl: item.imageUrl,
+      quantity: 1
+    };
+    const updated = [...cartItems, newItem];
+    setCartItems(updated);
+  };
+  
+  const handleUnsave = async (id) => {
+    try {
+      await unsaveClothes(id);
+      setFilteredData(prev => prev.filter(item => item._id !== id)); // Adjust state name accordingly
+    } catch (err) {
+      console.error("Failed to unsave:", err);
+    }
+  };
 
   // === ACCOUNT INFO STATES & HANDLERS ===
   const [profileImage, setProfileImage] = useState(null);
@@ -75,15 +110,53 @@ export default function Account() {
   const handleEditUserInfo = () => setIsEditing(true);
 
   // === PREFERENCES STATES ===
-  const [gender, setGender] = useState('male');
-  const [shirtSize, setShirtSize] = useState('m');
-  const [pantSize, setPantSize] = useState('m');
-  const [selectedClothingTypes, setSelectedClothingTypes] = useState(['Casual', 'Business Casual']);
+  const [gender, setGender] = useState('');
+  const [shirtSize, setShirtSize] = useState('');
+  const [pantSize, setPantSize] = useState('');
+  const [selectedClothingTypes, setSelectedClothingTypes] = useState([]);
+  const [isPreferencesEditable, setIsPreferencesEditable] = useState(false);
+  // Fetch preferences when the component loads
+  useEffect(() => {
+    const fetchPreferences = async () => {
+      try {
+        const preferences = await getUserPreferences();
+        setGender(preferences.gender || 'male');
+        setShirtSize(preferences.shirtSize || 'm');
+        setPantSize(preferences.pantSize || 'm');
+        setSelectedClothingTypes(preferences.selectedClothingTypes || ['Casual', 'Business Casual']);
+      } catch (error) {
+        console.error('Failed to fetch preferences:', error);
+      }
+    };
+
+    fetchPreferences();
+  }, []);
+
   const handleClothingTypeClick = (type) => {
     setSelectedClothingTypes(prev =>
       prev.includes(type) ? prev.filter(t => t !== type) : [...prev, type]
     );
   };
+
+  const handleSavePreferences = async () => {
+    try {
+      const preferences = { gender, shirtSize, pantSize, selectedClothingTypes };
+      await updateUserPreferences(preferences); // Save updated preferences to the backend
+      setIsPreferencesEditable(false); // Switch back to view mode after saving
+      alert('Preferences updated successfully!');
+    } catch (error) {
+      console.error('Failed to save preferences:', error);
+    }
+  };
+
+  const handleEditClick = () => {
+    setIsPreferencesEditable(true); // Switch to edit mode when "Edit" is clicked
+  };
+
+  const handleCancelEdit = () => {
+    setIsPreferencesEditable(false); // Switch back to view mode when canceling edit
+  };
+
 
   // === BILLING STATES ===
   const [savedCards, setSavedCards] = useState([
@@ -135,6 +208,12 @@ export default function Account() {
     queryFn: getSavedClothes,
     enabled: activeTab === 'savedOutfits',
   });
+  const [filteredData, setFilteredData] = useState([]);
+  useEffect(() => {
+    if (activeTab === 'savedOutfits') {
+      setFilteredData(savedClothes);
+    }
+  }, [savedClothes, activeTab]);
   
 
   const groupByCategoryAndType = (items) =>
@@ -162,7 +241,7 @@ export default function Account() {
       );
     }
 
-    const groups = Object.entries(groupByCategoryAndType(savedClothes));
+    const groups = Object.entries(groupByCategoryAndType(filteredData));
 
     return groups.map(([groupName, items]) => {
       // de‑dup by name
@@ -189,88 +268,88 @@ export default function Account() {
 
       return (
         <Box key={groupName} sx={{ mb: 4 }}>
-          <Typography sx={{ fontSize: 28, fontWeight: 600, color: "#27374D", mb: 2 }}>
-            {label}
-          </Typography>
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Box
+    <Typography sx={{ fontSize: 28, fontWeight: 600, color: "#27374D", mb: 2 }}>
+      {label}
+    </Typography>
+    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+      <Box
+        sx={{
+          display: 'flex',
+          gap: 2,
+          overflowX: 'auto',
+          scrollBehavior: 'smooth',
+          px: 1,
+          '&::-webkit-scrollbar': { display: 'none' }
+        }}
+      >
+        {unique.map(item => (
+          <Box
+            key={item._id}
+            sx={{
+              flex: '0 0 auto',
+              width: { xs: '85%', sm: '40%', md: '22%' },
+              minWidth: 200
+            }}
+          >
+            <Card
               sx={{
-                display: 'flex',
-                gap: 2,
-                overflowX: 'auto',
-                scrollBehavior: 'smooth',
-                px: 1,
-                '&::-webkit-scrollbar': { display: 'none' }
+                borderRadius: 2,
+                overflow: 'hidden',
+                boxShadow: 3,
+                transition: 'transform 0.3s ease',
+                '&:hover': { transform: 'scale(1.05)', zIndex: 1 }
               }}
             >
-              {unique.map(item => (
-                <Box
-                  key={item._id}
+              <Box sx={{ p: 1, backgroundColor: '#fff' }}>
+                <CardMedia
+                  component="img"
+                  src={item.imageUrl}
+                  height="260"
+                  alt={item.name}
+                  sx={{ objectFit: 'contain', cursor: 'pointer' }}
+                  onClick={() => navigate(`/clothes/${item._id}`)}
+                />
+              </Box>
+              <Box sx={{ px: 1, py: 1, display: "flex", gap: 1, justifyContent: "center" }}>
+                <Button
+                  variant="contained"
                   sx={{
-                    flex: '0 0 auto',
-                    width: { xs: '85%', sm: '40%', md: '22%' },
-                    minWidth: 200
+                    minWidth: 40,
+                    minHeight: 40,
+                    bgcolor: "#2D333A",
+                    borderRadius: 1,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    "&:hover": { bgcolor: "#1f2428" }
                   }}
+                  onClick={() => handleAddToCart(item)}
                 >
-                  <Card
-                    sx={{
-                      borderRadius: 2,
-                      overflow: 'hidden',
-                      boxShadow: 3,
-                      transition: 'transform 0.3s ease',
-                      '&:hover': { transform: 'scale(1.05)', zIndex: 1 }
-                    }}
-                  >
-                    <Box sx={{ p: 1, backgroundColor: '#fff' }}>
-                      <CardMedia
-                        component="img"
-                        src={item.imageUrl}
-                        height="260"
-                        alt={item.name}
-                        sx={{ objectFit: 'contain', cursor: 'pointer' }}
-                        onClick={() => navigate(`/clothes/${item._id}`)}
-                      />
-                    </Box>
-                    <Box sx={{ px: 1, py: 1, display: "flex", gap: 1, justifyContent: "center" }}>
-                    <Button
-                      variant="contained"
-                      sx={{
-                        minWidth: 40,
-                        minHeight: 40,
-                        bgcolor: "#2D333A",
-                        borderRadius: 1,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        "&:hover": { bgcolor: "#1f2428" }
-                      }}
-                    >
-                      <ShoppingCartIcon />
-                    </Button>
-                    <Button
-                      variant="contained"
-                      sx={{
-                        minWidth: 40,
-                        minHeight: 40,
-                        bgcolor: "#2D333A",
-                        borderRadius: 1,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        "&:hover": { bgcolor: "#1f2428" }
-                      }}
-                    >
-                      <DeleteIcon />
-                    </Button>
-                  </Box>
-                  
-                  
-                  </Card>
-                </Box>
-              ))}
-            </Box>
+                  <ShoppingCartIcon />
+                </Button>
+                <Button
+                  variant="contained"
+                  sx={{
+                    minWidth: 40,
+                    minHeight: 40,
+                    bgcolor: "#2D333A",
+                    borderRadius: 1,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    "&:hover": { bgcolor: "#1f2428" }
+                  }}
+                  onClick={() => handleUnsave(item._id)}
+                >
+                  <DeleteIcon />
+                </Button>
+              </Box>
+            </Card>
           </Box>
-        </Box>
+        ))}
+      </Box>
+    </Box>
+  </Box>
       );
     });
   };
@@ -385,63 +464,122 @@ export default function Account() {
 
       case 'preferences':
         return (
+          // <Paper sx={styles.contentPaper}>
+          //   <Box sx={styles.contentHeader}>
+          //     <Typography variant="h5" sx={styles.contentTitle}>Preferences</Typography>
+          //     <Typography variant="body2" color="text.secondary">
+          //       Manage your clothing preferences and sizes
+          //     </Typography>
+          //   </Box>
+          //   <Divider />
+          //   <Box sx={styles.contentBody}>
+          //     {/* Gender */}
+          //     <FormControl sx={{ mb: 3 }}>
+          //       <InputLabel>Gender</InputLabel>
+          //       <Select value={gender} onChange={e => setGender(e.target.value)}>
+          //         <MenuItem value="male">Male</MenuItem>
+          //         <MenuItem value="female">Female</MenuItem>
+          //       </Select>
+          //     </FormControl>
+
+          //     {/* Shirt Size */}
+          //     <FormControl fullWidth sx={{ mb: 3 }}>
+          //       <InputLabel>Shirt Size</InputLabel>
+          //       <Select value={shirtSize} onChange={e => setShirtSize(e.target.value)}>
+          //         <MenuItem value="s">Small</MenuItem>
+          //         <MenuItem value="m">Medium</MenuItem>
+          //         <MenuItem value="l">Large</MenuItem>
+          //       </Select>
+          //     </FormControl>
+
+          //     {/* Pant Size */}
+          //     <FormControl fullWidth sx={{ mb: 3 }}>
+          //       <InputLabel>Pant Size</InputLabel>
+          //       <Select value={pantSize} onChange={e => setPantSize(e.target.value)}>
+          //         <MenuItem value="s">Small</MenuItem>
+          //         <MenuItem value="m">Medium</MenuItem>
+          //         <MenuItem value="l">Large</MenuItem>
+          //       </Select>
+          //     </FormControl>
+
+          //     {/* Clothing Types */}
+          //     <Box>
+          //       <Typography sx={{ mb: 1 }}>Preferred Clothing Types</Typography>
+          //       {['Modern','Business','Old Money','Casual'].map(type => (
+          //         <Chip
+          //           key={type}
+          //           label={type}
+          //           variant={selectedClothingTypes.includes(type) ? 'filled' : 'outlined'}
+          //           onClick={() => handleClothingTypeClick(type)}
+          //           sx={{ mr: 1, mb: 1 }}
+          //         />
+          //       ))}
+          //     </Box>
+          //   </Box>
+          //   <Divider />
+          //   <Box sx={styles.contentFooter}>
+          //     <Button variant="contained">Save Preferences</Button>
+          //   </Box>
+          // </Paper>
           <Paper sx={styles.contentPaper}>
-            <Box sx={styles.contentHeader}>
-              <Typography variant="h5" sx={styles.contentTitle}>Preferences</Typography>
-              <Typography variant="body2" color="text.secondary">
-                Manage your clothing preferences and sizes
-              </Typography>
-            </Box>
-            <Divider />
-            <Box sx={styles.contentBody}>
-              {/* Gender */}
-              <FormControl sx={{ mb: 3 }}>
-                <InputLabel>Gender</InputLabel>
-                <Select value={gender} onChange={e => setGender(e.target.value)}>
-                  <MenuItem value="male">Male</MenuItem>
-                  <MenuItem value="female">Female</MenuItem>
-                </Select>
-              </FormControl>
+      <Box sx={styles.contentHeader}>
+        <Typography variant="h5" sx={styles.contentTitle}>Preferences</Typography>
+        <Typography variant="body2" color="text.secondary">
+          Manage your clothing preferences and sizes
+        </Typography>
+      </Box>
+      <Divider />
+      <Box sx={styles.contentBody}>
+        {/* Gender */}
+        <FormControl sx={{ mb: 3 }}>
+          <InputLabel>Gender</InputLabel>
+          <Select value={gender} onChange={e => setGender(e.target.value)}>
+            <MenuItem value="male">Male</MenuItem>
+            <MenuItem value="female">Female</MenuItem>
+          </Select>
+        </FormControl>
 
-              {/* Shirt Size */}
-              <FormControl fullWidth sx={{ mb: 3 }}>
-                <InputLabel>Shirt Size</InputLabel>
-                <Select value={shirtSize} onChange={e => setShirtSize(e.target.value)}>
-                  <MenuItem value="s">Small</MenuItem>
-                  <MenuItem value="m">Medium</MenuItem>
-                  <MenuItem value="l">Large</MenuItem>
-                </Select>
-              </FormControl>
+        {/* Shirt Size */}
+        <FormControl fullWidth sx={{ mb: 3 }}>
+          <InputLabel>Shirt Size</InputLabel>
+          <Select value={shirtSize} onChange={e => setShirtSize(e.target.value)}>
+            <MenuItem value="s">Small</MenuItem>
+            <MenuItem value="m">Medium</MenuItem>
+            <MenuItem value="l">Large</MenuItem>
+          </Select>
+        </FormControl>
 
-              {/* Pant Size */}
-              <FormControl fullWidth sx={{ mb: 3 }}>
-                <InputLabel>Pant Size</InputLabel>
-                <Select value={pantSize} onChange={e => setPantSize(e.target.value)}>
-                  <MenuItem value="s">Small</MenuItem>
-                  <MenuItem value="m">Medium</MenuItem>
-                  <MenuItem value="l">Large</MenuItem>
-                </Select>
-              </FormControl>
+        {/* Pant Size */}
+        <FormControl fullWidth sx={{ mb: 3 }}>
+          <InputLabel>Pant Size</InputLabel>
+          <Select value={pantSize} onChange={e => setPantSize(e.target.value)}>
+            <MenuItem value="s">Small</MenuItem>
+            <MenuItem value="m">Medium</MenuItem>
+            <MenuItem value="l">Large</MenuItem>
+          </Select>
+        </FormControl>
 
-              {/* Clothing Types */}
-              <Box>
-                <Typography sx={{ mb: 1 }}>Preferred Clothing Types</Typography>
-                {['Modern','Business','Old Money','Casual'].map(type => (
-                  <Chip
-                    key={type}
-                    label={type}
-                    variant={selectedClothingTypes.includes(type) ? 'filled' : 'outlined'}
-                    onClick={() => handleClothingTypeClick(type)}
-                    sx={{ mr: 1, mb: 1 }}
-                  />
-                ))}
-              </Box>
-            </Box>
-            <Divider />
-            <Box sx={styles.contentFooter}>
-              <Button variant="contained">Save Preferences</Button>
-            </Box>
-          </Paper>
+        {/* Clothing Types */}
+        <Box sx={{ mb: 3 }}>
+          <Typography sx={{ mb: 1 }}>Preferred Clothing Types</Typography>
+          {['Modern', 'Business', 'Old Money', 'Casual'].map(type => (
+            <Chip
+              key={type}
+              label={type}
+              variant={selectedClothingTypes.includes(type) ? 'filled' : 'outlined'}
+              onClick={() => handleClothingTypeClick(type)}
+              sx={{ mr: 1, mb: 1 }}
+            />
+          ))}
+        </Box>
+      </Box>
+      <Divider />
+      <Box sx={styles.contentFooter}>
+        <Button variant="contained" onClick={handleSavePreferences}>
+          Save Preferences
+        </Button>
+      </Box>
+    </Paper>
         );
 
       case 'billing':
@@ -588,6 +726,27 @@ export default function Account() {
           </IconButton>
           <IconButton onClick={() => navigate('/cart')}>
             <ShoppingCartIcon />
+            {/* Display item count if there are any items in the cart */}
+            {cartItems.length > 0 && (
+              <Box
+                sx={{
+                  position: 'absolute',
+                  top: 0,
+                  right: 0,
+                  bgcolor: '#FF5733',
+                  color: 'white',
+                  borderRadius: '50%',
+                  width: 20,
+                  height: 20,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '12px',
+                }}
+              >
+                {cartItems.length}
+              </Box>
+            )}
           </IconButton>
         </Toolbar>
       </AppBar>
