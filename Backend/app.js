@@ -29,12 +29,15 @@ import userRoutes from './routes/user.js';
 import clothesRoutes from './routes/clothes.js';
 import postsRoutes from './routes/posts.js';
 import googleAuthRoutes from './routes/googleAuth.js';
+import textureRoutes from './routes/textures.js';
+
 
 app.use('/api', postRoutes);
 app.use("/api/auth", googleAuthRoutes);
 app.use('/api/auth', userRoutes);
 app.use('/api/clothes', clothesRoutes);
 app.use('/api/posts', postsRoutes);
+app.use('/api/textures', textureRoutes);
 
 
 app.post('/api/chat', async (req, res) => {
