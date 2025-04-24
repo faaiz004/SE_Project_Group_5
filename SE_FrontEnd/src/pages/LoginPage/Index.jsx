@@ -52,7 +52,28 @@ export default function LoginPage() {
   }
 
   const handleGoogleLoginSuccess = async (credentialResponse) => {
-    // existing Google login logic...
+    try {
+      const googleToken = credentialResponse.credential
+      console.log("Received Google token:", googleToken)
+
+      const response = await axios.post(
+        "http://localhost:8000/api/auth/google",
+        { token: googleToken },
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      )
+
+      const { token, user } = response.data
+      const email = response.data.user.email
+      if (token) {
+        localStorage.setItem("jwt", token)
+        localStorage.setItem("email", email)
+        navigate("/explore")
+      }
+    } catch (error) {
+      console.error("Google login error:", error.response?.data || error.message)
+    }
   }
 
   return (

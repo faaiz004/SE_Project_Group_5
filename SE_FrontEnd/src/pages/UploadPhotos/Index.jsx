@@ -31,10 +31,12 @@ export default function CreatePostForm() {
     return item.name.toLowerCase().includes(searchLower);
   });
 
+  // Get details of selected items by matching _id
   const selectedItemsDetails = pastPurchases.filter(item =>
     selectedItems.includes(item._id)
   );
 
+  // Handle image upload: create a preview and store the File object
   const handleImageUpload = (e) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -44,6 +46,7 @@ export default function CreatePostForm() {
     }
   };
 
+  // Toggle item selection for tagging purchased clothes
   const toggleItemSelection = (id) => {
     setSelectedItems((prev) =>
       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
@@ -69,6 +72,7 @@ export default function CreatePostForm() {
     },
   });
 
+  // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!selectedImageFile || !caption) {
@@ -79,18 +83,19 @@ export default function CreatePostForm() {
     console.log("📝 Caption:", caption);
     console.log("🛠️ Tagged clothes IDs:", selectedItems);
 
+    // Trigger mutation with image, caption, and tagged clothes array
     postMutation.mutate({ image: selectedImageFile, caption, clothes: selectedItems });
   };
 
   return (
     <Box component="form" onSubmit={handleSubmit} sx={{ py: 4, px: 2, backgroundColor: '#f8f8f8', minHeight: '100vh' }}>
       <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', gap: 3, flexWrap: 'nowrap' }}>
-        {}
+        {/* Left Section: Input Form */}
         <Paper sx={{ p: 4, borderRadius: 2, width: '500px', flexShrink: 0 }}>
           <Typography variant="h4" component="h1" align="center" fontWeight="500" gutterBottom sx={{ mb: 4 }}>
             Create a New Post
           </Typography>
-          {}
+          {/* Image Upload */}
           <Box sx={{ display: 'flex', justifyContent: 'center', mb: 4 }}>
             <Box
               component="label"
@@ -133,7 +138,7 @@ export default function CreatePostForm() {
               />
             </Box>
           </Box>
-          {}
+          {/* Caption Input */}
           <Box sx={{ mb: 4 }}>
             <Typography variant="h6" component="h2" gutterBottom>
               Caption
@@ -147,7 +152,7 @@ export default function CreatePostForm() {
               sx={{ '& .MuiOutlinedInput-root': { borderRadius: 1 } }}
             />
           </Box>
-          {}
+          {/* Tag Purchased Items */}
           <Box sx={{ mb: 2 }}>
             <Typography variant="h6" component="h2" gutterBottom>
               Tag Worn Articles
@@ -198,7 +203,7 @@ export default function CreatePostForm() {
             )}
           </Box>
         </Paper>
-        {}
+        {/* Right Section: Post Preview */}
         <Paper sx={{ p: 4, borderRadius: 2, width: '500px', flexShrink: 0 }}>
           <Typography variant="h4" component="h2" align="center" fontWeight="500" gutterBottom>
             Post Preview
@@ -225,7 +230,7 @@ export default function CreatePostForm() {
                 <Typography variant="body2" color="text.secondary">Just now</Typography>
               </Box>
             </Box>
-            {}
+            {/* Post Image */}
             <Box
               component="img"
               src={selectedImagePreview || "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Screenshot%202025-04-03%20at%205.24.38%E2%80%AFPM-b257J6hrtziaTKbIaPYg6tMJtI0C4u.png"}
@@ -244,7 +249,7 @@ export default function CreatePostForm() {
                 <FilterList sx={{ fontSize: 28 }} />
               </IconButton>
             </Box>
-            {}
+            {/* Post Caption */}
             <Box sx={{ px: 2, pb: 1 }}>
               <Typography variant="subtitle1" fontWeight="bold">
                 Your caption
@@ -253,7 +258,7 @@ export default function CreatePostForm() {
                 {caption || "Your caption will appear here..."}
               </Typography>
             </Box>
-            {}
+            {/* Tagged Items */}
             <Box sx={{ px: 2, pb: 2, display: 'flex', flexWrap: 'wrap', gap: 1 }}>
               {selectedItemsDetails.map(item => (
                 <Chip key={item._id} label={item.name} variant="outlined" sx={{ borderRadius: 1 }} />

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// controllers/clothesController.js
+>>>>>>> 8daf48a405e3121c6672ac216edd4042645795bd
 
 import User from '../../models/User.js';
 import Clothes from '../../models/clothes.js';

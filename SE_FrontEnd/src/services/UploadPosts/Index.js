@@ -1,17 +1,17 @@
+// services/UploadPosts/index.js
 import axios from "axios";
 
-const API_BASE_URL = import.meta.env.VITE_API_URL;
+const API_POST_URL = "http://localhost:8000/api/posts/create";
 
 export const createPost = async ({ image, caption, clothes }) => {
   const token = localStorage.getItem("jwt");
   const email = localStorage.getItem("email");
-
   if (!token || !email) throw new Error("Missing JWT token or email");
 
   const formData = new FormData();
-  formData.append("image", image);
+  formData.append("image", image);         // image: File object
   formData.append("caption", caption);
-  formData.append("email", email);
+  formData.append("email", email);         // used to look up the user
   if (clothes && clothes.length > 0) {
     formData.append("clothes", JSON.stringify(clothes));
   }
@@ -21,7 +21,7 @@ export const createPost = async ({ image, caption, clothes }) => {
     console.log(`${pair[0]}:`, pair[1]);
   }
 
-  const response = await axios.post(`${API_BASE_URL}/posts/create`, formData, {
+  const response = await axios.post(API_POST_URL, formData, {
     headers: {
       "Content-Type": "multipart/form-data",
       Authorization: `Bearer ${token}`,

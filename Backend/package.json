@@ -7,17 +7,26 @@
     "dev": "nodemon server.js",
     "seed": "node ./scripts/bulkPushClothes.js",
     "update": "node ./scripts/updateClothes.js",
+<<<<<<< HEAD
     "buy": "node ./scripts/buyClothes.js",
     "start": "node server.js",
     "generate-thumbnails": "node ./scripts/generateThumbnails.js"
+=======
+    "buy": "node ./scripts/buyClothes.js"
+>>>>>>> 8daf48a405e3121c6672ac216edd4042645795bd
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
+<<<<<<< HEAD
     "@aws-sdk/client-s3": "^3.787.0",
     "@aws-sdk/s3-request-presigner": "^3.787.0",
+=======
+    "@aws-sdk/client-s3": "^3.779.0",
+    "@aws-sdk/s3-request-presigner": "^3.782.0",
+>>>>>>> 8daf48a405e3121c6672ac216edd4042645795bd
     "@react-oauth/google": "^0.12.1",
     "aws-sdk": "^2.1692.0",
     "axios": "^1.8.4",

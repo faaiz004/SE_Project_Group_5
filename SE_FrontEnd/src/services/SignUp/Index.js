@@ -12,11 +12,11 @@ export const signupUser = async (userData) => {
     });
 
     const { token, user } = response.data;
-    const email = user?.email;
+    const email = response.data.user.email;
 
     if (token) {
       localStorage.setItem('jwt', token);
-      localStorage.setItem('email', email);
+      localStorage.setItem('email', email); // Save email to localStorage
     }
 
     return response.data;
