@@ -138,14 +138,14 @@ const sizeMap = { small: 'S', medium: 'M', large: 'L' };
 // Style preference mapping
 const styleMatchMap = {
   Casual: ['Casual_Everyday',  'Smart_Casual'],
-  business: ['Smart_Casual'],
+  business: ['Modern'],
   modern: ['Modern'],
   oldmoney: ['Modern/Old_Money']
 };
 
 // ...existing code...
 
-const { shirtSize, pantSize, stylePreference } = prefResp.preferences;
+const { shirtSize, pantSize, stylePreference, gender: userGender } = prefResp.preferences;
 const shirtMapped = sizeMap[shirtSize];
 const pantMapped = sizeMap[pantSize];
 
@@ -164,8 +164,13 @@ const matchedOutfits = outfits.filter(o => {
   // Style match check - if no style preference or no matching styles, don't filter by style
   const styleMatches = !stylePreference || matchingStyles.length === 0 || 
                      (o.category && matchingStyles.includes(o.category));
+
+  const genderMatches = o.gender === 'Unisex'
+  || o.gender === userGender;
+
+  console.log(o)
   
-  return sizeMatches && styleMatches;
+  return sizeMatches && styleMatches && genderMatches;
 });
 
 // Remove duplicates by name AND size combinations

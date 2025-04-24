@@ -19,7 +19,7 @@ export const fetchPreferences = async (req, res) => {
       return res.status(401).json({ error: 'Invalid token' });
     }
 
-    const user = await User.findById(decoded.userId).select('gender shirtSize pantSize stylePreference');
+    const user = await User.findById(decoded.userId).select('gender shirtSize pantSize stylePreference ');
     if (!user) return res.status(404).json({ error: 'User not found' });
 
     return res.status(200).json({

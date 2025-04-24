@@ -24,6 +24,7 @@ const PreferencesPants = lazy(() => import("../pages/PreferencesPants/Index"));
 const SignInPage = lazy(() => import("../pages/LoginPage/Index"));
 const SavedOutfits = lazy(() => import('../pages/SavedOutfits/Index'));
 const AccountPage = lazy(() => import('../pages/Account/index'));
+const AllClothesSearch = lazy(() => import('../pages/AllClothesSearch/index'));
 
 const router = createBrowserRouter([
   {
@@ -177,7 +178,15 @@ const router = createBrowserRouter([
         <AccountPage />
       </Suspense>
     ),
-  }
+  },
+  {
+    path: "/all-clothes-search",
+    element: (
+      <Suspense fallback={<div>Loading All Clothes Search...</div>}>
+        <AllClothesSearch />
+      </Suspense>
+    ),
+  },
 ]);
 
 export default function RouterComponent() {
