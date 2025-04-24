@@ -36,3 +36,30 @@ export const fetchOutfits = async () => {
   const { data } = await apiClient.get('/clothes/getClothes');
   return data;
 };
+
+export const getUserPreferences = async () => {
+  const token = localStorage.getItem('jwt');
+  if (!token) throw new Error('No authentication token found');
+
+  const { data } = await apiClient.get('/api/auth/fetch-preferences', {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return data; // { message, preferences: { gender, shirtSize, pantSize } }
+};
+
+
+export const updateUserPreferences = async prefs => {
+  const token = localStorage.getItem('jwt');
+  if (!token) throw new Error('No authentication token found');
+
+  const { data } = await apiClient.put('/api/auth/update-preferences', prefs, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return data;
+};
