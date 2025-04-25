@@ -1,157 +1,231 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { lazy, Suspense } from "react";
-import { Navigate } from "react-router-dom";
 
-// Lazy loaded components
-const ExplorePage = lazy(() => import("../pages/ExplorePage/Index"));
-const StyleFeed = lazy(() => import("../pages/StyleFeed/Index"));
-const CartPage = lazy(() => import("../pages/CartPage/Index"));
-const CheckoutPage = lazy(() => import("../pages/CheckoutPage/Index"));
-const CardPaymentPage = lazy(() => import("../pages/CardPaymentPage/Index"));
-const OrderConfirmation = lazy(() => import("../pages/OrderConfirmation/Index"));
-const SwipeFitPage = lazy(() => import("../pages/SwipeFitPage/index"));
-const SignInPage = lazy(() => import("../pages/SignInPage/Index"));
-const SignInPage2 = lazy(() => import("../pages/SignInPage2/Index"));
-const UploadPhotos = lazy(() => import("../pages/UploadPhotos/Index"));
-const Chatbot = lazy(() => import("../pages/Chatbot/Index"));
-const GenderPreference = lazy(() => import("../pages/GenderPreference/Index"));
-const WeightPreference = lazy(() => import("../pages/WeightPreference/Index"));
-const StylePreferences = lazy(() => import("../pages/StylePreferences/Index"));
-const PreferencesShirts = lazy(() => import("../pages/PreferencesShirts/Index"));
-const PreferencesPants = lazy(() => import("../pages/PreferencesPants/Index"));
-// Route configuration
+// ---------- Lazy-loaded pages ----------
+import SwipeFitPage          from "../pages/SwipeFitPage/index";
+
+const ExplorePage            = lazy(() => import("../pages/ExplorePage/Index"));
+const StyleFeed              = lazy(() => import("../pages/StyleFeed/Index"));
+const CartPage               = lazy(() => import("../pages/CartPage/index"));
+const CheckoutPage           = lazy(() => import("../pages/CheckoutPage/index"));
+const CardPaymentPage        = lazy(() => import("../pages/CardPaymentPage/index"));
+const OrderConfirmation      = lazy(() => import("../pages/OrderConfirmation/index"));
+const LandingPage            = lazy(() => import("../pages/LandingPage/Index"));
+const SignUpPage             = lazy(() => import("../pages/SignUp/Index"));
+const UploadPhotos           = lazy(() => import("../pages/UploadPhotos/Index"));
+const Chatbot                = lazy(() => import("../pages/Chatbot/index"));
+const GenderPreference       = lazy(() => import("../pages/GenderPreference/Index"));
+const WeightPreference       = lazy(() => import("../pages/WeightPreference/Index"));
+const StylePreferences       = lazy(() => import("../pages/StylePreferences/Index"));
+const PreferencesShirts      = lazy(() => import("../pages/PreferencesShirts/Index"));
+const PreferencesPants       = lazy(() => import("../pages/PreferencesPants/Index"));
+const SignInPage             = lazy(() => import("../pages/LoginPage/Index"));
+const SavedOutfits           = lazy(() => import('../pages/SavedOutfits/Index'));
+const AccountPage            = lazy(() => import('../pages/Account/index'));
+const AllClothesSearch = lazy(() => import('../pages/AllClothesSearch/index'));
+
+
+// ---------- Route guards ----------
+import PublicRoute from './PublicRoute';
+import PrivateRoute from './PrivateRoute';
+import PreferenceGuardRoute from './PreferenceGuardRoute';
+
+
+const suspense = (node, msg) => (
+  <Suspense fallback={<div>{msg}</div>}>{node}</Suspense>
+);
+
+// ---------------- Router ----------------
 const router = createBrowserRouter([
+  // ---- Public (tokenless) ----
   {
     path: "/",
-    element: <Navigate to="/explore" replace />,
-  },
-  {
-    path: "/explore",
-    element: (
-      <Suspense fallback={<div>Loading Explore Page...</div>}>
-        <ExplorePage />
-      </Suspense>
-    ),
-  },
-  {
-    path: "/stylefeed",
-    element: (
-      <Suspense fallback={<div>Loading Style Feed...</div>}>
-        <StyleFeed />
-      </Suspense>
-    ),
-  },
-  {
-    path: "/cart",
-    element: (
-      <Suspense fallback={<div>Loading Cart...</div>}>
-        <CartPage />
-      </Suspense>
-    ),
-  },
-  {
-    path: "/checkout",
-    element: (
-      <Suspense fallback={<div>Loading Checkout...</div>}>
-        <CheckoutPage />
-      </Suspense>
-    ),
-  },
-  {
-    path: "/card-payment",
-    element: (
-      <Suspense fallback={<div>Loading Payment...</div>}>
-        <CardPaymentPage />
-      </Suspense>
-    ),
-  },
-  {
-    path: "/order-confirmation",
-    element: (
-      <Suspense fallback={<div>Loading...</div>}>
-        <OrderConfirmation />
-      </Suspense>
-    ),
+    element: suspense(
+      <PublicRoute>
+        <LandingPage />
+      </PublicRoute>,
+      "Loading Landing..."
+    )
   },
   {
     path: "/sign-in",
-    element: (
-      <Suspense fallback={<div>Loading Sign In...</div>}>
+    element: suspense(
+      <PublicRoute>
         <SignInPage />
-      </Suspense>
-    ),
+      </PublicRoute>,
+      "Loading Sign-In..."
+    )
   },
   {
     path: "/sign-up",
-    element: (
-      <Suspense fallback={<div>Loading Sign In 2...</div>}>
-        <SignInPage2 />
-      </Suspense>
-    ),
+    element: suspense(
+      <PublicRoute>
+        <SignUpPage />
+      </PublicRoute>,
+      "Loading Sign-Up..."
+    )
+  },
+
+  // ---- Mandatory-preference flow (token required, preference flag may still be false) ----
+  {
+    path: "/preferences/gender",
+    element: suspense(
+      <PrivateRoute>
+        <GenderPreference />
+      </PrivateRoute>,
+      "Loading Gender Pref..."
+    )
   },
   {
-    path: "/chatbot", // New chatbot route (if you prefer full-page view)
-    element: (
-      <Suspense fallback={<div>Loading Chatbot...</div>}>
-        <Chatbot />
-      </Suspense>
-    ),
+    path: "/preferences/weight",
+    element: suspense(
+      <PrivateRoute>
+        <WeightPreference />
+      </PrivateRoute>,
+      "Loading Weight Pref..."
+    )
   },
   {
-    path: '/upload-photos',
-    element: (
-      <Suspense fallback={<div>Loading Upload Photo...</div>}>
-        <UploadPhotos />
-      </Suspense>
-    ),
+    path: "/preferences/style",
+    element: suspense(
+      <PrivateRoute>
+        <StylePreferences />
+      </PrivateRoute>,
+      "Loading Style Pref..."
+    )
+  },
+  {
+    path: "/preferences/shirts",
+    element: suspense(
+      <PrivateRoute>
+        <PreferencesShirts />
+      </PrivateRoute>,
+      "Loading Shirt Pref..."
+    )
+  },
+  {
+    path: "/preferences/pants",
+    element: suspense(
+      <PrivateRoute>
+        <PreferencesPants />
+      </PrivateRoute>,
+      "Loading Pant Pref..."
+    )
+  },
+
+  // ---- Main app (token + preferencesCompleted === true) ----
+  {
+    path: "/explore",
+    element: suspense(
+      <PreferenceGuardRoute>
+        <ExplorePage />
+      </PreferenceGuardRoute>,
+      "Loading Explore..."
+    )
+  },
+  {
+    path: "/stylefeed",
+    element: suspense(
+      <PreferenceGuardRoute>
+        <StyleFeed />
+      </PreferenceGuardRoute>,
+      "Loading Style Feed..."
+    )
+  },
+  {
+    path: "/saved-outfits",
+    element: suspense(
+      <PreferenceGuardRoute>
+        <SavedOutfits />
+      </PreferenceGuardRoute>,
+      "Loading Saved Outfits..."
+    )
+  },
+  {
+    path: "/cart",
+    element: suspense(
+      <PreferenceGuardRoute>
+        <CartPage />
+      </PreferenceGuardRoute>,
+      "Loading Cart..."
+    )
+  },
+  {
+    path: "/checkout",
+    element: suspense(
+      <PreferenceGuardRoute>
+        <CheckoutPage />
+      </PreferenceGuardRoute>,
+      "Loading Checkout..."
+    )
+  },
+  {
+    path: "/card-payment",
+    element: suspense(
+      <PreferenceGuardRoute>
+        <CardPaymentPage />
+      </PreferenceGuardRoute>,
+      "Loading Payment..."
+    )
+  },
+  {
+    path: "/order-confirmation",
+    element: suspense(
+      <PreferenceGuardRoute>
+        <OrderConfirmation />
+      </PreferenceGuardRoute>,
+      "Loading Confirmation..."
+    )
   },
   {
     path: "/mannequin",
-    element: (
-      <Suspense fallback={<div>Loading Mannequin Page...</div>}>
+    element: suspense(
+      <PreferenceGuardRoute>
         <SwipeFitPage />
-      </Suspense>
-    ),
-  },
-  {
-    path: '/preferences/gender',
-    element: (
-      <Suspense fallback={<div>Loading Gender PageRevealEvent...</div>}>
-        <GenderPreference />
-      </Suspense>
-    )
-  }, 
-  {
-    path: '/preferences/weight',
-    element: (
-      <Suspense fallback={<div>Loading Weight PageRevealEvent...</div>}>
-        <WeightPreference />
-      </Suspense>
+      </PreferenceGuardRoute>,
+      "Loading Mannequin..."
     )
   },
   {
-    path: '/preferences/style',
-    element: (
-      <Suspense fallback={<div>Loading Style PageRevealEvent...</div>}>
-        <StylePreferences />
-      </Suspense>
+    path: "/chatbot",
+    element: suspense(
+      <PreferenceGuardRoute>
+        <Chatbot />
+      </PreferenceGuardRoute>,
+      "Loading Chatbot..."
     )
   },
   {
-    path: '/preferences/shirts',
-    element: (
-      <Suspense fallback={<div>Loading Shirt PageRevealEvent...</div>}>
-        <PreferencesShirts />
-      </Suspense>
+    path: "/upload-photos",
+    element: suspense(
+      <PreferenceGuardRoute>
+        <UploadPhotos />
+      </PreferenceGuardRoute>,
+      "Loading Upload..."
     )
   },
   {
-    path: '/preferences/pants',
-    element: (
-      <Suspense fallback={<div>Loading Pants PageRevealEvent...</div>}>
-        <PreferencesPants />
-      </Suspense>
+    path: "/account",
+    element: suspense(
+      <PreferenceGuardRoute>
+        <AccountPage />
+      </PreferenceGuardRoute>,
+      "Loading Account..."
     )
+  },
+  {
+      path: "/all-clothes-search",
+      element: (
+        <Suspense fallback={<div>Loading All Clothes Search...</div>}>
+          <AllClothesSearch />
+        </Suspense>
+      ),
+    },
+
+  // ---- Catch-all ----
+  {
+    path: "*",
+    element: suspense(<PublicRoute><LandingPage /></PublicRoute>, "Redirecting...")
   }
 ]);
 

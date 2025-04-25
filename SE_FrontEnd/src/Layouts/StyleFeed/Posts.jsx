@@ -1,181 +1,149 @@
-// Posts.jsx
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import {
-  Box,
-  Card,
-  CardHeader,
-  CardMedia,
-  CardContent,
-  Avatar,
-  Typography,
-  IconButton,
-  Button
+  Box, Card, CardHeader, CardMedia, CardContent,
+  Avatar, Typography, IconButton, Button, Tooltip, Stack, Snackbar, Alert
 } from '@mui/material';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import { getPosts, likePost, unlikePost } from '../../api/postService';
 
-// Use your own images or placeholders
-import sampleImage from '../../assets/StyleFeed/Group.png';
+const fixUrl = (u = '') => u.replace('/thumbnails/thumbnails/', '/thumbnails/');
 
-const Posts = () => {
-  // 1) Array of multiple posts
-  const postData = [
-    {
-      id: 1,
-      name: 'Ashlyn Taylor',
-      avatar: sampleImage,
-      postImage: sampleImage,
-      likes: 1234,
-      price: 129.0,
-    },
-    {
-      id: 2,
-      name: 'John Doe',
-      avatar: sampleImage,
-      postImage: sampleImage,
-      likes: 567,
-      price: 99.0,
-    },
-    {
-      id: 3,
-      name: 'Jane Smith',
-      avatar: sampleImage,
-      postImage: sampleImage,
-      likes: 890,
-      price: 159.0,
-    },
-    // Add more posts as needed...
-  ];
+export default function Posts() {
+  const { data, isLoading, error } = useQuery({ queryKey: ['posts'], queryFn: getPosts });
+  const posts = data?.posts || [];
+
+  const [liked, setLiked] = useState({});
+  const [snackbar, setSnackbar] = useState({ open: false, msg: '', severity: 'info' });
+
+  useEffect(() => {
+    const m = {};
+    posts.forEach(p => (m[p._id] = p.likedByCurrentUser));
+    setLiked(m);
+  }, [posts]);
+
+  const likeMutation = useMutation({
+    mutationFn: ({ postId, action }) => action === 'like' ? likePost(postId) : unlikePost(postId),
+    onError: (_, { postId, prevState }) => {
+      // Revert to previous state if API fails
+      setLiked(prev => ({ ...prev, [postId]: prevState }));
+      setSnackbar({ open: true, msg: 'Action failed. Please try again.', severity: 'error' });
+    }
+  });
+
+  const handleToggleLike = (postId) => {
+    const currentState = liked[postId];
+    const action = currentState ? 'unlike' : 'like';
+
+    // Optimistic update
+    setLiked(prev => ({ ...prev, [postId]: !currentState }));
+
+    likeMutation.mutate({ postId, action, prevState: currentState });
+  };
+
+  const handleAddToCart = post => {
+    const existing = JSON.parse(sessionStorage.getItem('cart')) || [];
+    const idsInCart = existing.map(i => i.productId);
+
+    let upperStatus = '';
+    let lowerStatus = '';
+
+    (post.clothes || []).forEach(c => {
+      const alreadyInCart = idsInCart.includes(c._id);
+      if (c.upper) {
+        upperStatus = alreadyInCart ? 'Upper already in cart' : 'Upper added';
+      } else if (c.lower) {
+        lowerStatus = alreadyInCart ? 'Lower already in cart' : 'Lower added';
+      }
+
+      if (!alreadyInCart) {
+        existing.push({
+          productId: c._id,
+          name: c.name,
+          brand: c.brand,
+          price: c.price,
+          imageUrl: fixUrl(c.imageUrl),
+          quantity: 1
+        });
+      }
+    });
+
+    sessionStorage.setItem('cart', JSON.stringify(existing));
+
+    const messages = [upperStatus, lowerStatus].filter(Boolean).join(', ');
+    setSnackbar({ open: true, msg: messages || 'No items to add', severity: 'success' });
+  };
+
+  if (isLoading) return <Typography>Loading posts…</Typography>;
+  if (error) return <Typography color="error">Error: {error.message}</Typography>;
 
   return (
-    <Box
-      sx={{
-        width: '100%',
-        maxWidth: '500px',
-        height: 'calc(100vh - 120px)',
-        overflowY: 'auto',
-        /* Hide scrollbar for Chrome, Safari and Opera */
-        '&::-webkit-scrollbar': {
-          display: 'none',
-        },
-        /* Hide scrollbar for Firefox */
-        scrollbarWidth: 'none',
-        paddingRight: 2, 
-        /* Optional: add right padding to avoid scrollbar overlap */
-      }}
-    >
-      {/* 2) Map over posts to create multiple cards */}
-      {postData.map((post) => (
-        <Card
-          key={post.id}
-          sx={{
-            borderRadius: 5,
-            boxShadow: 2,
-            marginBottom: 3, // spacing between cards
-          }}
-        >
-          <CardHeader
-            avatar={<Avatar alt={post.name} src={post.avatar} />}
-            title={
-              <Typography
-                sx={{
-                  fontFamily: 'Inter, sans-serif',
-                  fontSize: '18px',
-                  fontWeight: '600',
-                  color: '#000',
-                }}
-              >
-                {post.name}
-              </Typography>
-            }
-          />
+    <>
+      <Box sx={{ maxWidth: 500, height: 'calc(100vh - 120px)', overflowY: 'auto', px: 2,
+                 '&::-webkit-scrollbar': { display: 'none' }, scrollbarWidth: 'none' }}>
 
-          <CardMedia
-            component="img"
-            image={post.postImage}
-            alt={post.name}
-            sx={{
-              width: '100%',
-              height: 450,
-              objectFit: 'cover',
-            }}
-          />
+        {posts.map(p => {
+          const isLiked = liked[p._id];
+          const likeCnt = p.likes + (isLiked && !p.likedByCurrentUser ? 1 : 0) - (!isLiked && p.likedByCurrentUser ? 1 : 0);
+          const email = p.user?.email || '';
+          const author = email.split('@')[0] || email;
+          const priceSum = (p.clothes || []).reduce((t, c) => t + (c.price || 0), 0);
 
-          <CardContent
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 2,
-            }}
-          >
-            <Box
-              sx={{
-                display: 'flex',
-                gap: 1,
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}
-            >
-              <Box
-                sx={{
-                  display: 'flex',
-                  gap: 1,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}
-              >
-                <IconButton>
-                  <FavoriteBorderIcon />
-                </IconButton>
-                <Typography
-                  sx={{
-                    fontFamily: 'Inter, sans-serif',
-                    fontSize: '18px',
-                    fontWeight: '600',
-                    color: '#000',
-                  }}
-                >
-                  {post.likes.toLocaleString()} Likes
-                </Typography>
-              </Box>
+          return (
+            <Card key={p._id} sx={{ mb: 3, borderRadius: 5, boxShadow: 2 }}>
+              <CardHeader
+                avatar={<Avatar alt={author} />}
+                title={<Typography fontWeight={600}>{author}</Typography>}
+              />
 
-              <Typography
-                sx={{
-                  fontFamily: 'Inter, sans-serif',
-                  fontSize: '30px',
-                  fontWeight: 'bold',
-                  color: '#000',
-                  marginRight: 2,
-                }}
-              >
-                ${post.price.toFixed(2)}
-              </Typography>
-            </Box>
+              <CardMedia
+                component="img"
+                image={fixUrl(p.signedImageUrl)}
+                alt={p.caption}
+                sx={{ height: 450, objectFit: 'cover' }}
+              />
 
-            <Button
-              variant="contained"
-              sx={{
-                backgroundColor: 'black',
-                color: 'white',
-                borderRadius: '12px',
-                paddingX: '32px',
-                paddingY: '10px',
-                fontSize: '16px',
-                fontWeight: 500,
-                textTransform: 'none',
-                boxShadow: 'none',
-                '&:hover': {
-                  backgroundColor: '#333',
-                  boxShadow: 'none',
-                },
-              }}
-            >
-              Add to Cart
-            </Button>
-          </CardContent>
-        </Card>
-      ))}
-    </Box>
+              <CardContent sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                <Typography><strong>Caption:&nbsp;</strong>{p.caption}</Typography>
+
+                {p.clothes?.length > 0 && (
+                  <Stack direction="row" spacing={1}>
+                    {p.clothes.map(c => (
+                      <Tooltip key={c._id} title={`${c.name} — $${c.price}`}>
+                        <Box component="img" src={fixUrl(c.imageUrl)} alt={c.name}
+                             sx={{ width: 48, height: 48, borderRadius: 1, objectFit: 'cover', border: '1px solid #ddd' }} />
+                      </Tooltip>
+                    ))}
+                  </Stack>
+                )}
+
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    <IconButton onClick={() => handleToggleLike(p._id)}>
+                      {isLiked ? <FavoriteIcon color="error" /> : <FavoriteBorderIcon />}
+                    </IconButton>
+                    <Typography fontWeight={600}>{likeCnt} Likes</Typography>
+                  </Box>
+                  <Typography fontWeight="bold" fontSize={24}>${priceSum.toFixed(2)}</Typography>
+                </Box>
+
+                <Button variant="contained" onClick={() => handleAddToCart(p)}
+                  sx={{ mt: 1, background: 'black', '&:hover': { background: '#333' },
+                    borderRadius: 2, textTransform: 'none' }}>
+                  Add to Cart
+                </Button>
+              </CardContent>
+            </Card>
+          );
+        })}
+      </Box>
+
+      <Snackbar open={snackbar.open} autoHideDuration={3000} onClose={() => setSnackbar(s => ({ ...s, open: false }))}>
+        <Alert onClose={() => setSnackbar(s => ({ ...s, open: false }))} severity={snackbar.severity} sx={{ width: '100%' }}>
+          {snackbar.msg}
+        </Alert>
+      </Snackbar>
+    </>
   );
-};
-
-export default Posts;
+}

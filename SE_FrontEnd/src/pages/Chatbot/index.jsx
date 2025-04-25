@@ -1,130 +1,136 @@
 import React, { useState } from 'react';
-import { InferenceClient } from '@huggingface/inference';
-import { Box, Typography, TextField, Button, IconButton } from '@mui/material';
+import {
+  Box,
+  Typography,
+  TextField,
+  Button,
+  IconButton,
+  LinearProgress,
+  CircularProgress
+} from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import useStyles from './Styles';
-
-// Initialize the InferenceClient with your API key
-const client = new InferenceClient(import.meta.env.VITE_HUGGINGFACE_API_KEY);
-
+import useStyles from './styles.jsx';
 
 const Chatbot = ({ closeChat }) => {
   const classes = useStyles();
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
-  const [category, setCategory] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-
-  // Handler to send message using the Hugging Face InferenceClient
   const sendMessage = async (msg) => {
     if (!msg.trim()) return;
+  
     const userMessage = { role: "user", content: msg };
-    // Create new messages array including the user message
-    const newMessages = [...messages, userMessage];
-    setMessages(newMessages);
+    const history = [...messages, userMessage];
+    setMessages(history);
     setInput("");
-
+    setLoading(true);
+  
     try {
-      // Build the payload for the chat completion API
-      const payload = {
-        provider: "fireworks-ai",
-        model: "meta-llama/Llama-3.2-11B-Vision-Instruct",
-        messages: [
-          {
-            role: "system",
-            content: "You are a helpful assistant to give recommendations about clothing."
-          },
-          ...newMessages
-        ],
-        max_tokens: 500,  // Adjust as needed
-        // You can also add other parameters like temperature if supported
-        // temperature: 0.7,
-      };
-
-      console.log("Payload:", payload);
-
-      // Send the request using the InferenceClient
-      const chatCompletion = await client.chatCompletion(payload);
-      console.log("API Response:", chatCompletion);
-
-      // Extract the content from the response object
-      const botMessage = {
-        role: "assistant",
-        content: chatCompletion.choices?.[0]?.message?.content || "No response received."
-      };
-
-      setMessages(prev => [...prev, botMessage]);
-    } catch (error) {
-      console.error("Error calling Hugging Face API:", error);
+      const resp = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${import.meta.env.VITE_OPENAI_API_KEY}`,
+        },
+        body: JSON.stringify({
+          model: "gpt-3.5-turbo",
+          messages: [
+            { role: "system", content: "You are a helpful assistant to give recommendations about clothing." },
+            ...history,
+          ],
+          max_tokens: 500,
+          temperature: 0.7,
+        }),
+      });
+  
+      if (!resp.ok) throw new Error(`OpenAI error: ${resp.status}`);
+      const data = await resp.json();
+      const botContent = data.choices?.[0]?.message?.content || "No response received.";
+      setMessages(prev => [...prev, { role: "assistant", content: botContent }]);
+    } catch (err) {
+      console.error("OpenAI Fetch Error:", err);
       setMessages(prev => [
         ...prev,
         { role: "assistant", content: "Sorry, something went wrong." }
       ]);
+    } finally {
+      setLoading(false);
     }
   };
+  
 
-  const selectCategory = (selectedCategory) => {
-    setCategory(selectedCategory);
-    const categoryMessage = {
-      role: "user",
-      content: `I want to know more about ${selectedCategory} clothing.`
-    };
-    setMessages(prev => [...prev, categoryMessage]);
+  const selectCategory = (category) => {
+    const catMsg = { role: "user", content: `I want to know more about ${category} clothing.` };
+    setMessages(prev => [...prev, catMsg]);
   };
 
   return (
     <Box sx={classes.chatbotBox}>
-      {/* Header with Title and Close Button */}
+      {loading && <LinearProgress sx={{ position: 'absolute', top: 0, width: '100%' }} />}
+      
       <Box sx={classes.header}>
-        <Typography variant="h5" sx={classes.title}>
-          Chat with Stylist
-        </Typography>
-        <IconButton onClick={closeChat} sx={classes.closeButton}>
+        <Typography variant="h5" sx={classes.title}>Chat with Stylist</Typography>
+        <IconButton onClick={closeChat} sx={classes.closeButton} disabled={loading}>
           <CloseIcon />
         </IconButton>
       </Box>
 
-      {/* Category Buttons */}
       <Box sx={classes.categoryButtons}>
-        <Button onClick={() => selectCategory("Formal")} variant="contained" sx={classes.categoryButton}>
+        <Button
+          onClick={() => selectCategory("Formal")}
+          variant="contained"
+          sx={classes.categoryButton}
+          disabled={loading}
+        >
           Formal
         </Button>
-        <Button onClick={() => selectCategory("Eastern")} variant="contained" sx={classes.categoryButton}>
+        <Button
+          onClick={() => selectCategory("Eastern")}
+          variant="contained"
+          sx={classes.categoryButton}
+          disabled={loading}
+        >
           Eastern
         </Button>
-        {/* Add more categories as needed */}
       </Box>
 
-      {/* Messages Display */}
       <Box sx={classes.messagesContainer}>
-        {messages.map((msg, idx) => (
+        {messages.map((m, i) => (
           <Typography
-            key={idx}
-            sx={msg.role === "user" ? classes.userMessage : classes.botMessage}
+            key={i}
+            sx={m.role === "user" ? classes.userMessage : classes.botMessage}
           >
-            {msg.content}
+            {m.content}
           </Typography>
         ))}
       </Box>
 
-      {/* Typing Area */}
       <Box sx={classes.inputContainer}>
         <TextField
           fullWidth
           variant="outlined"
           placeholder="Type your message..."
           value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyPress={(e) => {
+          onChange={e => setInput(e.target.value)}
+          onKeyPress={e => {
             if (e.key === 'Enter') {
               e.preventDefault();
               sendMessage(input);
             }
           }}
+          disabled={loading}
           sx={classes.textField}
         />
-        <Button variant="contained" onClick={() => sendMessage(input)} sx={classes.sendButton}>
-          Send
+        <Button
+          variant="contained"
+          onClick={() => sendMessage(input)}
+          disabled={loading}
+          sx={classes.sendButton}
+        >
+          {loading
+            ? <CircularProgress size={24} color="inherit" />
+            : 'Send'}
         </Button>
       </Box>
     </Box>

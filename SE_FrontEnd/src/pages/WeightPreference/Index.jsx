@@ -1,5 +1,5 @@
-import { useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Box,
   Typography,
@@ -11,29 +11,50 @@ import {
   ToggleButtonGroup,
   ToggleButton,
   Stack
-} from "@mui/material"
-import { Download, ArrowBack } from "@mui/icons-material"
+} from "@mui/material";
+import { Download, ArrowBack } from "@mui/icons-material";
 
 function WeightPreference() {
-  const [shirtSize, setShirtSize] = useState(null)
-  const [pantsSize, setPantsSize] = useState(null)
-  const [weightClass, setWeightClass] = useState(null)
+  const [shirtSize, setShirtSize] = useState(null);
+  const [pantsSize, setPantsSize] = useState(null);
+  const navigate = useNavigate();
 
-  const navigate = useNavigate()
+  useEffect(() => {
+    const credentials = JSON.parse(sessionStorage.getItem('user-credentials')) || {};
+
+    // If gender isn't set, redirect back to gender step
+    if (!credentials.gender) {
+      navigate("/preferences/gender");
+      return;
+    }
+
+    // Pre-fill values if they exist
+    if (credentials.shirtSize) setShirtSize(credentials.shirtSize);
+    if (credentials.pantSize) setPantsSize(credentials.pantSize);
+  }, [navigate]);
 
   const handleShirtSizeChange = (event, newSize) => {
-    if (newSize !== null) setShirtSize(newSize)
-  }
+    if (newSize !== null) {
+      setShirtSize(newSize);
+      updateSession({ shirtSize: newSize });
+    }
+  };
 
   const handlePantsSizeChange = (event, newSize) => {
-    if (newSize !== null) setPantsSize(newSize)
-  }
+    if (newSize !== null) {
+      setPantsSize(newSize);
+      updateSession({ pantSize: newSize });
+    }
+  };
 
-  const handleWeightClassChange = (event, newClass) => {
-    if (newClass !== null) setWeightClass(newClass)
-  }
 
-  const isFormComplete = shirtSize && pantsSize && weightClass
+  const updateSession = (newData) => {
+    const current = JSON.parse(sessionStorage.getItem('user-credentials')) || {};
+    const updated = { ...current, ...newData };
+    sessionStorage.setItem('user-credentials', JSON.stringify(updated));
+  };
+
+  const isFormComplete = shirtSize && pantsSize ;
 
   return (
     <Box
@@ -45,7 +66,7 @@ function WeightPreference() {
         p: 2,
       }}
     >
-      {/* Top section */}
+      {}
       <Box sx={{ display: "flex", alignItems: "center", mb: 4 }}>
         <Box sx={{ flexGrow: 1, mx: 2 }}>
           <LinearProgress
@@ -67,14 +88,28 @@ function WeightPreference() {
         </IconButton>
       </Box>
 
-      {/* Step indicator */}
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 4 }}>
+      {}
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          mb: 4,
+        }}
+      >
         <Box sx={{ width: "33%" }}>
-          <IconButton sx={{ color: "#000" }} onClick={() => navigate("/preferences/gender")}>
+          <IconButton
+            sx={{ color: "#000" }}
+            onClick={() => navigate("/preferences/gender")}
+          >
             <ArrowBack />
           </IconButton>
         </Box>
-        <Typography variant="h5" align="center" sx={{ fontWeight: 500, width: "33%" }}>
+        <Typography
+          variant="h5"
+          align="center"
+          sx={{ fontWeight: 500, width: "33%" }}
+        >
           Step 2 of 5
         </Typography>
         <Box sx={{ width: "33%", display: "flex", justifyContent: "flex-end" }}>
@@ -104,16 +139,28 @@ function WeightPreference() {
             </Typography>
           </Box>
 
-          <Typography variant="h6" align="center" color="text.secondary" sx={{ mb: 4 }}>
+          <Typography
+            variant="h6"
+            align="center"
+            color="text.secondary"
+            sx={{ mb: 4 }}
+          >
             We'll use this info to show better <br /> outfit fits for you.
           </Typography>
 
-          {/* Shirt size */}
+          {}
           <Box>
             <Typography variant="h5" sx={{ fontWeight: 600, mb: 2 }}>
               Shirt Size
             </Typography>
-            <Paper elevation={0} sx={{ borderRadius: 3, overflow: "hidden", border: "1px solid #e0e0e0" }}>
+            <Paper
+              elevation={0}
+              sx={{
+                borderRadius: 3,
+                overflow: "hidden",
+                border: "1px solid #e0e0e0",
+              }}
+            >
               <ToggleButtonGroup
                 value={shirtSize}
                 exclusive
@@ -142,12 +189,19 @@ function WeightPreference() {
             </Paper>
           </Box>
 
-          {/* Pants size */}
+          {}
           <Box>
             <Typography variant="h5" sx={{ fontWeight: 600, mb: 2 }}>
               Pants Size
             </Typography>
-            <Paper elevation={0} sx={{ borderRadius: 3, overflow: "hidden", border: "1px solid #e0e0e0" }}>
+            <Paper
+              elevation={0}
+              sx={{
+                borderRadius: 3,
+                overflow: "hidden",
+                border: "1px solid #e0e0e0",
+              }}
+            >
               <ToggleButtonGroup
                 value={pantsSize}
                 exclusive
@@ -175,42 +229,7 @@ function WeightPreference() {
               </ToggleButtonGroup>
             </Paper>
           </Box>
-
-          {/* Weight class */}
-          <Box>
-            <Typography variant="h5" sx={{ fontWeight: 600, mb: 2 }}>
-              Weight Class
-            </Typography>
-            <Paper elevation={0} sx={{ borderRadius: 3, overflow: "hidden", border: "1px solid #e0e0e0" }}>
-              <ToggleButtonGroup
-                value={weightClass}
-                exclusive
-                onChange={handleWeightClassChange}
-                aria-label="weight class"
-                fullWidth
-                sx={{
-                  width: "100%",
-                  "& .MuiToggleButtonGroup-grouped": {
-                    border: 0,
-                    borderRadius: 0,
-                    flex: 1,
-                    py: 2,
-                    "&.Mui-selected": {
-                      backgroundColor: "rgba(63, 81, 181, 0.15)",
-                      color: "#3f51b5",
-                      fontWeight: 600,
-                    },
-                  },
-                }}
-              >
-                <ToggleButton value="light">Light</ToggleButton>
-                <ToggleButton value="average">Average</ToggleButton>
-                <ToggleButton value="heavy">Heavy</ToggleButton>
-              </ToggleButtonGroup>
-            </Paper>
-          </Box>
-
-          {/* Navigation buttons */}
+          {}
           <Stack direction="row" spacing={2} justifyContent="center" mt={4}>
             <Button
               variant="outlined"
@@ -251,7 +270,7 @@ function WeightPreference() {
         </Stack>
       </Container>
     </Box>
-  )
+  );
 }
 
-export default WeightPreference
+export default WeightPreference;
