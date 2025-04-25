@@ -1,3 +1,4 @@
+import { genSalt } from 'bcrypt';
 import Clothes from '../../../models/clothes.js';
 
 // Get all clothes, optionally filtered by category
@@ -18,6 +19,7 @@ export const getAllClothes = async (req, res) => {
         upper: clothing.upper,
         lower: clothing.lower,
         imageUrl: clothing.imageUrl || null,
+        gender: clothing.gender,
         
       };
     });

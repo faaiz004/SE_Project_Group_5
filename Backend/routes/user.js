@@ -6,6 +6,8 @@ import { login } from '../controllers/User/Login.js';
 import { verifyToken } from '../middleware/authMiddleware.js';
 import { getUserPreferences } from '../controllers/User/getPreferences.js';
 import { updateUserPreferences } from '../controllers/User/updatePreferences.js';
+import { fetchPreferences } from '../controllers/User/FetchPreferences.js';
+import { updatePreferences } from '../controllers/User/FetchPreferences.js';
 
 const router = express.Router();
 
@@ -14,6 +16,8 @@ router.post('/signup', signup);
 router.post('/submit-preferences', verifyToken, submitPreferences);
 router.get('/get-preferences', verifyToken, getUserPreferences);
 router.post('/update-preferences', verifyToken, updateUserPreferences);
+router.get('/fetch-preferences', verifyToken, fetchPreferences);
+router.put('/update-preferences', verifyToken, updatePreferences);
 router.post('/login', login);
 
 

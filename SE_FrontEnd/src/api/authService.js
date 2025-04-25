@@ -53,3 +53,5 @@ export const updatePreferences = async (prefs) => {
   const { data } = await apiClient.post('/auth/update-preferences', prefs);
   return data;  
 };
+
+

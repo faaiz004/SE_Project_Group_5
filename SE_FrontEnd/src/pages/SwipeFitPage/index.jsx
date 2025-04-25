@@ -36,8 +36,6 @@ import * as THREE from "three";
 import { useQuery } from "@tanstack/react-query";
 import { fetchOutfits} from "../../api/clothesService";
 
-// const textureUrlA = sessionStorage.getItem("selectedTextureUrl");
-// console.log("Texture URL A:", textureUrlA);
 
 // --- Helper Components (CanvasLoader, Fallbacks, ClothingModel, SceneContent) ---
 
@@ -67,11 +65,10 @@ function CanvasLoader() {
 
 function FallbackUpperClothing({ textureUrl, position }) {
 	const [fbTextureError, setFbTextureError] = useState(false);
-	// Ensure textureUrl is valid before calling useTexture
-	const safeTextureUrl = textureUrl || "/textures/placeholder.png"; // Use placeholder if null/undefined
+	const safeTextureUrl = textureUrl || "/textures/red.png"; 
 
 	const texture = useTexture(
-		safeTextureUrl, // Use the safe URL
+		safeTextureUrl, 
 		(tex) => {
 			tex.flipY = false;
 			tex.colorSpace = THREE.SRGBColorSpace;
@@ -660,14 +657,14 @@ export default function ClothingViewer() {
 		);
 	}
 
-	const handleAddToFavorites = () => {
-		// Log the currently selected data
-		console.log("Added to favorites:", {
-			upper: currentUpperData,
-			lower: currentLowerData,
-		});
-		showNotification("Added to favorites!");
-	};
+	// const handleAddToFavorites = () => {
+	// 	// Log the currently selected data
+	// 	console.log("Added to favorites:", {
+	// 		upper: currentUpperData,
+	// 		lower: currentLowerData,
+	// 	});
+	// 	showNotification("Added to favorites!");
+	// };
 
 	const handleResetLook = () => {
 		setUpperIndex(0);
@@ -711,15 +708,6 @@ export default function ClothingViewer() {
 		showNotification("Current outfit added to cart!");
 	};
 	
-
-	const handleSaveOutfit = () => {
-		// Log the currently selected data
-		console.log("Saved outfit:", {
-			upper: currentUpperData,
-			lower: currentLowerData,
-		});
-		showNotification("Outfit saved!");
-	};
 
 	const handleCloseSnackbar = (event, reason) => {
 		if (reason === "clickaway") {
@@ -830,22 +818,13 @@ export default function ClothingViewer() {
 						flexShrink: 0, // Prevent shrinking
 					}}>
 					{[
-						{
-							icon: <FavoriteIcon />,
-							label: "Favorites",
-							handler: handleAddToFavorites,
-						},
 						{ icon: <RefreshIcon />, label: "Reset", handler: handleResetLook },
 						{
 							icon: <ShoppingCartIcon />,
 							label: "Add Cart",
 							handler: handleAddToCart,
 						},
-						{
-							icon: <SaveIcon />,
-							label: "Save Look",
-							handler: handleSaveOutfit,
-						},
+					
 					].map((action) => (
 						<Box
 							key={action.label}
@@ -1005,20 +984,7 @@ export default function ClothingViewer() {
 					borderTop: "1px solid #eaeaea",
 					backgroundColor: "#fff",
 				}}>
-				<Button
-					variant="contained"
-					startIcon={<FavoriteIcon />}
-					onClick={handleAddToFavorites}
-					size="small"
-					sx={{
-						flex: 1,
-						py: 1,
-						backgroundColor: "#4a90e2",
-						"&:hover": { backgroundColor: "#3a80d2" },
-						fontSize: "0.75rem",
-					}}>
-					Favorite
-				</Button>
+	
 				<Button
 					variant="outlined"
 					startIcon={<ShoppingCartIcon />}
@@ -1033,20 +999,7 @@ export default function ClothingViewer() {
 					}}>
 					Add Cart
 				</Button>
-				<Button
-					variant="outlined"
-					startIcon={<SaveIcon />}
-					onClick={handleSaveOutfit}
-					size="small"
-					sx={{
-						flex: 1,
-						py: 1,
-						borderColor: "#ccc",
-						color: "#555",
-						fontSize: "0.75rem",
-					}}>
-					Save
-				</Button>
+				
 			</Box>
 
 			{/* Notification Snackbar */}

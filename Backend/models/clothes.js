@@ -50,21 +50,10 @@ const clothesSchema = new mongoose.Schema(
       default: '', 
       required: true,
     },
-
-    lower: {
-      type: Boolean,
-      default: false, 
-    },
-
-    upper: {
-      type: Boolean,
-      default: false, 
-    },
     gender: {
       type : String,
       enum: ['male', 'female', 'unisex'],
-    }
-    
+    }    
   },
   {
     timestamps: true,

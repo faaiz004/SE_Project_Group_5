@@ -41,7 +41,7 @@ export const getPurchasedClothes = async (req, res) => {
       })
     );
 
-    return res.status(200).json({ clothes });          // frontend still expects { clothes: [...] }
+    return res.status(200).json({ clothes });         
   } catch (err) {
     console.error('Error fetching purchased clothes:', err);
     res.status(500).json({ error: 'Server error.' });
