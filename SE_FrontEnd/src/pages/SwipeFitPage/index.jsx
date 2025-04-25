@@ -34,8 +34,7 @@ import {
 } from "@react-three/drei";
 import * as THREE from "three";
 import { useQuery } from "@tanstack/react-query";
-import { fetchOutfits} from "../../api/clothesService";
-
+import { fetchOutfits } from "../../api/clothesService";
 
 // --- Helper Components (CanvasLoader, Fallbacks, ClothingModel, SceneContent) ---
 
@@ -65,10 +64,10 @@ function CanvasLoader() {
 
 function FallbackUpperClothing({ textureUrl, position }) {
 	const [fbTextureError, setFbTextureError] = useState(false);
-	const safeTextureUrl = textureUrl || "/textures/red.png"; 
+	const safeTextureUrl = textureUrl || "/textures/red.png";
 
 	const texture = useTexture(
-		safeTextureUrl, 
+		safeTextureUrl,
 		(tex) => {
 			tex.flipY = false;
 			tex.colorSpace = THREE.SRGBColorSpace;
@@ -176,7 +175,6 @@ function FallbackLowerClothing({ textureUrl, position }) {
 function ClothingModel({ geometryUrl, textureUrl, scale, position, isUpper }) {
 	const [modelError, setModelError] = useState(false);
 	const [textureError, setTextureError] = useState(false);
-	// Ensure textureUrl is valid before calling useTexture/useGLTF
 	const safeTextureUrl = textureUrl || "/textures/placeholder.png";
 
 	useEffect(() => {
@@ -201,7 +199,6 @@ function ClothingModel({ geometryUrl, textureUrl, scale, position, isUpper }) {
 			tex.needsUpdate = true;
 		},
 		(error) => {
-			// This is the onError callback for useTexture
 			console.error(`Failed to load texture: ${safeTextureUrl}`, error);
 			setTextureError(true);
 		}
@@ -229,39 +226,31 @@ function ClothingModel({ geometryUrl, textureUrl, scale, position, isUpper }) {
 				child.castShadow = true;
 				child.receiveShadow = true;
 
-				// Ensure material exists before trying to apply texture
 				if (!child.material) {
 					console.warn("Mesh found without material:", child);
-					// Optionally assign a default material
-					// child.material = new THREE.MeshStandardMaterial({ color: 'grey' });
-					return; // Skip texture application if no material
+
+					return;
 				}
 
 				const applyTexture = (material) => {
-					// Check if 'map' property exists on the material
 					if (!textureError && material.map !== undefined) {
-						material.map = texture; // Use the loaded texture
-						// Adjust transparency based on texture format or file extension
+						material.map = texture;
 						if (
 							texture &&
 							(texture.format === THREE.RGBAFormat ||
 								safeTextureUrl.endsWith(".png"))
 						) {
 							material.transparent = true;
-							material.alphaTest = 0.1; // Adjust as needed, helps with PNG edges
+							material.alphaTest = 0.1;
 						} else {
 							material.transparent = false;
 						}
 						material.needsUpdate = true;
 					} else if (textureError) {
-						// Optional: Handle texture error on material, e.g., set a default color
-						material.color.set("#888888"); // Grey color if texture fails
-						material.map = null; // Ensure no old map is used
+						material.color.set("#888888");
+						material.map = null;
 						material.needsUpdate = true;
 					}
-					// Add other material properties if needed
-					// material.roughness = 0.5;
-					// material.metalness = 0.1;
 				};
 
 				if (Array.isArray(child.material)) {
@@ -274,12 +263,10 @@ function ClothingModel({ geometryUrl, textureUrl, scale, position, isUpper }) {
 		clone.scale.set(...scale);
 		clone.position.set(...position);
 		return clone;
-	}, [geometryScene, texture, scale, position, safeTextureUrl, textureError]); // Added dependencies
+	}, [geometryScene, texture, scale, position, safeTextureUrl, textureError]);
 
-	// Render the cloned scene using primitive
 	return useMemo(() => {
 		if (!clonedScene) {
-			// Return fallback or null if scene isn't ready
 			console.log("Cloned scene not ready, rendering fallback (or null).");
 			return isUpper ? (
 				<FallbackUpperClothing
@@ -293,9 +280,8 @@ function ClothingModel({ geometryUrl, textureUrl, scale, position, isUpper }) {
 				/>
 			);
 		}
-		// console.log("Rendering primitive with cloned scene");
 		return <primitive object={clonedScene} dispose={null} />;
-	}, [clonedScene, isUpper, safeTextureUrl, position]); // Added dependencies
+	}, [clonedScene, isUpper, safeTextureUrl, position]);
 }
 
 function SceneContent({ upperData, lowerData, setAutoRotate, isAutoRotating }) {
@@ -329,9 +315,7 @@ function SceneContent({ upperData, lowerData, setAutoRotate, isAutoRotating }) {
 				}
 			};
 		}
-	}, [setAutoRotate]); // controlsRef is stable, setAutoRotate is the dependency
-
-	// Add checks for data validity before rendering ClothingModel
+	}, [setAutoRotate]);
 	if (
 		!upperData ||
 		!lowerData ||
@@ -342,7 +326,6 @@ function SceneContent({ upperData, lowerData, setAutoRotate, isAutoRotating }) {
 			"SceneContent: upperData or lowerData missing or invalid. Rendering loader.",
 			{ upperData, lowerData }
 		);
-		// Optionally return a loader or null instead of trying to render incomplete models
 		return <CanvasLoader />;
 	}
 
@@ -354,14 +337,14 @@ function SceneContent({ upperData, lowerData, setAutoRotate, isAutoRotating }) {
 				position={[5, 8, 5]}
 				intensity={1.5}
 				castShadow
-				shadow-mapSize-width={2048} // Increased shadow map size
+				shadow-mapSize-width={2048}
 				shadow-mapSize-height={2048}
 				shadow-camera-far={50}
 				shadow-camera-left={-10}
 				shadow-camera-right={10}
 				shadow-camera-top={10}
 				shadow-camera-bottom={-10}
-				shadow-bias={-0.0005} // Adjusted shadow bias
+				shadow-bias={-0.0005}
 			/>
 			<directionalLight position={[-5, 2, -2]} intensity={0.3} />
 			{/* Environment */}
@@ -379,7 +362,6 @@ function SceneContent({ upperData, lowerData, setAutoRotate, isAutoRotating }) {
 			{/* Models Group */}
 			<group ref={groupRef}>
 				<ClothingModel
-					// Use unique keys combining relevant changing props
 					key={`upper-${upperData.geometryUrl}-${
 						upperData.textureUrl || "fallback"
 					}`}
@@ -390,7 +372,6 @@ function SceneContent({ upperData, lowerData, setAutoRotate, isAutoRotating }) {
 					isUpper={true}
 				/>
 				<ClothingModel
-					// Use unique keys combining relevant changing props
 					key={`lower-${lowerData.geometryUrl}-${
 						lowerData.textureUrl || "fallback"
 					}`}
@@ -407,11 +388,9 @@ function SceneContent({ upperData, lowerData, setAutoRotate, isAutoRotating }) {
 				makeDefault
 				enablePan={true}
 				enableZoom={true}
-				target={[0, 0, 0]} // Centered target
+				target={[0, 0, 0]}
 				minDistance={2}
 				maxDistance={10}
-				// enableDamping={true} // Optional: Smoother controls
-				// dampingFactor={0.05}
 			/>
 		</>
 	);
@@ -433,50 +412,41 @@ export default function ClothingViewer() {
 
 	const { data, isLoading, error } = useQuery({
 		queryKey: ["clothesAll"],
-		queryFn : fetchOutfits
+		queryFn: fetchOutfits,
 	});
 
-	console.log(data)
+	console.log(data);
 
 	const { uppers, lowers } = useMemo(() => {
-	const list = Array.isArray(data) ? data : [];
-	return {
-		uppers : list.filter(c => c.upper),
-		lowers : list.filter(c => c.lower)
-	};
+		const list = Array.isArray(data) ? data : [];
+		return {
+			uppers: list.filter((c) => c.upper),
+			lowers: list.filter((c) => c.lower),
+		};
 	}, [data]);
 
 	/** Convert one DB row → the shape ClothingModel expects */
 	const rowToOption = (row, isUpper) => {
-	// fix double “/thumbnails/thumbnails/” if it’s in S3 key
-	const img = (row.signedImageUrl || row.imageUrl || "")
-					.replace("/thumbnails/thumbnails/", "/thumbnails/");
+		// fix double “/thumbnails/thumbnails/” if it’s in S3 key
+		const img = (row.signedImageUrl || row.imageUrl || "").replace(
+			"/thumbnails/thumbnails/",
+			"/thumbnails/"
+		);
 
-	return {
-		name:       row.name,
-		textureUrl: img,                               // show correct picture
-		geometryUrl:isUpper ? "/models/bomber_jacket.glb"
-							: "/models/leg.glb",        // whatever model you want
-		scale:      [1,1,1],
-		position:   isUpper ? [0,-0.3,0] : [0,-0.6,0],
+		return {
+			name: row.name,
+			textureUrl: img, // show correct picture
+			geometryUrl: isUpper ? "/models/bomber_jacket.glb" : "/models/leg.glb", // whatever model you want
+			scale: [1, 1, 1],
+			position: isUpper ? [0, -0.3, 0] : [0, -0.6, 0],
+		};
 	};
-	};
-
 
 	// --- Effect to load URL from sessionStorage ---
 	useEffect(() => {
 		const UrlFromStorage = sessionStorage.getItem("selectedTextureUrl");
 		const isUpper = sessionStorage.getItem("selectedModelisUpper") === "true";
 
-		// const lowerUrlFromStorage = sessionStorage.getItem(
-		// 	"selectedLowerTextureUrl"
-		// );
-		// console.log("Loaded from sessionStorage - Upper:", UrlFromStorage);
-		// console.log("Loaded from sessionStorage - Lower:", UrlFromStorage);
-		// *** IMPORTANT: Add a placeholder image at /public/textures/placeholder.png ***
-		// *** OR change the fallback logic here
-		//         ***
-		// console.log("Is Upper:", isUpper);
 		if (isUpper) {
 			setDynamicUpperTextureUrl(UrlFromStorage || "/textures/red.png");
 			setDynamicLowerTextureUrl("/textures/jeans.png"); // Default lower clothing
@@ -484,15 +454,12 @@ export default function ClothingViewer() {
 			setDynamicUpperTextureUrl("/textures/red.png");
 			setDynamicLowerTextureUrl(UrlFromStorage || "/textures/red.png");
 		}
-		// setDynamicUpperTextureUrl(UrlFromStorage || "/textures/placeholder.png");
-		// setDynamicLowerTextureUrl(UrlFromStorage || "/textures/red.png");
-	}, []); // Empty array runs once on mount
-
+	}, []);
 	// --- Define clothing options dynamically using useMemo ---
 
 	const getUniqueByName = (items) => {
 		const seen = new Set();
-		return items.filter(item => {
+		return items.filter((item) => {
 			if (seen.has(item.name)) return false;
 			seen.add(item.name);
 			return true;
@@ -500,13 +467,15 @@ export default function ClothingViewer() {
 	};
 	const fetchTextureUrl = async (textureName) => {
 		try {
-			const response = await fetch(`http://localhost:8000/api/textures/${textureName}`);
+			const response = await fetch(
+				`http://localhost:8000/api/textures/${textureName}`
+			);
 			if (!response.ok) throw new Error("Texture not found");
 			const data = await response.json();
 			return data.signedUrl;
 		} catch (err) {
 			console.error(`Error fetching texture for ${textureName}:`, err);
-			return "/textures/placeholder.png";  // Fallback texture
+			return "/textures/placeholder.png"; // Fallback texture
 		}
 	};
 
@@ -515,35 +484,35 @@ export default function ClothingViewer() {
 
 	useEffect(() => {
 		if (!Array.isArray(data)) return;
-	
+
 		const fetchAllTextures = async (items, setTextures, label) => {
 			const texturesMap = {};
-			await Promise.all(items.map(async (item) => {
-				const textureName = `${item.name}_texture`;
-				const url = await fetchTextureUrl(textureName);
-				texturesMap[item.name] = url;
-			}));
+			await Promise.all(
+				items.map(async (item) => {
+					const textureName = `${item.name}_texture`;
+					const url = await fetchTextureUrl(textureName);
+					texturesMap[item.name] = url;
+				})
+			);
 			console.log(`Fetched Textures for ${label}:`, texturesMap);
 			setTextures(texturesMap);
 		};
-	
-		const uniqueUppers = getUniqueByName(data.filter(item => item.upper));
-		const uniqueLowers = getUniqueByName(data.filter(item => item.lower));
-	
+
+		const uniqueUppers = getUniqueByName(data.filter((item) => item.upper));
+		const uniqueLowers = getUniqueByName(data.filter((item) => item.lower));
+
 		fetchAllTextures(uniqueUppers, setUpperTextures, "Uppers");
 		fetchAllTextures(uniqueLowers, setLowerTextures, "Lowers");
-	
 	}, [data]);
-	
 
 	const upperClothingOptions = useMemo(() => {
 		if (!Array.isArray(data)) return [];
-	
-		const upperItems = getUniqueByName(data.filter(item => item.upper));
-	
+
+		const upperItems = getUniqueByName(data.filter((item) => item.upper));
+
 		return upperItems
-			.filter(item => upperTextures[item.name])  
-			.map(item => ({
+			.filter((item) => upperTextures[item.name])
+			.map((item) => ({
 				name: item.name,
 				textureUrl: upperTextures[item.name],
 				geometryUrl: "/models/bomber_jacket.glb",
@@ -553,31 +522,24 @@ export default function ClothingViewer() {
 				imageUrl: item.imageUrl || "",
 			}));
 	}, [data, upperTextures]);
-	
-	
+
 	const LOWER_CLOTHING = useMemo(() => {
 		if (!Array.isArray(data)) return [];
-	
-		const lowerItems = getUniqueByName(data.filter(item => item.lower));
-	
+
+		const lowerItems = getUniqueByName(data.filter((item) => item.lower));
+
 		return lowerItems
-			.filter(item => lowerTextures[item.name])  
-			.map(item => ({
+			.filter((item) => lowerTextures[item.name])
+			.map((item) => ({
 				name: item.name,
 				textureUrl: lowerTextures[item.name],
 				geometryUrl: "/models/leg.glb",
 				scale: [1, 1, 1],
 				position: [0, -0.6, 0],
-				price: item.price || 0, 
-				imageUrl: item.imageUrl || "", 
+				price: item.price || 0,
+				imageUrl: item.imageUrl || "",
 			}));
 	}, [data, lowerTextures]);
-
-
-	
-	
-	
-	
 
 	// Reset upperIndex if it becomes invalid when options change
 	useEffect(() => {
@@ -675,13 +637,13 @@ export default function ClothingViewer() {
 
 	const handleAddToCart = () => {
 		const cart = JSON.parse(sessionStorage.getItem("cart")) || [];
-	
+
 		const itemsToAdd = [
 			{
-				productId: currentUpperData.name,   // Assuming `name` uniquely identifies
+				productId: currentUpperData.name,
 				name: currentUpperData.name,
 				category: "Upper",
-				price: currentUpperData.price || 0,  // Set price if available
+				price: currentUpperData.price || 0, // Set price if available
 				imageUrl: currentUpperData.imageUrl,
 				quantity: 1,
 			},
@@ -694,20 +656,19 @@ export default function ClothingViewer() {
 				quantity: 1,
 			},
 		];
-	
+
 		const updatedCart = [...cart];
-	
-		itemsToAdd.forEach(item => {
-			const exists = updatedCart.some(ci => ci.productId === item.productId);
+
+		itemsToAdd.forEach((item) => {
+			const exists = updatedCart.some((ci) => ci.productId === item.productId);
 			if (!exists) updatedCart.push(item);
 		});
-	
+
 		sessionStorage.setItem("cart", JSON.stringify(updatedCart));
-	
+
 		console.log("Added to cart:", itemsToAdd);
 		showNotification("Current outfit added to cart!");
 	};
-	
 
 	const handleCloseSnackbar = (event, reason) => {
 		if (reason === "clickaway") {
@@ -824,7 +785,6 @@ export default function ClothingViewer() {
 							label: "Add Cart",
 							handler: handleAddToCart,
 						},
-					
 					].map((action) => (
 						<Box
 							key={action.label}
@@ -984,7 +944,6 @@ export default function ClothingViewer() {
 					borderTop: "1px solid #eaeaea",
 					backgroundColor: "#fff",
 				}}>
-	
 				<Button
 					variant="outlined"
 					startIcon={<ShoppingCartIcon />}
@@ -999,7 +958,6 @@ export default function ClothingViewer() {
 					}}>
 					Add Cart
 				</Button>
-				
 			</Box>
 
 			{/* Notification Snackbar */}
