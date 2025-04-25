@@ -1,14 +1,16 @@
-
-import { Navigate } from 'react-router-dom';  // ← you must import this
+import { Navigate } from 'react-router-dom';
 
 const PreferenceGuardRoute = ({ children }) => {
-    const token = localStorage.getItem('jwt');
-    const preferencesCompleted = localStorage.getItem('preferencesCompleted') === 'true';
-    if (!token) return <Navigate to="/login" />;
-    if (!preferencesCompleted && window.location.pathname !== '/preferences') {
-      return <Navigate to="/preferences" />;
-    }
-    return children;
+  const token = localStorage.getItem('jwt');
+  const preferencesCompleted = localStorage.getItem('preferencesCompleted') === 'true';
+
+  if (!token) return <Navigate to="/login" />;
+
+  if (!preferencesCompleted) {
+    return <Navigate to="/preferences/gender" />;
+  }
+
+  return children;
 };
 
 export default PreferenceGuardRoute;

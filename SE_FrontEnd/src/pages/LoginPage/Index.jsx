@@ -16,7 +16,7 @@ import {
   LinearProgress,
 } from "@mui/material"
 import { useNavigate } from "react-router-dom"
-import {loginConvention} from "../../api/authService"
+import {loginConvention, loginWithGoogle} from "../../api/authService"
 import { GoogleLogin } from "@react-oauth/google"
 
 export default function LoginPage() {
@@ -38,6 +38,7 @@ export default function LoginPage() {
     setIsLoading(true)
     try {
       await loginConvention(email, password)
+      navigate("/explore")
     } catch (err) {
       const msg = err.response?.data?.error?.includes("Invalid credentials")
         ? "Incorrect email or password."
@@ -49,8 +50,18 @@ export default function LoginPage() {
   }
 
   const handleGoogleLoginSuccess = async (credentialResponse) => {
-    // existing Google login logic...
-  }
+    setIsLoading(true);
+    try {
+      const googleToken = credentialResponse.credential;
+      await loginWithGoogle(googleToken);
+      navigate("/explore");
+    } catch (err) {
+      console.error("Google login failed:", err.response?.data || err.message);
+      setError("Google login failed. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <Box sx={{ position: "relative", height: "100vh" }}>
