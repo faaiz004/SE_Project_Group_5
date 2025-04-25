@@ -169,13 +169,6 @@ const router = createBrowserRouter([
     )
   },
   {
-    path: "/order-confirmation",
-    element: suspense(
-      <PreferenceGuardRoute>
-        <OrderConfirmation />
-      </PreferenceGuardRoute>,
-      "Loading Confirmation..."
-    )
   },
   {
     path: "/mannequin",
