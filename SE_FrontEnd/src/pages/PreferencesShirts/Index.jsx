@@ -16,8 +16,6 @@ import {
 } from "@mui/material"
 import CheckCircleIcon from "@mui/icons-material/CheckCircle"
 import { useNavigate } from "react-router-dom"
-
-// Import shirt images
 import modernImg from "../../assets/StylePreferences/larki1.jpeg"
 import businessImg from "../../assets/StylePreferences/larki2.png"
 import oldMoneyImg from "../../assets/StylePreferences/larki4.png"
@@ -207,7 +205,7 @@ function PreferencesShirts() {
         </Stack>
       </Container>
 
-      {/* Snackbar Error */}
+      {}
       <Snackbar
         open={showError}
         autoHideDuration={4000}

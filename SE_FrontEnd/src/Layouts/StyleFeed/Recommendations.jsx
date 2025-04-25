@@ -1,4 +1,3 @@
-// Recommendations.jsx
 import React from "react";
 import {
   Box,
@@ -9,7 +8,6 @@ import {
   Button,
 } from "@mui/material";
 
-// Replace with your actual image(s)
 import sampleImage from "../../assets/StyleFeed/Group.png";
 
 const Recommendations = () => {
@@ -48,7 +46,7 @@ const Recommendations = () => {
           fontSize: "20px",
           fontWeight: 400,
           color: "#1E1E1E",
-          letterSpacing: "1px", // Add letter spacing (adjust the value as needed)
+          letterSpacing: "1px", 
         }}
       >
         Recommendations for you!
@@ -57,8 +55,8 @@ const Recommendations = () => {
         sx={{
           width: "100%",
           height: "1px",
-          backgroundColor: "#5F65C3", // Light bluish-purple
-          marginTop: "-12px", // Pull it closer to the text
+          backgroundColor: "#5F65C3", 
+          marginTop: "-12px", 
         }}
       />
 
@@ -71,8 +69,8 @@ const Recommendations = () => {
             gap: 2,
             alignItems: "center",
             backgroundColor: "transparent",
-            boxShadow: "none",    // No shadow
-            borderColor: "transparent", // Removes the outline
+            boxShadow: "none",   
+            borderColor: "transparent",
             padding: 1
         }}
         >

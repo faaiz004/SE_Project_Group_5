@@ -1,6 +1,3 @@
-// app.js
-
-// 1. Load environment variables
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -23,18 +20,23 @@ app.use(express.json()); // Parse JSON requests
 app.use(express.urlencoded({ extended: true })); // Parse form data
 
 // 4. Routes
-import uploadRoutes from './routes/upload.js';
-import postRoutes from './routes/posts.js';
-import cartRoutes from './routes/cart.js';
+import postRoutes from './routes/clothes.js';
 import userRoutes from './routes/user.js';
-
+import clothesRoutes from './routes/clothes.js';
+import postsRoutes from './routes/posts.js';
 import googleAuthRoutes from './routes/googleAuth.js';
+import textureRoutes from './routes/textures.js';
 
-app.use('/api', uploadRoutes);
+
 app.use('/api', postRoutes);
-app.use("/api/cart", cartRoutes);
 app.use("/api/auth", googleAuthRoutes);
 app.use('/api/auth', userRoutes);
+app.use('/api/clothes', clothesRoutes);
+app.use('/api/posts', postsRoutes);
+app.use('/api/textures', textureRoutes);
+
+
+
 
 
 // Basic test route

@@ -11,45 +11,85 @@ import {
   CardActionArea,
   Button,
   Stack,
+  Skeleton
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-
-// Import images
-import modernImg from "../../assets/StylePreferences/larki1.jpeg";
-import businessImg from "../../assets/StylePreferences/larki2.png";
-import oldMoneyImg from "../../assets/StylePreferences/larki4.png";
-import casualImg from "../../assets/StylePreferences/larki5.png";
+import { fetchOutfits } from "../../api/clothesService";
 
 function StylePreferences() {
   const [selectedStyle, setSelectedStyle] = useState(null);
+  const [styleOptions, setStyleOptions] = useState([]);
   const navigate = useNavigate();
 
-  // Preload style preference from sessionStorage if available
   useEffect(() => {
     const credentials = JSON.parse(sessionStorage.getItem("user-credentials")) || {};
     if (credentials.stylePreference) {
       setSelectedStyle(credentials.stylePreference);
     }
+    const gender = credentials.gender; // "Male" or "Female"
+  
+    fetchOutfits()
+      .then(data => {
+        // Filter by gender
+        const genderItems = data.filter(o => o.gender === gender);
+        
+        // Split into uppers and lowers
+        const uppers = genderItems.filter(o => o.upper);
+        const lowers = genderItems.filter(o => !o.upper);
+        
+        // define both the backend category and the display label
+        const categoryMap = {
+          modern:    { cat: "Modern",            label: "Modern" },
+          business:  { cat: "Modern",            label: "Business" },
+          oldmoney:  { cat: "Modern/Old_Money",  label: "Old Money" },
+          casual:    { cat: "Casual_Everyday",   label: "Casual" },
+        };
+        
+        // Create style options with half uppers, half lowers
+        const options = [];
+        let upperCount = 0;
+        let lowerCount = 0;
+        const targetCount = Object.keys(categoryMap).length;
+        const halfCount = Math.ceil(targetCount / 2);
+        
+        Object.entries(categoryMap).forEach(([id, { cat, label }]) => {
+          // Decide if this should be upper or lower based on counts
+          const useUpper = upperCount < halfCount && (lowerCount >= halfCount || Math.random() < 0.5);
+          
+          const sourceArray = useUpper ? uppers : lowers;
+          const candidates = sourceArray.filter(o => o.category === cat);
+          
+          const item = candidates.length
+            ? candidates[Math.floor(Math.random() * candidates.length)]
+            : null;
+            
+          if (useUpper) upperCount++;
+          else lowerCount++;
+          
+          options.push({
+            id,
+            label,
+            image: item?.signedImageUrl || item?.imageUrl || ""
+          });
+        });
+        
+        setStyleOptions(options);
+      })
+      .catch(console.error);
   }, []);
 
-  // Update sessionStorage with the new style preference
   const updateSession = (newData) => {
     const current = JSON.parse(sessionStorage.getItem("user-credentials")) || {};
-    const updated = { ...current, ...newData };
-    sessionStorage.setItem("user-credentials", JSON.stringify(updated));
+    sessionStorage.setItem(
+      "user-credentials",
+      JSON.stringify({ ...current, ...newData })
+    );
   };
 
   const handleStyleSelect = (style) => {
     setSelectedStyle(style);
     updateSession({ stylePreference: style });
   };
-
-  const styleOptions = [
-    { id: "modern", name: "Modern", image: modernImg },
-    { id: "business", name: "Business", image: businessImg },
-    { id: "oldmoney", name: "Old Money", image: oldMoneyImg },
-    { id: "casual", name: "Casual", image: casualImg },
-  ];
 
   return (
     <Box
@@ -104,44 +144,59 @@ function StylePreferences() {
             justifyContent: "center",
           }}
         >
-          {styleOptions.map((style) => (
-            <Grid item xs={12} sm={6} md={4} key={style.id}>
-              <Card
-                elevation={0}
-                onClick={() => handleStyleSelect(style.id)}
-                sx={{
-                  borderRadius: 2,
-                  overflow: "hidden",
-                  border:
-                    selectedStyle === style.id
-                      ? "2px solid #3f51b5"
-                      : "1px solid #e0e0e0",
-                  transition: "all 0.3s ease",
-                  cursor: "pointer",
-                  height: "100%",
-                  "&:hover": {
-                    boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-                    transform: "translateY(-4px)",
-                  },
-                }}
-              >
-                <CardActionArea sx={{ height: "100%" }}>
-                  <CardMedia
-                    component="img"
-                    height="300"
-                    image={style.image}
-                    alt={style.name}
-                    sx={{ objectFit: "cover" }}
-                  />
-                  <CardContent sx={{ textAlign: "center", py: 2 }}>
-                    <Typography variant="h5" component="div" sx={{ fontWeight: 500 }}>
-                      {style.name}
-                    </Typography>
-                  </CardContent>
-                </CardActionArea>
-              </Card>
-            </Grid>
-          ))}
+          {styleOptions.length === 0
+            ? Array.from({ length: 4 }).map((_, idx) => (
+                <Grid item xs={12} sm={6} md={4} key={idx}>
+                  <Card elevation={0} sx={{ borderRadius: 2 }}>
+                    <Skeleton variant="rectangular" width={250} height={300} />
+                    <CardContent>
+                      <Skeleton variant="text" width="60%" />
+                    </CardContent>
+                  </Card>
+                </Grid>
+              ))
+            : styleOptions.map((style) => (
+                <Grid item xs={12} sm={6} md={4} key={style.id}>
+                  <Card
+                    elevation={0}
+                    onClick={() => handleStyleSelect(style.id)}
+                    sx={{
+                      borderRadius: 2,
+                      overflow: "hidden",
+                      border:
+                        selectedStyle === style.id
+                          ? "2px solid #3f51b5"
+                          : "1px solid #e0e0e0",
+                      transition: "all 0.3s ease",
+                      cursor: "pointer",
+                      height: "100%",
+                      "&:hover": {
+                        boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+                        transform: "translateY(-4px)",
+                      },
+                    }}
+                  >
+                    <CardActionArea sx={{ height: "100%" }}>
+                      <CardMedia
+                        component="img"
+                        height="300"
+                        image={style.image}
+                        alt={style.label}
+                        sx={{ objectFit: "cover" }}
+                      />
+                      <CardContent sx={{ textAlign: "center", py: 2 }}>
+                        <Typography
+                          variant="h5"
+                          component="div"
+                          sx={{ fontWeight: 500 }}
+                        >
+                          {style.label}
+                        </Typography>
+                      </CardContent>
+                    </CardActionArea>
+                  </Card>
+                </Grid>
+              ))}
         </Grid>
 
         {/* Navigation buttons */}

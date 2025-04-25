@@ -1,10 +1,9 @@
-import React from "react";
-import { Box, Typography, Button } from "@mui/material";
+import React, { useState } from "react";
+import { Box, Typography, Button, LinearProgress } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
-import axios from 'axios';
+import { loginWithGoogle } from "../../api/authService";
 
-// Import your style objects
 import {
   pageContainer,
   leftContainer,
@@ -23,7 +22,6 @@ import {
   googleButton,
 } from "./Style";
 
-// Import your images (adjust paths as needed)
 import mannequin from "../../assets/SignInPage/mannequin.png";
 import girl1 from "../../assets/SignInPage/larki1.jpeg";
 import girl2 from "../../assets/SignInPage/larki2.png";
@@ -45,48 +43,43 @@ function Collage() {
 
 function LandingPage() {
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleGoogleLoginSuccess = async (credentialResponse) => {
+    setIsLoading(true);
     try {
       const googleToken = credentialResponse.credential;
-      console.log("Received Google token:", googleToken);
+      await loginWithGoogle(googleToken);
 
-      // Send this Google token to your backend for verification via the updated route
-      const response = await axios.post(
-        'http://localhost:8000/api/auth/google',  // Updated URL
-        { token: googleToken },
-        {
-          headers: { 'Content-Type': 'application/json' },
-        }
-      );
-
-      // Extract your app's token and user information
-      const { token, user } = response.data;
-      if (token) {
-        // Save your JWT in local storage
-        localStorage.setItem('jwt', token);
+      const preferencesCompleted = localStorage.getItem('preferencesCompleted') === 'true';
+      if (preferencesCompleted) {
+        navigate("/explore");
+      } else {
+        navigate("/preferences/gender");
       }
-      
-      console.log("Backend response:", response.data);
-      navigate("/preferences/gender"); // Proceed as needed
     } catch (error) {
-      console.error("Google login error:", error.response?.data || error.message);
+      console.error("Google login failed:", error.response?.data || error.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleGoogleLoginFailure = () => {
     console.log("Google login failed");
-    // Handle error display as needed
   };
 
   return (
     <Box sx={pageContainer}>
-      {/* Left side with overlapping collage images */}
+      {isLoading && (
+        <LinearProgress
+          sx={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 2000 }}
+        />
+      )}
+
       <Box sx={leftContainer}>
         <Collage />
       </Box>
 
-      {/* Right side with sign-up text, mannequin image, and buttons */}
       <Box sx={rightContainer}>
         <Typography component="h1" sx={title}>
           Welcome To Swipe-FIT

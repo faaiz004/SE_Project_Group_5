@@ -9,10 +9,6 @@ const postSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  tags: {
-    type: [String],
-    default: []
-  },
   createdAt: {
     type: Date,
     default: Date.now
@@ -22,14 +18,16 @@ const postSchema = new mongoose.Schema({
     ref: 'User',
     required: true
   },
-  likes: {
-    type: Number,
-    default: 0
-  },
-  upper : {
-    
-  }
-
+  likes: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  }],
+  clothes: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Clothes'
+    }
+  ],
 });
 
 const Post = mongoose.model('Post', postSchema);
