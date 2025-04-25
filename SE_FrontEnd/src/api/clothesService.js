@@ -1,11 +1,9 @@
-// src/api/clothesService.js
-// this file contains functions to interact with the clothing-related API endpoints.
+
 import apiClient from './apiClient.js';
 
 export const purchaseClothes = async clothesId => {
   const email = localStorage.getItem('email');
   if (!email) throw new Error('Missing email in localStorage');
-
   const { data } = await apiClient.post('/clothes/purchase', { email, clothesId });
   return data;
 };
@@ -13,7 +11,6 @@ export const purchaseClothes = async clothesId => {
 export const getPurchases = async () => {
   const email = localStorage.getItem('email');
   if (!email) throw new Error('Missing email in localStorage');
-
   const { data } = await apiClient.post('/clothes/purchased', { email });
   return data;
 };
@@ -59,24 +56,4 @@ export const updateUserPreferences = async prefs => {
     headers: { Authorization: `Bearer ${token}` }
   });
   return data;
-};
-
-export const sampleClothes = async ({ count = 3, categories = [], gender, upper }) => {
-  if (!categories.length) throw new Error('At least one category is required');
-  if (!gender) throw new Error('Gender is required');
-
-  const { data } = await apiClient.get('/clothes/sample', {
-    params: {
-      count,
-      categories: categories.join(','), 
-      gender,
-      upper
-    }
-  });
-
-  return data;  
-};
-
-
-
 
