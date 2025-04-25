@@ -12,7 +12,7 @@ const app = express();
 // 3. Database connection
 
 app.use(cors({
-  origin: '*', // or 'http://localhost:3000' for React frontend
+  origin: '*', 
   credentials: true
 }));
 

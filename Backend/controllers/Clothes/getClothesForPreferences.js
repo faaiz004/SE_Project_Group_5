@@ -1,5 +1,8 @@
+// This file gets preferences for clothes based on user preferences and returns a sample of clothes from the database. 
 import Clothes from '../../models/clothes.js';
 
+
+// This function samples clothes from the database based on the provided categories
 export async function sampleClothes({ categories, gender, count, upper }) {
   if (typeof categories === 'string') {
     categories = categories.split(',').map(c => c.trim()).filter(Boolean);

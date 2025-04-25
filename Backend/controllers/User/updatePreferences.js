@@ -1,5 +1,6 @@
 import User from '../../models/User.js';
 
+// This function updates the user's preferences in the database
 export const updateUserPreferences = async (req, res) => {
 	try {
 		const userId = req.user.id;
@@ -12,7 +13,6 @@ export const updateUserPreferences = async (req, res) => {
 			preferencesCompleted
 		} = req.body;
 
-		// Build update object dynamically to avoid overwriting unintentionally
 		const updateFields = {};
 		if (gender) updateFields.gender = gender;
 		if (shirtSize) updateFields.shirtSize = shirtSize;

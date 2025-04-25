@@ -1,4 +1,3 @@
-// scripts/generateClothesThumbnails.js
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import {
@@ -6,7 +5,7 @@ import {
   GetObjectCommand,
   PutObjectCommand,
 } from "@aws-sdk/client-s3";
-import Clothes from "../models/clothes.js";  // adjust path if needed
+import Clothes from "../models/clothes.js";  
 
 dotenv.config();
 
@@ -62,14 +61,12 @@ async function main() {
   console.log("🟢 Connected to MongoDB");
 
   const clothes = await Clothes.find().lean();
-  console.log(`🔍 Found ${clothes.length} clothes documents`);
 
   for (const item of clothes) {
     if (!item.imageUrl) continue;
 
     try {
       const key = extractKeyFromUrl(item.imageUrl);
-      console.log(`→ Processing ${item._id} (key: ${key})`);
 
       // Download original image (no resizing)
       const buffer = await downloadBuffer(key);
@@ -95,9 +92,6 @@ async function main() {
         { $set: { imageUrl: thumbnailUrl } }
       );
 
-      console.log(
-        `✅ Updated ${item._id} → ${thumbnailUrl}`
-      );
     } catch (err) {
       console.error(
         `❌ Failed ${item._id}: ${err.message}`

@@ -1,4 +1,3 @@
-// routes/textures.js
 
 import express from 'express';
 import { getTextureByName } from '../controllers/Clothes/getTextureClothes.js';

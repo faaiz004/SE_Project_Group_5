@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 
+// schema for the clothes collection
 const clothesSchema = new mongoose.Schema(
   {
     name: {

@@ -1,3 +1,4 @@
+// This file fetched saved clothes for a user and saved/unsaved clothes to/from the user's savedClothes array
 import User from '../../models/User.js';
 import Clothes from '../../models/clothes.js';
 
@@ -15,7 +16,7 @@ export const saveClothes = async (req, res) => {
 
     await User.findByIdAndUpdate(
       userId,
-      { $addToSet: { savedClothes: clothesId } },  // Prevent duplicates
+      { $addToSet: { savedClothes: clothesId } }, 
       { new: true }
     );
 

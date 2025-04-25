@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 import User from '../../models/User.js';
 
 
-
+// This function fetches the user's preferences from the database
 export const fetchPreferences = async (req, res) => {
     const JWT_SECRET = process.env.JWT_SECRET 
   try {
@@ -40,6 +40,8 @@ export const fetchPreferences = async (req, res) => {
   }
 };
 
+
+// This function updates the user's preferences in the database
 export const updatePreferences = async (req, res) => {
   try {
     const authHeader = req.headers.authorization;

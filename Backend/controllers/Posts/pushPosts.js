@@ -1,4 +1,3 @@
-// controllers/postController.js
 import Post from '../../models/Post.js';
 import User from '../../models/User.js';
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
@@ -6,11 +5,10 @@ import { v4 as uuidv4 } from 'uuid';
 
 const s3 = new S3Client({ region: process.env.AWS_REGION });
 
+// Create a new post
 export const createPost = async (req, res) => {
   try {
-    console.log("Received createPost request");
-    console.log("Request body:", req.body);
-    console.log("Uploaded file info:", req.file);
+
     
     const { caption, email } = req.body;
 
@@ -18,7 +16,6 @@ export const createPost = async (req, res) => {
     if (req.body.clothes) {
       try {
         clothesArray = JSON.parse(req.body.clothes);
-        console.log("Parsed clothes array:", clothesArray);
       } catch (err) {
         console.error("Error parsing clothes array:", err);
       }
@@ -38,7 +35,6 @@ export const createPost = async (req, res) => {
     const file = req.file;
     const extension = file.originalname.split('.').pop();
     const fileName = `posts/${uuidv4()}.${extension}`;
-    console.log("📝 Uploading to S3 with key:", fileName);
 
     const command = new PutObjectCommand({
       Bucket: process.env.AWS_BUCKET_NAME,
@@ -47,10 +43,8 @@ export const createPost = async (req, res) => {
       ContentType: file.mimetype,
     });
     const s3Response = await s3.send(command);
-    console.log("S3 upload successful:", s3Response);
 
     const imageUrl = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileName}`;
-    console.log("Image URL:", imageUrl);
 
     const newPost = await Post.create({
       imageUrl,
@@ -59,7 +53,6 @@ export const createPost = async (req, res) => {
       clothes: clothesArray, 
     });
 
-    console.log("New post saved:", newPost);
     return res.status(201).json({ post: newPost });
   } catch (error) {
     console.error("Error creating post:", error);

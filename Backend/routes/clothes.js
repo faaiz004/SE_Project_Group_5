@@ -14,7 +14,7 @@ router.get('/sample', async (req, res) => {
     try {
       const { categories, gender, count, upper } = req.query;
   
-      const data = await sampleClothes({   // ← This is calling the imported function
+      const data = await sampleClothes({   
         categories,
         gender,
         count: Number(count),

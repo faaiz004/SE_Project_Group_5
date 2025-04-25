@@ -1,8 +1,10 @@
 import User from '../../models/User.js';
 
+
+// This function handles the submission of user preferences
 export const submitPreferences = async (req, res) => {
   try {
-    const userId = req.user.id;   // Retrieved from verifyToken middleware
+    const userId = req.user.id;  
     const { gender, shirtSize, pantSize, stylePreference } = req.body;
 
     if (!gender || !shirtSize || !pantSize || !stylePreference) {
