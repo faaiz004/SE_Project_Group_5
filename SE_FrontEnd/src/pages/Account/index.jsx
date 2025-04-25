@@ -59,7 +59,6 @@ const styleOptions = [
   { id: 'Modern',           name: 'Modern'    },
   { id: 'Smart_Casual',     name: 'Business'  },
   { id: 'Old_Money',        name: 'Old Money' },
-  { id: 'Casual_Everyday',  name: 'Casual'    }
 ];
 
 export default function Account() {
