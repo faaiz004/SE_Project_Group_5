@@ -1,3 +1,4 @@
+
 import apiClient from './apiClient.js';
 
 export const purchaseClothes = async clothesId => {
@@ -44,21 +45,8 @@ export const getUserPreferences = async () => {
     headers: { Authorization: `Bearer ${token}` }
   });
 
-  // data: { message, preferences: { gender, shirtSize, pantSize, … } }
   return data;
 };
-// export const getUserPreferences2 = async () => {
-//   const token = localStorage.getItem('jwt');
-//   if (!token) throw new Error('No authentication token found');
-
-//   // GET /api/auth/fetch-preferences
-//   const { data } = await apiClient.get('/auth/fetch-preferences', {
-//     headers: { Authorization: `Bearer ${token}` }
-//   });
-
-//   // data: { message, preferences: { gender, shirtSize, pantSize, … } }
-//   return data;
-// };
 
 export const updateUserPreferences = async prefs => {
   const token = localStorage.getItem('jwt');
