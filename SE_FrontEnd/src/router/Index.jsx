@@ -22,7 +22,8 @@ const PreferencesPants       = lazy(() => import("../pages/PreferencesPants/Inde
 const SignInPage             = lazy(() => import("../pages/LoginPage/Index"));
 const SavedOutfits           = lazy(() => import('../pages/SavedOutfits/Index'));
 const AccountPage            = lazy(() => import('../pages/Account/index'));
-const AllClothesSearch = lazy(() => import('../pages/AllClothesSearch/Index'));
+const AllClothesSearch = lazy(() => import('../pages/AllClothesSearch/index'));
+
 
 // ---------- Route guards ----------
 import PublicRoute from './PublicRoute';
@@ -213,13 +214,13 @@ const router = createBrowserRouter([
     )
   },
   {
-  path: "/all-clothes-search",
-  element: (
-      <Suspense fallback={<div>Loading All Clothes Search...</div>}>
-        <AllClothesSearch />
-      </Suspense>
-    ),
-  },
+      path: "/all-clothes-search",
+      element: (
+        <Suspense fallback={<div>Loading All Clothes Search...</div>}>
+          <AllClothesSearch />
+        </Suspense>
+      ),
+    },
 
   // ---- Catch-all ----
   {

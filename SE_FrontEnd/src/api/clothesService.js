@@ -1,10 +1,8 @@
-// src/api/clothesService.js
 import apiClient from './apiClient.js';
 
 export const purchaseClothes = async clothesId => {
   const email = localStorage.getItem('email');
   if (!email) throw new Error('Missing email in localStorage');
-
   const { data } = await apiClient.post('/clothes/purchase', { email, clothesId });
   return data;
 };
@@ -12,7 +10,6 @@ export const purchaseClothes = async clothesId => {
 export const getPurchases = async () => {
   const email = localStorage.getItem('email');
   if (!email) throw new Error('Missing email in localStorage');
-
   const { data } = await apiClient.post('/clothes/purchased', { email });
   return data;
 };
@@ -37,7 +34,6 @@ export const fetchOutfits = async () => {
   return data;
 };
 
-
 export const getUserPreferences = async () => {
   const token = localStorage.getItem('jwt');
   if (!token) throw new Error('No authentication token found');
@@ -60,6 +56,3 @@ export const updateUserPreferences = async prefs => {
   });
   return data;
 };
-
-
-
