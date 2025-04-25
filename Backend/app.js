@@ -40,24 +40,6 @@ app.use('/api/posts', postsRoutes);
 app.use('/api/textures', textureRoutes);
 
 
-app.post('/api/chat', async (req, res) => {
-  try {
-    const response = await axios.post(
-      'https://api-inference.huggingface.co/models/meta-llama/Llama-3.2-3B-Instruct',
-      req.body,
-      {
-        headers: {
-          Authorization: `Bearer ${process.env.HF_API_KEY}`,
-          'Content-Type': 'application/json'
-        }
-      }
-    );
-    res.json(response.data);
-  } catch (error) {
-    console.error('HF Proxy Error:', error.response?.data || error.message);
-    res.status(500).json({ error: 'Failed to contact Hugging Face API' });
-  }
-});
 
 
 

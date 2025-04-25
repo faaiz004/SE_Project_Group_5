@@ -41,12 +41,12 @@ function StylePreferences() {
   };
 
   const styleOptions = [
-    { id: "modern", name: "Modern", image: modernImg },
-    { id: "business", name: "Business", image: businessImg },
-    { id: "oldmoney", name: "Old Money", image: oldMoneyImg },
-    { id: "Casual", name: "Casual", image: casualImg },
+    { id: "Modern", name: "Modern", image: modernImg },
+    { id: "Smart_Casual", name: "Business", image: businessImg },
+    { id: "Old_Money", name: "Old Money", image: oldMoneyImg },
+    { id: "Casual_Everyday", name: "Casual", image: casualImg },
   ];
-
+  
   return (
     <Box
       sx={{

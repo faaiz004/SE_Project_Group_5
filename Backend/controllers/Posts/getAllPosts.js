@@ -1,44 +1,63 @@
-import Post from '../../models/Post.js';
-import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+// controllers/posts/getAllPosts.js
+import Post    from '../../models/Post.js';
+import Clothes from '../../models/Clothes.js';      // to populate clothes
+import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 const s3 = new S3Client({ region: process.env.AWS_REGION });
-
-// Helper to generate a signed URL for a given S3 object key
-const generateSignedUrl = async (key) => {
-  const command = new GetObjectCommand({
-    Bucket: process.env.AWS_BUCKET_NAME,
-    Key: key,
-  });
-  return await getSignedUrl(s3, command, { expiresIn: 3600 });
+const sign = (key) =>
+  getSignedUrl(
+    s3,
+    new GetObjectCommand({ Bucket: process.env.AWS_BUCKET_NAME, Key: key }),
+    { expiresIn: 3600 }
+  );
+const keyFromURL = (url) => {
+  const i = url.indexOf('.amazonaws.com/');
+  return i === -1 ? url : url.slice(i + 15);
 };
 
-const extractKeyFromUrl = (url) => {
-  const parts = url.split('.amazonaws.com/');
-  return parts.length === 2 ? parts[1] : url;
-};
-
-// Controller to retrieve all posts with a signed image URL
 export const getAllPosts = async (req, res) => {
   try {
+    const userId = req.user.id;
+
     const posts = await Post.find()
-      .populate("user", "username email") 
+      .populate('user', 'email')      // only need email prefix client-side
+      .populate('clothes')            // bring full clothes docs
       .sort({ createdAt: -1 });
 
-    const postsWithSignedUrl = await Promise.all(
-      posts.map(async (post) => {
-        const postObj = post.toObject();
-        if (postObj.imageUrl) {
-          const key = extractKeyFromUrl(postObj.imageUrl);
-          postObj.signedImageUrl = await generateSignedUrl(key);
+    const result = await Promise.all(
+      posts.map(async (p) => {
+        const o = p.toObject();
+
+        /* likes */
+        o.likes             = o.likes.length;
+        o.likedByCurrentUser = p.likes.some((id) => id.toString() === userId);
+
+        /* post image needs signing (private) */
+        if (o.imageUrl) {
+          o.signedImageUrl = await sign(keyFromURL(o.imageUrl));
         }
-        return postObj;
+
+        /* clothes: return same structure as getAllClothes (public imageUrl, no signing) */
+        o.clothes = (o.clothes || []).map((c) => ({
+          _id:      c._id,
+          name:     c.name,
+          brand:    c.brand,
+          size:     c.size,
+          category: c.category,
+          price:    c.price,
+          upper:    c.upper,
+          lower:    c.lower,
+          imageUrl: c.imageUrl           // already public
+        }));
+
+        return o;
       })
     );
 
-    return res.status(200).json({ posts: postsWithSignedUrl });
-  } catch (error) {
-    console.error("Error fetching posts:", error);
-    return res.status(500).json({ error: "Server error retrieving posts." });
+    res.status(200).json({ posts: result });
+  } catch (err) {
+    console.error('Error fetching posts:', err);
+    res.status(500).json({ error: 'Server error retrieving posts.' });
   }
 };
