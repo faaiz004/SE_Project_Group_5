@@ -83,14 +83,10 @@ export default function ExploreClothes() {
 		const pantMapped = sizeMap[pantSize];
 		const matchingStyles = styleMatchMap[stylePreference] || [];
 
-		console.log("User preference:", stylePreference);
-		console.log("Expected categories:", matchingStyles);
-
 		const filtered = outfits.filter((o) => {
 			const sizeOK = o.upper ? shirtMapped === o.size : pantMapped === o.size;
 			const styleOK = !stylePreference || matchingStyles.includes(o.category);
 			const genderOK = o.gender === "Unisex" || o.gender === userGender;
-			//   console.log("O:", o);
 			if (!styleOK && sizeOK && genderOK) {
 				console.log("Style mismatch:", {
 					userPreference: stylePreference,
