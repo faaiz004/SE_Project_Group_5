@@ -77,7 +77,8 @@ export const getAllClothes = async (req, res) => {
           price: item.price,
           signedImageUrl: signedUrl,
           upper: item.upper,
-            lower: item.lower,
+          lower: item.lower,
+          gender: item.gender,
         };
       })
     );
