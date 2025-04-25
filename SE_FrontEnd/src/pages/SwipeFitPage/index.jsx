@@ -1,5 +1,3 @@
-"use client";
-
 import {
 	useState,
 	useRef,
@@ -35,6 +33,8 @@ import {
 	Cylinder,
 } from "@react-three/drei";
 import * as THREE from "three";
+import { useQuery } from "@tanstack/react-query";
+import { fetchOutfits} from "../../api/clothesService";
 
 // const textureUrlA = sessionStorage.getItem("selectedTextureUrl");
 // console.log("Texture URL A:", textureUrlA);
@@ -434,6 +434,38 @@ export default function ClothingViewer() {
 	const [dynamicUpperTextureUrl, setDynamicUpperTextureUrl] = useState(null); // Start as null
 	const [dynamicLowerTextureUrl, setDynamicLowerTextureUrl] = useState(null); // New state for lower clothing
 
+	const { data, isLoading, error } = useQuery({
+		queryKey: ["clothesAll"],
+		queryFn : fetchOutfits
+	});
+
+	console.log(data)
+
+	const { uppers, lowers } = useMemo(() => {
+	const list = Array.isArray(data) ? data : [];
+	return {
+		uppers : list.filter(c => c.upper),
+		lowers : list.filter(c => c.lower)
+	};
+	}, [data]);
+
+	/** Convert one DB row → the shape ClothingModel expects */
+	const rowToOption = (row, isUpper) => {
+	// fix double “/thumbnails/thumbnails/” if it’s in S3 key
+	const img = (row.signedImageUrl || row.imageUrl || "")
+					.replace("/thumbnails/thumbnails/", "/thumbnails/");
+
+	return {
+		name:       row.name,
+		textureUrl: img,                               // show correct picture
+		geometryUrl:isUpper ? "/models/bomber_jacket.glb"
+							: "/models/leg.glb",        // whatever model you want
+		scale:      [1,1,1],
+		position:   isUpper ? [0,-0.3,0] : [0,-0.6,0],
+	};
+	};
+
+
 	// --- Effect to load URL from sessionStorage ---
 	useEffect(() => {
 		const UrlFromStorage = sessionStorage.getItem("selectedTextureUrl");
@@ -460,73 +492,95 @@ export default function ClothingViewer() {
 	}, []); // Empty array runs once on mount
 
 	// --- Define clothing options dynamically using useMemo ---
-	const upperClothingOptions = useMemo(() => {
-		// Only define if the dynamic URL has been loaded (is not null)
-		// If it's still null, maybe return just the first item or an empty array
-		// to avoid passing null textureUrl initially. Let's wait for it.
-		if (dynamicUpperTextureUrl === null) {
-			// Return only the static item(s) while loading the dynamic one
-			return [
-				{
-					name: "Blue Pattern Shirt",
-					textureUrl: "/textures/red.png", // Static URL
-					geometryUrl: "/models/bomber_jacket.glb",
-					scale: [1, 1, 1],
-					position: [0, -0.3, 0],
-				},
-			];
-		}
-		// Once loaded, return the full array
-		return [
-			{
-				name: "Blue Pattern Shirt",
-				textureUrl: dynamicUpperTextureUrl,
-				geometryUrl: "/models/bomber_jacket.glb",
-				scale: [1, 1, 1],
-				position: [0, -0.3, 0],
-			},
-			{
-				name: "Red Stripe Shirt",
-				textureUrl: dynamicUpperTextureUrl,
-				geometryUrl: "/models/bomber_jacket.glb",
-				scale: [1, 1, 1],
-				position: [0, -0.3, 0],
-			},
-		];
-	}, [dynamicUpperTextureUrl]); // Recompute when the dynamic URL changes
 
-	// Replace the static LOWER_CLOTHING array with a dynamic implementation
-	const LOWER_CLOTHING = useMemo(() => {
-		// Return only static items while loading the dynamic one
-		if (dynamicLowerTextureUrl === null) {
-			return [
-				{
-					name: "Denim Jeans",
-					textureUrl: "/textures/jeans.png",
-					geometryUrl: "/models/leg.glb",
-					scale: [1, 1, 1],
-					position: [0, -0.6, 0],
-				},
-			];
+	const getUniqueByName = (items) => {
+		const seen = new Set();
+		return items.filter(item => {
+			if (seen.has(item.name)) return false;
+			seen.add(item.name);
+			return true;
+		});
+	};
+	const fetchTextureUrl = async (textureName) => {
+		try {
+			const response = await fetch(`http://localhost:8000/api/textures/${textureName}`);
+			if (!response.ok) throw new Error("Texture not found");
+			const data = await response.json();
+			return data.signedUrl;
+		} catch (err) {
+			console.error(`Error fetching texture for ${textureName}:`, err);
+			return "/textures/placeholder.png";  // Fallback texture
 		}
-		// Once loaded, return the full array with dynamic texture
-		return [
-			{
-				name: "Denim Jeans",
-				textureUrl: dynamicLowerTextureUrl, // Use dynamic texture URL
+	};
+
+	const [upperTextures, setUpperTextures] = useState({});
+	const [lowerTextures, setLowerTextures] = useState({});
+
+	useEffect(() => {
+		if (!Array.isArray(data)) return;
+	
+		const fetchAllTextures = async (items, setTextures, label) => {
+			const texturesMap = {};
+			await Promise.all(items.map(async (item) => {
+				const textureName = `${item.name}_texture`;
+				const url = await fetchTextureUrl(textureName);
+				texturesMap[item.name] = url;
+			}));
+			console.log(`Fetched Textures for ${label}:`, texturesMap);
+			setTextures(texturesMap);
+		};
+	
+		const uniqueUppers = getUniqueByName(data.filter(item => item.upper));
+		const uniqueLowers = getUniqueByName(data.filter(item => item.lower));
+	
+		fetchAllTextures(uniqueUppers, setUpperTextures, "Uppers");
+		fetchAllTextures(uniqueLowers, setLowerTextures, "Lowers");
+	
+	}, [data]);
+	
+
+	const upperClothingOptions = useMemo(() => {
+		if (!Array.isArray(data)) return [];
+	
+		const upperItems = getUniqueByName(data.filter(item => item.upper));
+	
+		return upperItems
+			.filter(item => upperTextures[item.name])  
+			.map(item => ({
+				name: item.name,
+				textureUrl: upperTextures[item.name],
+				geometryUrl: "/models/bomber_jacket.glb",
+				scale: [1, 1, 1],
+				position: [0, -0.3, 0],
+				price: item.price || 0,
+				imageUrl: item.imageUrl || "",
+			}));
+	}, [data, upperTextures]);
+	
+	
+	const LOWER_CLOTHING = useMemo(() => {
+		if (!Array.isArray(data)) return [];
+	
+		const lowerItems = getUniqueByName(data.filter(item => item.lower));
+	
+		return lowerItems
+			.filter(item => lowerTextures[item.name])  
+			.map(item => ({
+				name: item.name,
+				textureUrl: lowerTextures[item.name],
 				geometryUrl: "/models/leg.glb",
 				scale: [1, 1, 1],
 				position: [0, -0.6, 0],
-			},
-			{
-				name: "Khaki Pants",
-				textureUrl: dynamicLowerTextureUrl, // Use dynamic texture URL
-				geometryUrl: "/models/leg.glb",
-				scale: [1, 1, 1],
-				position: [0, -0.6, 0],
-			},
-		];
-	}, [dynamicLowerTextureUrl]); // Recompute when the dynamic URL changes
+				price: item.price || 0, 
+				imageUrl: item.imageUrl || "", 
+			}));
+	}, [data, lowerTextures]);
+
+
+	
+	
+	
+	
 
 	// Reset upperIndex if it becomes invalid when options change
 	useEffect(() => {
@@ -623,13 +677,40 @@ export default function ClothingViewer() {
 	};
 
 	const handleAddToCart = () => {
-		// Log the currently selected data
-		console.log("Added to cart:", {
-			upper: currentUpperData,
-			lower: currentLowerData,
+		const cart = JSON.parse(sessionStorage.getItem("cart")) || [];
+	
+		const itemsToAdd = [
+			{
+				productId: currentUpperData.name,   // Assuming `name` uniquely identifies
+				name: currentUpperData.name,
+				category: "Upper",
+				price: currentUpperData.price || 0,  // Set price if available
+				imageUrl: currentUpperData.imageUrl,
+				quantity: 1,
+			},
+			{
+				productId: currentLowerData.name,
+				name: currentLowerData.name,
+				category: "Lower",
+				price: currentLowerData.price || 0, // Set price if available
+				imageUrl: currentLowerData.imageUrl,
+				quantity: 1,
+			},
+		];
+	
+		const updatedCart = [...cart];
+	
+		itemsToAdd.forEach(item => {
+			const exists = updatedCart.some(ci => ci.productId === item.productId);
+			if (!exists) updatedCart.push(item);
 		});
-		showNotification("Added to cart!");
+	
+		sessionStorage.setItem("cart", JSON.stringify(updatedCart));
+	
+		console.log("Added to cart:", itemsToAdd);
+		showNotification("Current outfit added to cart!");
 	};
+	
 
 	const handleSaveOutfit = () => {
 		// Log the currently selected data
@@ -648,6 +729,10 @@ export default function ClothingViewer() {
 	};
 
 	// --- Render UI ---
+	console.log("Upper Options Length:", upperClothingOptions.length);
+	console.log("Current Upper Index:", upperIndex);
+	console.log("Current Upper Name:", currentUpperData?.name);
+
 	return (
 		<Box
 			sx={{

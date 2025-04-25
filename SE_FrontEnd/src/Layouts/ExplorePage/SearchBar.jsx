@@ -21,6 +21,8 @@ const SearchBar = () => {
       return; 
     }
 
+    
+
     setLoading(true);
     try {
       const res = await fetch("https://api.openai.com/v1/chat/completions", {
