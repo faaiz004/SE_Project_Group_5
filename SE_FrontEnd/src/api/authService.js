@@ -43,3 +43,13 @@ export const loginWithGoogle = async (googleToken) => {
   persist(data);
   return data;
 };
+
+export const getPreferences = async () => {
+  const { data } = await apiClient.get('/auth/get-preferences');
+  return data;  
+};
+
+export const updatePreferences = async (prefs) => {
+  const { data } = await apiClient.post('/auth/update-preferences', prefs);
+  return data;  
+};

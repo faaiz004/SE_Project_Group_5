@@ -1,5 +1,4 @@
-// src/pages/Account/Index.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
@@ -14,11 +13,6 @@ import {
   ListItemIcon,
   ListItemText,
   ListItemButton,
-  Grid,
-  Card,
-  CardContent,
-  CardMedia,
-  CardActions,
   FormControl,
   InputLabel,
   Select,
@@ -28,7 +22,9 @@ import {
   AppBar,
   Toolbar,
   Container,
-  Skeleton
+  Skeleton,
+  Card,
+  CardMedia
 } from '@mui/material';
 import {
   Person as PersonIcon,
@@ -41,172 +37,86 @@ import {
   ShoppingCart as ShoppingCartIcon,
   Edit as EditIcon
 } from '@mui/icons-material';
-import { useQuery } from '@tanstack/react-query';
-import {getSavedClothes} from '../../api/clothesService';
-import { styles } from './styles';
+import { useQuery, useMutation } from '@tanstack/react-query';
+
+import {getSavedClothes}      from '../../api/clothesService'; 
+import { styles }               from './styles';
 import { unsaveClothes } from "../../api/clothesService";
 import { getUserPreferences, updateUserPreferences } from '../../api/clothesService'; // Import from the newly created userService.js
 
 
+const styleOptions = [
+  { id: 'Modern',           name: 'Modern'    },
+  { id: 'Smart_Casual',     name: 'Business'  },
+  { id: 'Old_Money',        name: 'Old Money' },
+  { id: 'Casual_Everyday',  name: 'Casual'    }
+];
+
 export default function Account() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('account');
-  const [cartItems, setCartItems] = useState(() => {
-    return JSON.parse(sessionStorage.getItem("cart")) || [];
-  });
-  
-  useEffect(() => {
-    sessionStorage.setItem("cart", JSON.stringify(cartItems));
-  }, [cartItems]);
-  
-  const handleAddToCart = (item) => {
-    if (cartItems.some(ci => ci.productId === item._id)) return;
-    const newItem = {
-      productId: item._id,
-      name: item.name,
-      brand: item.brand,
-      size: item.size,
-      category: item.category,
-      price: item.price,
-      imageUrl: item.imageUrl,
-      quantity: 1
-    };
-    const updated = [...cartItems, newItem];
-    setCartItems(updated);
-  };
-  
-  const handleUnsave = async (id) => {
-    try {
-      await unsaveClothes(id);
-      setFilteredData(prev => prev.filter(item => item._id !== id)); // Adjust state name accordingly
-    } catch (err) {
-      console.error("Failed to unsave:", err);
-    }
-  };
 
   // === ACCOUNT INFO STATES & HANDLERS ===
   const [profileImage, setProfileImage] = useState(null);
-  const [isEditing, setIsEditing] = useState(true);
+  const [isEditing, setIsEditing]       = useState(true);
   const [userInfo, setUserInfo] = useState({
     firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    bio: ''
+    lastName : '',
+    email    : '',
+    phone    : '',
+    bio      : ''
   });
+
+  const handleUserInfoChange = (e) =>
+    setUserInfo(p => ({ ...p, [e.target.name]: e.target.value }));
+
   const handleImageUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => setProfileImage(reader.result);
-      reader.readAsDataURL(file);
-    }
+    const f = e.target.files[0];
+    if (!f) return;
+    const reader = new FileReader();
+    reader.onloadend = () => setProfileImage(reader.result);
+    reader.readAsDataURL(f);
   };
-  const handleUserInfoChange = (e) => {
-    const { name, value } = e.target;
-    setUserInfo(prev => ({ ...prev, [name]: value }));
-  };
-  const handleSaveUserInfo = () => setIsEditing(false);
-  const handleEditUserInfo = () => setIsEditing(true);
 
-  // === PREFERENCES STATES ===
-  const [gender, setGender] = useState('');
+  const [gender,    setGender]    = useState('');
   const [shirtSize, setShirtSize] = useState('');
-  const [pantSize, setPantSize] = useState('');
-  const [selectedClothingTypes, setSelectedClothingTypes] = useState([]);
-  const [isPreferencesEditable, setIsPreferencesEditable] = useState(false);
-  // Fetch preferences when the component loads
-  useEffect(() => {
-    const fetchPreferences = async () => {
-      try {
-        const preferences = await getUserPreferences();
-        setGender(preferences.gender || 'male');
-        setShirtSize(preferences.shirtSize || 'm');
-        setPantSize(preferences.pantSize || 'm');
-        setSelectedClothingTypes(preferences.selectedClothingTypes || ['Casual', 'Business Casual']);
-      } catch (error) {
-        console.error('Failed to fetch preferences:', error);
-      }
-    };
+  const [pantSize,  setPantSize]  = useState('');
+  const [stylePref, setStylePref] = useState('');     
 
-    fetchPreferences();
-  }, []);
-
-  const handleClothingTypeClick = (type) => {
-    setSelectedClothingTypes(prev =>
-      prev.includes(type) ? prev.filter(t => t !== type) : [...prev, type]
-    );
-  };
-
-  const handleSavePreferences = async () => {
-    try {
-      const preferences = { gender, shirtSize, pantSize, selectedClothingTypes };
-      await updateUserPreferences(preferences); // Save updated preferences to the backend
-      setIsPreferencesEditable(false); // Switch back to view mode after saving
-      alert('Preferences updated successfully!');
-    } catch (error) {
-      console.error('Failed to save preferences:', error);
-    }
-  };
-
-  const handleEditClick = () => {
-    setIsPreferencesEditable(true); // Switch to edit mode when "Edit" is clicked
-  };
-
-  const handleCancelEdit = () => {
-    setIsPreferencesEditable(false); // Switch back to view mode when canceling edit
-  };
-
-
-  // === BILLING STATES ===
-  const [savedCards, setSavedCards] = useState([
-    { id: 1, cardNumber: "**** **** **** 4321", expiryDate: "05/25", cardHolder: "John Doe", type: "Visa" },
-    { id: 2, cardNumber: "**** **** **** 8765", expiryDate: "12/24", cardHolder: "John Doe", type: "Mastercard" }
-  ]);
-  const [newCard, setNewCard] = useState({
-    cardHolder: '', cardNumber: '', expiryDate: '', cvc: '',
-    address: '', city: '', state: '', zipCode: ''
-  });
-  const handleNewCardChange = (e) => {
-    const { name, value } = e.target;
-    setNewCard(prev => ({ ...prev, [name]: value }));
-  };
-  const handleAddCard = () => {
-    if (!newCard.cardHolder || !newCard.cardNumber || !newCard.expiryDate || !newCard.cvc) {
-      alert('Please fill in all required card fields');
-      return;
-    }
-    const formattedNumber = "**** **** **** " + newCard.cardNumber.slice(-4);
-    const cardType = newCard.cardNumber.startsWith('4') ? 'Visa' : 'Mastercard';
-    setSavedCards(prev => [
-      ...prev,
-      {
-        id: prev.length + 1,
-        cardNumber: formattedNumber,
-        expiryDate: newCard.expiryDate,
-        cardHolder: newCard.cardHolder,
-        type: cardType
-      }
-    ]);
-    setNewCard({
-      cardHolder: '', cardNumber: '', expiryDate: '', cvc: '',
-      address: '', city: '', state: '', zipCode: ''
-    });
-  };
-  const handleDeleteCard = (id) => {
-    setSavedCards(prev => prev.filter(c => c.id !== id));
-  };
-
-  // === SAVED CLOTHES QUERY & RENDERING ===
   const {
-    data: savedClothes = [],
-    isLoading: isLoadingSaved,
-    isError: isErrorSaved,
-    error: savedError,
+    data: fetchedPrefs = null,
+    isLoading: prefLoading,
+    isError  : prefError
   } = useQuery({
-    queryKey: ['savedClothes'],
-    queryFn: getSavedClothes,
-    enabled: activeTab === 'savedOutfits',
+    queryKey : ['userPreferences'],
+    queryFn  : getPreferences,
+    enabled  : activeTab === 'preferences'
+  });
+
+  useEffect(() => {
+    if (fetchedPrefs) {
+      setGender     (fetchedPrefs.gender          ?? '');
+      setShirtSize  (fetchedPrefs.shirtSize       ?? '');
+      setPantSize   (fetchedPrefs.pantSize        ?? '');
+      setStylePref  (fetchedPrefs.stylePreference ?? '');
+    }
+  }, [fetchedPrefs]);
+
+  const savePrefs = useMutation({
+    mutationFn : updatePreferences,
+    onSuccess  : () => alert('Preferences saved!'),
+    onError    : () => alert('Could not save preferences')
+  });
+
+  const {
+    data      : savedClothes = [],
+    isLoading : isLoadingSaved,
+    isError   : isErrorSaved,
+    error     : savedError
+  } = useQuery({
+    queryKey : ['savedClothes'],
+    queryFn  : getSavedClothes,
+    enabled  : activeTab === 'savedOutfits'
   });
   const [filteredData, setFilteredData] = useState([]);
   useEffect(() => {
@@ -217,10 +127,9 @@ export default function Account() {
   
 
   const groupByCategoryAndType = (items) =>
-    items.reduce((acc, item) => {
-      const type = item.upper ? 'Uppers' : 'Lowers';
-      const key = `${item.category} - ${type}`;
-      (acc[key] = acc[key] || []).push(item);
+    items.reduce((acc, it) => {
+      const k = `${it.category} - ${it.upper ? 'Uppers' : 'Lowers'}`;
+      (acc[k] = acc[k] || []).push(it);
       return acc;
     }, {});
 
@@ -243,28 +152,10 @@ export default function Account() {
 
     const groups = Object.entries(groupByCategoryAndType(filteredData));
 
-    return groups.map(([groupName, items]) => {
-      // de‑dup by name
+    return groups.map(([grp, items]) => {
       const unique = items.filter((it, i, arr) =>
         arr.findIndex(x => x.name === it.name) === i
       );
-      // nice label
-      const prefixMap = {
-        SF_BL: 'Blazers',
-        SF_DS: 'Dress Shirts',
-        SF_JN: 'Jeans',
-        SF_PT: 'Pants / Trousers',
-        SF_PS: 'Polo Shirts',
-        SF_SR: 'Shorts',
-        SF_TS: 'T - Shirts'
-      };
-      let label = unique[0]?.category || '';
-      for (const pre in prefixMap) {
-        if (unique[0]?.name?.startsWith(pre)) {
-          label = `${prefixMap[pre]} - ${unique[0].upper ? 'Uppers' : 'Lowers'}`;
-          break;
-        }
-      }
 
       return (
         <Box key={groupName} sx={{ mb: 4 }}>
@@ -354,9 +245,96 @@ export default function Account() {
     });
   };
 
-  // === RENDER SWITCH FOR TABS ===
+  const renderPreferences = () => (
+    <Paper sx={styles.contentPaper}>
+      <Box sx={styles.contentHeader}>
+        <Typography variant="h5" sx={styles.contentTitle}>Preferences</Typography>
+        <Typography variant="body2" color="text.secondary">
+          Manage your clothing preferences and sizes
+        </Typography>
+      </Box>
+      <Divider />
+
+      {prefLoading && (
+        <Box sx={{ p: 3 }}>
+          <Skeleton width="40%" height={30} sx={{ mb: 2 }} />
+          <Skeleton variant="rectangular" height={180} />
+        </Box>
+      )}
+
+      {!prefLoading && !prefError && (
+        <>
+          <Box sx={styles.contentBody}>
+            <FormControl sx={{ mb: 3 }}>
+              <InputLabel>Gender</InputLabel>
+              <Select value={gender} onChange={e => setGender(e.target.value)}>
+                <MenuItem value="male">Male</MenuItem>
+                <MenuItem value="female">Female</MenuItem>
+              </Select>
+            </FormControl>
+
+            <FormControl fullWidth sx={{ mb: 3 }}>
+              <InputLabel>Shirt Size</InputLabel>
+              <Select value={shirtSize} onChange={e => setShirtSize(e.target.value)}>
+                <MenuItem value="small">Small</MenuItem>
+                <MenuItem value="medium">Medium</MenuItem>
+                <MenuItem value="large">Large</MenuItem>
+              </Select>
+            </FormControl>
+
+            <FormControl fullWidth sx={{ mb: 3 }}>
+              <InputLabel>Pant Size</InputLabel>
+              <Select value={pantSize} onChange={e => setPantSize(e.target.value)}>
+                <MenuItem value="small">Small</MenuItem>
+                <MenuItem value="medium">Medium</MenuItem>
+                <MenuItem value="large">Large</MenuItem>
+              </Select>
+            </FormControl>
+
+            <Box>
+              <Typography sx={{ mb: 1 }}>Preferred Style</Typography>
+              {styleOptions.map(opt => (
+                <Chip
+                  key={opt.id}
+                  label={opt.name}
+                  variant={stylePref === opt.id ? 'filled' : 'outlined'}
+                  onClick={() => setStylePref(opt.id)}
+                  sx={{ mr: 1, mb: 1 }}
+                />
+              ))}
+            </Box>
+          </Box>
+
+          <Divider />
+          <Box sx={styles.contentFooter}>
+            <Button
+              variant="contained"
+              disabled={savePrefs.isLoading}
+              onClick={() => savePrefs.mutate({
+                gender,
+                shirtSize,
+                pantSize,
+                stylePreference: stylePref     
+              })}
+            >
+              {savePrefs.isLoading ? 'Saving…' : 'Save Preferences'}
+            </Button>
+          </Box>
+        </>
+      )}
+
+      {prefError && (
+        <Typography sx={{ p: 3 }} color="error">
+          Failed to load preferences.
+        </Typography>
+      )}
+    </Paper>
+  );
+
   const renderContent = () => {
     switch (activeTab) {
+      case 'preferences':  return renderPreferences();
+
       case 'account':
         return (
           <Paper sx={styles.contentPaper}>
@@ -368,93 +346,61 @@ export default function Account() {
             </Box>
             <Divider />
             <Box sx={styles.contentBody}>
-              {/* Profile Picture */}
+              {/* Profile picture */}
               <Box sx={styles.profilePictureSection}>
                 <Avatar src={profileImage} sx={styles.profileAvatar}>
                   {!profileImage && 'UP'}
                 </Avatar>
                 <Box>
-                  <input
-                    accept="image/*"
-                    id="upload-photo"
-                    type="file"
-                    style={{ display: 'none' }}
-                    onChange={handleImageUpload}
-                  />
+                  <input id="upload-photo" type="file" accept="image/*"
+                         style={{ display: 'none' }} onChange={handleImageUpload}/>
                   <label htmlFor="upload-photo">
-                    <Button
-                      variant="outlined"
-                      component="span"
-                      startIcon={<PhotoCameraIcon />}
-                      size="small"
-                    >
+                    <Button variant="outlined" component="span"
+                            startIcon={<PhotoCameraIcon/>} size="small">
                       Change Photo
                     </Button>
                   </label>
                 </Box>
               </Box>
+
               {isEditing ? (
                 <Box sx={styles.formSection}>
                   <Box sx={styles.nameFieldsContainer}>
-                    <TextField
-                      label="First Name"
-                      name="firstName"
-                      value={userInfo.firstName}
-                      onChange={handleUserInfoChange}
-                      fullWidth
-                      sx={styles.textField}
-                    />
-                    <TextField
-                      label="Last Name"
-                      name="lastName"
-                      value={userInfo.lastName}
-                      onChange={handleUserInfoChange}
-                      fullWidth
-                      sx={styles.textField}
-                    />
+                    <TextField fullWidth label="First Name" name="firstName"
+                               value={userInfo.firstName} onChange={handleUserInfoChange}
+                               sx={styles.textField}/>
+                    <TextField fullWidth label="Last Name"  name="lastName"
+                               value={userInfo.lastName}  onChange={handleUserInfoChange}
+                               sx={styles.textField}/>
                   </Box>
-                  <TextField
-                    label="Email"
-                    name="email"
-                    value={userInfo.email}
-                    onChange={handleUserInfoChange}
-                    fullWidth
-                    sx={styles.textField}
-                  />
-                  <TextField
-                    label="Phone"
-                    name="phone"
-                    value={userInfo.phone}
-                    onChange={handleUserInfoChange}
-                    fullWidth
-                    sx={styles.textField}
-                  />
-                  <TextField
-                    label="Bio"
-                    name="bio"
-                    value={userInfo.bio}
-                    onChange={handleUserInfoChange}
-                    fullWidth
-                    multiline
-                    rows={3}
-                    sx={styles.textField}
-                  />
+                  <TextField fullWidth label="Email"  name="email"
+                             value={userInfo.email} onChange={handleUserInfoChange}
+                             sx={styles.textField}/>
+                  <TextField fullWidth label="Phone" name="phone"
+                             value={userInfo.phone} onChange={handleUserInfoChange}
+                             sx={styles.textField}/>
+                  <TextField fullWidth multiline rows={3} label="Bio" name="bio"
+                             value={userInfo.bio} onChange={handleUserInfoChange}
+                             sx={styles.textField}/>
                 </Box>
               ) : (
                 <Box sx={styles.infoDisplay}>
-                  <Typography><b>Name:</b> {userInfo.firstName} {userInfo.lastName}</Typography>
+                  <Typography><b>Name:</b>  {userInfo.firstName} {userInfo.lastName}</Typography>
                   <Typography><b>Email:</b> {userInfo.email}</Typography>
                   <Typography><b>Phone:</b> {userInfo.phone}</Typography>
-                  <Typography><b>Bio:</b> {userInfo.bio}</Typography>
+                  <Typography><b>Bio:</b>   {userInfo.bio}</Typography>
                 </Box>
               )}
             </Box>
             <Divider />
             <Box sx={styles.contentFooter}>
               {isEditing ? (
-                <Button variant="contained" onClick={handleSaveUserInfo}>Save Changes</Button>
+                <Button variant="contained" onClick={() => setIsEditing(false)}>
+                  Save Changes
+                </Button>
               ) : (
-                <Button variant="outlined" startIcon={<EditIcon />} onClick={handleEditUserInfo}>
+                <Button variant="outlined" startIcon={<EditIcon/>}
+                        onClick={() => setIsEditing(true)}>
                   Edit Information
                 </Button>
               )}
@@ -692,9 +638,7 @@ export default function Account() {
               </Typography>
             </Box>
             <Divider />
-            <Box sx={styles.contentBody}>
-              {renderSavedClothes()}
-            </Box>
+            <Box sx={styles.contentBody}>{renderSavedClothes()}</Box>
           </Paper>
         );
 
@@ -705,24 +649,17 @@ export default function Account() {
 
   return (
     <Box sx={styles.root}>
-      {/* Top bar */}
+      {/* Top App-bar */}
       <AppBar position="static" sx={{ bgcolor: '#fff', color: '#000', boxShadow: 'none' }}>
         <Toolbar>
-          <Typography
-            variant="h4"
-            sx={{
-              flexGrow: 1,
-              fontWeight: 'bold',
-              cursor: 'pointer',
-              transition: 'transform 0.2s',
-              '&:hover': { transform: 'scale(1.03)' }
-            }}
-            onClick={() => navigate('/explore')}
-          >
-            Swipe‑Fit
+          <Typography variant="h4" sx={{
+            flexGrow: 1, fontWeight: 'bold', cursor: 'pointer',
+            transition: 'transform .2s', '&:hover': { transform: 'scale(1.03)' }
+          }} onClick={() => navigate('/explore')}>
+            Swipe-Fit
           </Typography>
           <IconButton onClick={() => navigate('/stylefeed')}>
-            <PersonIcon />
+            <PersonIcon/>
           </IconButton>
           <IconButton onClick={() => navigate('/cart')}>
             <ShoppingCartIcon />
@@ -751,35 +688,30 @@ export default function Account() {
         </Toolbar>
       </AppBar>
 
+      {/* Page Content */}
       <Container maxWidth="xl">
         <Box sx={styles.mainContainer}>
           {/* Sidebar */}
           <Paper sx={styles.sidebar}>
             <List>
               {[
-                { key: 'account', icon: <PersonIcon />, text: 'Account' },
-                { key: 'preferences', icon: <CheckroomIcon />, text: 'Preferences' },
-                { key: 'savedOutfits', icon: <FavoriteIcon />, text: 'Saved Clothes' },
-                { key: 'billing', icon: <CreditCardIcon />, text: 'Billing' },
-                { key: 'settings', icon: <SettingsIcon />, text: 'Settings' }
+                { key: 'account',      icon: <PersonIcon/>,      text: 'Account'        },
+                { key: 'preferences',  icon: <CheckroomIcon/>,   text: 'Preferences'    },
+                { key: 'savedOutfits', icon: <FavoriteIcon/>,    text: 'Saved Clothes'  },
               ].map(tab => (
                 <ListItem disablePadding key={tab.key}>
-                  <ListItemButton
-                    selected={activeTab === tab.key}
-                    onClick={() => setActiveTab(tab.key)}
-                  >
+                  <ListItemButton selected={activeTab === tab.key}
+                                  onClick={() => setActiveTab(tab.key)}>
                     <ListItemIcon>{tab.icon}</ListItemIcon>
-                    <ListItemText primary={tab.text} />
+                    <ListItemText primary={tab.text}/>
                   </ListItemButton>
                 </ListItem>
               ))}
             </List>
           </Paper>
 
-          {/* Content */}
-          <Box sx={styles.contentArea}>
-            {renderContent()}
-          </Box>
+          {/* Dynamic content */}
+          <Box sx={styles.contentArea}>{renderContent()}</Box>
         </Box>
       </Container>
     </Box>

@@ -21,7 +21,8 @@ export const login = async (req, res) => {
     if (!isValid) {
       return res.status(401).json({ error: 'Invalid credentials. Incorrect password.' });
     }
-    // console.log("JWT_SECRET", JWT_SECRET)
+
+    
     const token = jwt.sign(
       { userId: user._id, email: user.email },
       JWT_SECRET,
