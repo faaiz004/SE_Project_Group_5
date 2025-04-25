@@ -643,7 +643,7 @@ export default function ClothingViewer() {
 				productId: currentUpperData.name,
 				name: currentUpperData.name,
 				category: "Upper",
-				price: currentUpperData.price || 0, // Set price if available
+				price: currentUpperData.price || 0,
 				imageUrl: currentUpperData.imageUrl,
 				quantity: 1,
 			},
@@ -651,7 +651,7 @@ export default function ClothingViewer() {
 				productId: currentLowerData.name,
 				name: currentLowerData.name,
 				category: "Lower",
-				price: currentLowerData.price || 0, // Set price if available
+				price: currentLowerData.price || 0,
 				imageUrl: currentLowerData.imageUrl,
 				quantity: 1,
 			},
@@ -767,16 +767,16 @@ export default function ClothingViewer() {
 				{/* Right Side Action Buttons (Desktop) */}
 				<Box
 					sx={{
-						width: { md: "90px" }, // Fixed width on medium+ screens
-						display: { xs: "none", md: "flex" }, // Hidden on xs, flex on md+
+						width: { md: "90px" },
+						display: { xs: "none", md: "flex" },
 						flexDirection: "column",
 						alignItems: "center",
 						justifyContent: "center",
-						gap: 4, // Spacing between buttons
+						gap: 4,
 						p: 2,
 						borderLeft: "1px solid #eaeaea",
-						backgroundColor: "#fff", // Match surrounding UI
-						flexShrink: 0, // Prevent shrinking
+						backgroundColor: "#fff",
+						flexShrink: 0,
 					}}>
 					{[
 						{ icon: <RefreshIcon />, label: "Reset", handler: handleResetLook },
@@ -799,8 +799,8 @@ export default function ClothingViewer() {
 									width: "50px",
 									height: "50px",
 									border: "1px solid #eaeaea",
-									backgroundColor: "#f9f9f9", // Lighter background
-									"&:hover": { backgroundColor: "#f0f0f0" }, // Hover effect
+									backgroundColor: "#f9f9f9",
+									"&:hover": { backgroundColor: "#f0f0f0" },
 								}}>
 								{action.icon}
 							</IconButton>
@@ -889,7 +889,7 @@ export default function ClothingViewer() {
 						border: "1px solid #eaeaea",
 						borderRadius: "8px",
 						backgroundColor: "#fff",
-						minWidth: { xs: "150px", sm: "220px" }, // Responsive minimum width
+						minWidth: { xs: "150px", sm: "220px" },
 					}}>
 					<Typography
 						variant="subtitle1"
@@ -937,8 +937,8 @@ export default function ClothingViewer() {
 			{/* Bottom Action Buttons (Mobile) */}
 			<Box
 				sx={{
-					display: { xs: "flex", md: "none" }, // Display only on xs screens
-					justifyContent: "space-around", // Distribute buttons evenly
+					display: { xs: "flex", md: "none" },
+					justifyContent: "space-around",
 					p: 1.5,
 					gap: 1,
 					borderTop: "1px solid #eaeaea",
@@ -963,16 +963,15 @@ export default function ClothingViewer() {
 			{/* Notification Snackbar */}
 			<Snackbar
 				open={showSnackbar}
-				autoHideDuration={3000} // Duration message is shown
+				autoHideDuration={3000}
 				onClose={handleCloseSnackbar}
 				anchorOrigin={{ vertical: "bottom", horizontal: "center" }}>
 				{/* Wrap Alert for onClose propagation */}
 				<Alert
-					onClose={handleCloseSnackbar} // Allows closing via the 'x' on the Alert
+					onClose={handleCloseSnackbar}
 					severity={snackbarSeverity}
-					variant="filled" // Filled variant looks good for notifications
-					sx={{ width: "100%" }} // Ensure Alert fills Snackbar width
-				>
+					variant="filled"
+					sx={{ width: "100%" }}>
 					{snackbarMessage}
 				</Alert>
 			</Snackbar>
