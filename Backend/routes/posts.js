@@ -7,7 +7,7 @@ import { likePost } from '../controllers/Posts/likePost.js';
 import { unlikePost } from '../controllers/Posts/unlikePost.js';
 const router = express.Router();
 const storage = multer.memoryStorage();
-const upload = multer({ storage }); // store uploaded file in memory
+const upload = multer({ storage }); 
 
 // Route setup — notice `upload.single("image")` here
 router.post('/create',  upload.single("image"), verifyToken, createPost);

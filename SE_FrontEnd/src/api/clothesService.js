@@ -34,11 +34,12 @@ export const fetchOutfits = async () => {
   return data;
 };
 
+
 export const getUserPreferences = async () => {
   const token = localStorage.getItem('jwt');
   if (!token) throw new Error('No authentication token found');
 
-  // GET /api/auth/fetch-preferences
+  // GET /api/auth/fetch-references
   const { data } = await apiClient.get('/auth/fetch-preferences', {
     headers: { Authorization: `Bearer ${token}` }
   });
@@ -46,6 +47,18 @@ export const getUserPreferences = async () => {
   // data: { message, preferences: { gender, shirtSize, pantSize, … } }
   return data;
 };
+// export const getUserPreferences2 = async () => {
+//   const token = localStorage.getItem('jwt');
+//   if (!token) throw new Error('No authentication token found');
+
+//   // GET /api/auth/fetch-preferences
+//   const { data } = await apiClient.get('/auth/fetch-preferences', {
+//     headers: { Authorization: `Bearer ${token}` }
+//   });
+
+//   // data: { message, preferences: { gender, shirtSize, pantSize, … } }
+//   return data;
+// };
 
 export const updateUserPreferences = async prefs => {
   const token = localStorage.getItem('jwt');
@@ -55,4 +68,4 @@ export const updateUserPreferences = async prefs => {
     headers: { Authorization: `Bearer ${token}` }
   });
   return data;
-};
+

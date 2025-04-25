@@ -79,6 +79,7 @@
 
 import mongoose from 'mongoose';
 
+// schema for the clothes collection
 const clothesSchema = new mongoose.Schema(
   {
     name: {
@@ -144,26 +145,10 @@ const clothesSchema = new mongoose.Schema(
       required: true,
     },
 
-    lower: {
-      type: Boolean,
-      default: false, 
-    },
-
-    upper: {
-      type: Boolean,
-      default: false, 
-    },
-
-    gender: {
-      type: String,
-      enum: ['male', 'female', 'unisex'],
-    },
-
     gender: {
       type : String,
       enum: ['male', 'female', 'unisex'],
-    }
-    
+    }    
   },
   {
     timestamps: true,

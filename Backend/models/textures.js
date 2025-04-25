@@ -1,6 +1,7 @@
-// all textures/texture.js
 import mongoose from 'mongoose';
 
+
+// schema for the texture collection
 const textureSchema = new mongoose.Schema(
   {
     name: {
@@ -42,8 +43,6 @@ const textureSchema = new mongoose.Schema(
 textureSchema.index({ category: 1 });
 
 
-// Create the Mongoose model from the schema
 const Texture = mongoose.model('Texture', textureSchema);
 
-// Export the model
 export default Texture;

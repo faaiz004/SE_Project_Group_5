@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 
+// schema for the post collection
 const postSchema = new mongoose.Schema({
   imageUrl: {
     type: String,

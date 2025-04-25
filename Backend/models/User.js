@@ -41,10 +41,12 @@
 // ahsans
 import mongoose from 'mongoose';
 
+
+// user schema for the user collection
 const userSchema = new mongoose.Schema({
   username: { type: String },
   email: { type: String, required: true, unique: true },
-  password: { type: String , required:true}, // This was optional for OAuth users
+
   likedItems: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Clothes' }],
   ownedProducts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Clothes' }],
   savedOutfits: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Post' }],

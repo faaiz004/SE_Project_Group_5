@@ -1,9 +1,8 @@
-// controllers/googleAuthController.js
 import { OAuth2Client } from 'google-auth-library';
 import jwt from 'jsonwebtoken';
 import User from '../../models/User.js';
 
-
+// This function handles Google OAuth login
 export const googleAuth = async (req, res) => {
   const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
   const JWT_SECRET = process.env.JWT_SECRET 
@@ -39,7 +38,7 @@ export const googleAuth = async (req, res) => {
     const appToken = jwt.sign(
       { userId: user._id, email: user.email },
       JWT_SECRET,
-      { expiresIn: '168h' } // I need to set the expiration time
+      { expiresIn: '168h' } 
     );
 
     return res.json({

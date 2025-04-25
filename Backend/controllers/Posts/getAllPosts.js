@@ -1,6 +1,6 @@
-// controllers/posts/getAllPosts.js
+// This file gets all posts and generates signed URLs for their images
 import Post    from '../../models/Post.js';
-import Clothes from '../../models/Clothes.js';      // to populate clothes
+import Clothes from '../../models/clothes.js';      
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
@@ -21,24 +21,21 @@ export const getAllPosts = async (req, res) => {
     const userId = req.user.id;
 
     const posts = await Post.find()
-      .populate('user', 'email')      // only need email prefix client-side
-      .populate('clothes')            // bring full clothes docs
+      .populate('user', 'email')      
+      .populate('clothes')            
       .sort({ createdAt: -1 });
 
     const result = await Promise.all(
       posts.map(async (p) => {
         const o = p.toObject();
 
-        /* likes */
         o.likes             = o.likes.length;
         o.likedByCurrentUser = p.likes.some((id) => id.toString() === userId);
 
-        /* post image needs signing (private) */
         if (o.imageUrl) {
           o.signedImageUrl = await sign(keyFromURL(o.imageUrl));
         }
 
-        /* clothes: return same structure as getAllClothes (public imageUrl, no signing) */
         o.clothes = (o.clothes || []).map((c) => ({
           _id:      c._id,
           name:     c.name,
@@ -48,7 +45,7 @@ export const getAllPosts = async (req, res) => {
           price:    c.price,
           upper:    c.upper,
           lower:    c.lower,
-          imageUrl: c.imageUrl           // already public
+          imageUrl: c.imageUrl           
         }));
 
         return o;

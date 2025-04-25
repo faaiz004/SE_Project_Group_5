@@ -1,5 +1,6 @@
 import User from "../../models/User.js";
 
+// This function fetches the user's preferences from the database
 export const getUserPreferences = async (req, res) => {
 	try {
 		const userId = req.user.id; 

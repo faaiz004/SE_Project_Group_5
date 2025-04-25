@@ -8,12 +8,11 @@ import Clothes from '../models/clothes.js';
 
 dotenv.config();
 
-// Compute __dirname for ES modules
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
 // Set up the S3 client using credentials and region from your .env file
 const s3 = new S3Client({
-  region: process.env.AWS_REGION, // e.g., 'ap-southeast-2'
+  region: process.env.AWS_REGION, 
   credentials: {
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
@@ -152,21 +151,19 @@ const clothesData = [
   }
 ];
 
-// Helper function: Upload a local image file to AWS S3
+// Upload a local image file to AWS S3
 const uploadImageToS3 = async (filePath) => {
   try {
-    // Read the file as a Buffer
     const fileBuffer = fs.readFileSync(filePath);
     const fileExtension = path.extname(filePath);
     // Generate a unique S3 key for the file
     const key = `clothes/${uuidv4()}${fileExtension}`;
 
     const params = {
-      Bucket: process.env.AWS_BUCKET_NAME, // Your S3 bucket name
+      Bucket: process.env.AWS_BUCKET_NAME, 
       Key: key,
       Body: fileBuffer,
-      ContentType: 'image/png', // Adjust if you have different file types
-    //   ACL: 'public-read', // Make the file publicly accessible
+      ContentType: 'image/png', 
     };
 
     // Upload the file to S3
@@ -183,14 +180,12 @@ const uploadImageToS3 = async (filePath) => {
 // Main function to bulk push clothes data
 const bulkPushClothes = async () => {
   try {
-    // Connect to MongoDB (options no longer needed in Mongoose v6+)
     await mongoose.connect(process.env.MONGO_URI);
     console.log("✅ Connected to MongoDB");
 
     // Process each clothing item
     const clothesToInsert = [];
     for (const item of clothesData) {
-      // Upload image and get the public URL from S3
       const imageUrl = await uploadImageToS3(item.imagePath);
       
       // Create a clothing item object matching the Clothes model
@@ -207,7 +202,6 @@ const bulkPushClothes = async () => {
 
     // Bulk insert the clothing items into MongoDB
     const insertedDocs = await Clothes.insertMany(clothesToInsert);
-    console.log("✅ Bulk insert successful:", insertedDocs);
     process.exit(0);
   } catch (error) {
     console.error("❌ Bulk insert error:", error);
