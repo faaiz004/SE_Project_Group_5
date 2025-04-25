@@ -112,10 +112,12 @@ export default function ExploreClothes() {
 			const texture = await fetchTextureByName(textureName);
 			console.log("Texture found:", texture);
 			const textureUrl = texture.signedUrl;
+			const isUpper = texture.upper;
 
 			// navigate to mannequin page and maybe store in session/local state
 			sessionStorage.setItem("selectedTextureUrl", textureUrl);
 			sessionStorage.setItem("selectedModelName", item.name);
+			sessionStorage.setItem("selectedModelisUpper", isUpper);
 			navigate("/mannequin");
 		} catch (err) {
 			console.error("Texture not found for", textureName, err);

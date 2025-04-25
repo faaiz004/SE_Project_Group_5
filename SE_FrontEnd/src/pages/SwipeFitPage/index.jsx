@@ -1,4 +1,6 @@
-import React, {
+"use client";
+
+import {
 	useState,
 	useRef,
 	useEffect,
@@ -37,27 +39,7 @@ import * as THREE from "three";
 // const textureUrlA = sessionStorage.getItem("selectedTextureUrl");
 // console.log("Texture URL A:", textureUrlA);
 
-// This can remain global if it's truly static
-const LOWER_CLOTHING = [
-	{
-		name: "Denim Jeans",
-		textureUrl: "/textures/jeans.png",
-		geometryUrl: "/models/leg.glb",
-		scale: [1, 1, 1],
-		position: [0, -0.6, 0],
-	},
-	{
-		name: "Khaki Pants",
-		textureUrl: "/textures/red.png",
-		geometryUrl: "/models/leg.glb",
-		scale: [1, 1, 1],
-		position: [0, -0.6, 0],
-	},
-];
-
 // --- Helper Components (CanvasLoader, Fallbacks, ClothingModel, SceneContent) ---
-// These components remain unchanged as they receive props correctly
-// Make sure a '/textures/placeholder.png' exists in your public folder!
 
 function CanvasLoader() {
 	return (
@@ -198,15 +180,14 @@ function ClothingModel({ geometryUrl, textureUrl, scale, position, isUpper }) {
 	const [modelError, setModelError] = useState(false);
 	const [textureError, setTextureError] = useState(false);
 	// Ensure textureUrl is valid before calling useTexture/useGLTF
-	const safeTextureUrl = textureUrl || "/textures/placeholder.png"; // Use placeholder if null/undefined
+	const safeTextureUrl = textureUrl || "/textures/placeholder.png";
 
 	useEffect(() => {
 		setModelError(false);
 		setTextureError(false);
-	}, [geometryUrl, safeTextureUrl]); // Depend on safeTextureUrl
+	}, [geometryUrl, safeTextureUrl]);
 
-	// Use useGLTF hook
-	const { scene: geometryScene, error: gltfError } = useGLTF(geometryUrl, true); // Added 'true' for draco
+	const { scene: geometryScene, error: gltfError } = useGLTF(geometryUrl, true);
 
 	useEffect(() => {
 		if (gltfError) {
@@ -215,9 +196,8 @@ function ClothingModel({ geometryUrl, textureUrl, scale, position, isUpper }) {
 		}
 	}, [gltfError, geometryUrl]);
 
-	// Use useTexture hook
 	const texture = useTexture(
-		safeTextureUrl, // Use the safe URL
+		safeTextureUrl,
 		(tex) => {
 			tex.flipY = false;
 			tex.colorSpace = THREE.SRGBColorSpace;
@@ -452,14 +432,31 @@ export default function ClothingViewer() {
 
 	// --- State for dynamic texture URL ---
 	const [dynamicUpperTextureUrl, setDynamicUpperTextureUrl] = useState(null); // Start as null
+	const [dynamicLowerTextureUrl, setDynamicLowerTextureUrl] = useState(null); // New state for lower clothing
 
 	// --- Effect to load URL from sessionStorage ---
 	useEffect(() => {
-		const urlFromStorage = sessionStorage.getItem("selectedTextureUrl");
-		console.log("Loaded from sessionStorage:", urlFromStorage);
+		const UrlFromStorage = sessionStorage.getItem("selectedTextureUrl");
+		const isUpper = sessionStorage.getItem("selectedModelisUpper") === "true";
+
+		// const lowerUrlFromStorage = sessionStorage.getItem(
+		// 	"selectedLowerTextureUrl"
+		// );
+		// console.log("Loaded from sessionStorage - Upper:", UrlFromStorage);
+		// console.log("Loaded from sessionStorage - Lower:", UrlFromStorage);
 		// *** IMPORTANT: Add a placeholder image at /public/textures/placeholder.png ***
-		// *** OR change the fallback logic here                                     ***
-		setDynamicUpperTextureUrl(urlFromStorage || "/textures/placeholder.png");
+		// *** OR change the fallback logic here
+		//         ***
+		// console.log("Is Upper:", isUpper);
+		if (isUpper) {
+			setDynamicUpperTextureUrl(UrlFromStorage || "/textures/red.png");
+			setDynamicLowerTextureUrl("/textures/jeans.png"); // Default lower clothing
+		} else {
+			setDynamicUpperTextureUrl("/textures/red.png");
+			setDynamicLowerTextureUrl(UrlFromStorage || "/textures/red.png");
+		}
+		// setDynamicUpperTextureUrl(UrlFromStorage || "/textures/placeholder.png");
+		// setDynamicLowerTextureUrl(UrlFromStorage || "/textures/red.png");
 	}, []); // Empty array runs once on mount
 
 	// --- Define clothing options dynamically using useMemo ---
@@ -483,20 +480,53 @@ export default function ClothingViewer() {
 		return [
 			{
 				name: "Blue Pattern Shirt",
-				textureUrl: dynamicUpperTextureUrl, // Static URL
+				textureUrl: dynamicUpperTextureUrl,
 				geometryUrl: "/models/bomber_jacket.glb",
 				scale: [1, 1, 1],
 				position: [0, -0.3, 0],
 			},
 			{
 				name: "Red Stripe Shirt",
-				textureUrl: dynamicUpperTextureUrl, // Use the state variable
+				textureUrl: dynamicUpperTextureUrl,
 				geometryUrl: "/models/bomber_jacket.glb",
 				scale: [1, 1, 1],
 				position: [0, -0.3, 0],
 			},
 		];
 	}, [dynamicUpperTextureUrl]); // Recompute when the dynamic URL changes
+
+	// Replace the static LOWER_CLOTHING array with a dynamic implementation
+	const LOWER_CLOTHING = useMemo(() => {
+		// Return only static items while loading the dynamic one
+		if (dynamicLowerTextureUrl === null) {
+			return [
+				{
+					name: "Denim Jeans",
+					textureUrl: "/textures/jeans.png",
+					geometryUrl: "/models/leg.glb",
+					scale: [1, 1, 1],
+					position: [0, -0.6, 0],
+				},
+			];
+		}
+		// Once loaded, return the full array with dynamic texture
+		return [
+			{
+				name: "Denim Jeans",
+				textureUrl: dynamicLowerTextureUrl, // Use dynamic texture URL
+				geometryUrl: "/models/leg.glb",
+				scale: [1, 1, 1],
+				position: [0, -0.6, 0],
+			},
+			{
+				name: "Khaki Pants",
+				textureUrl: dynamicLowerTextureUrl, // Use dynamic texture URL
+				geometryUrl: "/models/leg.glb",
+				scale: [1, 1, 1],
+				position: [0, -0.6, 0],
+			},
+		];
+	}, [dynamicLowerTextureUrl]); // Recompute when the dynamic URL changes
 
 	// Reset upperIndex if it becomes invalid when options change
 	useEffect(() => {
@@ -518,9 +548,7 @@ export default function ClothingViewer() {
 
 	// --- Auto-rotation Effect ---
 	useEffect(() => {
-		// Start auto-rotate when indices change, unless context was just lost
 		if (snackbarSeverity !== "warning") {
-			// Avoid auto-rotating immediately after context loss
 			setAutoRotate(true);
 		}
 	}, [upperIndex, lowerIndex, snackbarSeverity]);
@@ -554,6 +582,29 @@ export default function ClothingViewer() {
 
 	const currentUpperData = upperClothingOptions[safeUpperIndex];
 	const currentLowerData = LOWER_CLOTHING[safeLowerIndex];
+
+	// --- Loading State Check ---
+	// Show loader if dynamic data isn't ready yet
+	if (
+		!currentUpperData ||
+		!currentLowerData ||
+		dynamicUpperTextureUrl === null ||
+		dynamicLowerTextureUrl === null
+	) {
+		console.log("Main component loading state active...");
+		return (
+			<Box
+				sx={{
+					display: "flex",
+					justifyContent: "center",
+					alignItems: "center",
+					height: "100vh",
+				}}>
+				<CircularProgress />
+				<Typography sx={{ ml: 2 }}>Loading Outfit...</Typography>
+			</Box>
+		);
+	}
 
 	const handleAddToFavorites = () => {
 		// Log the currently selected data
@@ -595,28 +646,6 @@ export default function ClothingViewer() {
 		}
 		setShowSnackbar(false);
 	};
-
-	// --- Loading State Check ---
-	// Show loader if dynamic data isn't ready yet
-	if (
-		!currentUpperData ||
-		!currentLowerData ||
-		dynamicUpperTextureUrl === null
-	) {
-		console.log("Main component loading state active...");
-		return (
-			<Box
-				sx={{
-					display: "flex",
-					justifyContent: "center",
-					alignItems: "center",
-					height: "100vh",
-				}}>
-				<CircularProgress />
-				<Typography sx={{ ml: 2 }}>Loading Outfit...</Typography>
-			</Box>
-		);
-	}
 
 	// --- Render UI ---
 	return (
