@@ -21,3 +21,17 @@ export const createPost = async ({ image, caption, clothes }) => {
   });
   return data;
 };
+
+export const likePost = async (postId) => {
+  if (!postId) throw new Error('Post ID is required');
+
+  const { data } = await apiClient.post(`/posts/${postId}/like`);
+  return data;  
+};
+
+export const unlikePost = async (postId) => {
+  if (!postId) throw new Error('Post ID is required');
+
+  const { data } = await apiClient.post(`/posts/${postId}/unlike`);
+  return data;
+};
