@@ -649,21 +649,22 @@ import {
   getUserPreferences,
 } from "../../api/clothesService";
 import { useNavigate } from "react-router-dom";
+import { fetchTextureByName } from "../../api/texturesService";
 
 const root = {
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  width: "100%",
-  backgroundColor: "#f0f0f0",
-  fontFamily: "Inter, sans-serif",
+	display: "flex",
+	flexDirection: "column",
+	alignItems: "center",
+	width: "100%",
+	backgroundColor: "#f0f0f0",
+	fontFamily: "Inter, sans-serif",
 };
 
 export default function ExploreClothes() {
-  const { data, isLoading, isError, error } = useQuery({
-    queryKey: ["outfits"],
-    queryFn: fetchOutfits,
-  });
+	const { data, isLoading, isError, error } = useQuery({
+		queryKey: ["outfits"],
+		queryFn: fetchOutfits,
+	});
 
   const outfits = Array.isArray(data) ? data : [];
   const navigate = useNavigate();
@@ -673,9 +674,9 @@ export default function ExploreClothes() {
   const [preferences, setPreferences] = useState(null);
   const [forYou, setForYou] = useState([]);
 
-  useEffect(() => {
-    const existingCart = JSON.parse(sessionStorage.getItem("cart")) || [];
-    setCartItems(existingCart);
+	useEffect(() => {
+		const existingCart = JSON.parse(sessionStorage.getItem("cart")) || [];
+		setCartItems(existingCart);
 
     const fetchSaved = async () => {
       try {
@@ -735,36 +736,55 @@ export default function ExploreClothes() {
     },
   });
 
-  const handleToggleSave = (clothesId) => {
-    const was = savedStates[clothesId] || false;
-    setSavedStates((p) => ({ ...p, [clothesId]: !was }));
-    if (!was) saveMutation.mutate(clothesId);
-    else unsaveMutation.mutate(clothesId);
-  };
+	const handleToggleSave = (clothesId) => {
+		const was = savedStates[clothesId] || false;
+		setSavedStates((p) => ({ ...p, [clothesId]: !was }));
+		if (!was) saveMutation.mutate(clothesId);
+		else unsaveMutation.mutate(clothesId);
+	};
 
-  const handleAddToCart = (item, imageUrl) => {
-    if (cartItems.some((ci) => ci.productId === item._id)) return;
-    const entry = {
-      productId: item._id,
-      name: item.name,
-      brand: item.brand,
-      size: item.size,
-      category: item.category,
-      price: item.price,
-      imageUrl,
-      quantity: 1,
-    };
-    const updated = [...cartItems, entry];
-    sessionStorage.setItem("cart", JSON.stringify(updated));
-    setCartItems(updated);
-  };
+	const handleAddToCart = (item, imageUrl) => {
+		if (cartItems.some((ci) => ci.productId === item._id)) return;
+		const entry = {
+			productId: item._id,
+			name: item.name,
+			brand: item.brand,
+			size: item.size,
+			category: item.category,
+			price: item.price,
+			imageUrl,
+			quantity: 1,
+		};
+		const updated = [...cartItems, entry];
+		sessionStorage.setItem("cart", JSON.stringify(updated));
+		setCartItems(updated);
+	};
 
-  const handleScroll = (groupName, dir) => {
-    const c = scrollContainerRefs.current[groupName];
-    if (!c) return;
-    const amount = c.clientWidth * 0.8;
-    c.scrollBy({ left: dir === "left" ? -amount : amount, behavior: "smooth" });
-  };
+	const handleScroll = (groupName, dir) => {
+		const c = scrollContainerRefs.current[groupName];
+		if (!c) return;
+		const amount = c.clientWidth * 0.8;
+		c.scrollBy({ left: dir === "left" ? -amount : amount, behavior: "smooth" });
+	};
+
+	const handleImageClick = async (item) => {
+		const textureName = `${item.name}_texture`; // append _texture
+		try {
+			const texture = await fetchTextureByName(textureName);
+			console.log("Texture found:", texture);
+			const textureUrl = texture.signedUrl;
+			const isUpper = texture.upper;
+
+			// navigate to mannequin page and maybe store in session/local state
+			sessionStorage.setItem("selectedTextureUrl", textureUrl);
+			sessionStorage.setItem("selectedModelName", item.name);
+			sessionStorage.setItem("selectedModelisUpper", isUpper);
+			navigate("/mannequin");
+		} catch (err) {
+			console.error("Texture not found for", textureName, err);
+			alert("Texture not found for this outfit.");
+		}
+	};
 
   const renderCard = (item) => {
     const raw = item.signedImageUrl || item.imageUrl || "";

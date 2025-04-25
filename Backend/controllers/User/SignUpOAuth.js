@@ -3,10 +3,10 @@ import { OAuth2Client } from 'google-auth-library';
 import jwt from 'jsonwebtoken';
 import User from '../../models/User.js';
 
-const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
-const JWT_SECRET = process.env.JWT_SECRET || 'yoursecretkey';
 
 export const googleAuth = async (req, res) => {
+  const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+  const JWT_SECRET = process.env.JWT_SECRET 
   const { token } = req.body;
   if (!token) {
     return res.status(400).json({ error: 'Token is required' });
@@ -39,7 +39,7 @@ export const googleAuth = async (req, res) => {
     const appToken = jwt.sign(
       { userId: user._id, email: user.email },
       JWT_SECRET,
-      { expiresIn: '1h' }
+      { expiresIn: '168h' } // I need to set the expiration time
     );
 
     return res.json({
@@ -49,6 +49,7 @@ export const googleAuth = async (req, res) => {
         id: user._id,
         username: user.username,
         email: user.email,
+        preferencesCompleted: user.preferencesCompleted,
       },
     });
   } catch (error) {

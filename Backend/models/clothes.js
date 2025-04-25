@@ -93,7 +93,6 @@ const clothesSchema = new mongoose.Schema(
     },
     size: {
       type: String,
-      // Enum ensures size must be one of these values
       enum: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
       default: 'M', 
       required: true,
@@ -160,6 +159,11 @@ const clothesSchema = new mongoose.Schema(
       enum: ['male', 'female', 'unisex'],
     },
 
+    gender: {
+      type : String,
+      enum: ['male', 'female', 'unisex'],
+    }
+    
   },
   {
     timestamps: true,

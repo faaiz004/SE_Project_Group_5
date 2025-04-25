@@ -19,33 +19,37 @@ const Chatbot = ({ closeChat }) => {
 
   const sendMessage = async (msg) => {
     if (!msg.trim()) return;
+  
     const userMessage = { role: "user", content: msg };
     const history = [...messages, userMessage];
     setMessages(history);
     setInput("");
     setLoading(true);
-
+  
     try {
-      const resp = await fetch('http://localhost:8000/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const resp = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${import.meta.env.VITE_OPENAI_API_KEY}`,
+        },
         body: JSON.stringify({
-          inputs: {
-            messages: [
-              { role: "system", content: "You are a helpful assistant to give recommendations about clothing." },
-              ...history
-            ]
-          },
-          parameters: { max_tokens: 500 }
-        })
+          model: "gpt-3.5-turbo",
+          messages: [
+            { role: "system", content: "You are a helpful assistant to give recommendations about clothing." },
+            ...history,
+          ],
+          max_tokens: 500,
+          temperature: 0.7,
+        }),
       });
-
-      if (!resp.ok) throw new Error(`Server error: ${resp.status}`);
+  
+      if (!resp.ok) throw new Error(`OpenAI error: ${resp.status}`);
       const data = await resp.json();
       const botContent = data.choices?.[0]?.message?.content || "No response received.";
       setMessages(prev => [...prev, { role: "assistant", content: botContent }]);
     } catch (err) {
-      console.error("Proxy Fetch Error:", err);
+      console.error("OpenAI Fetch Error:", err);
       setMessages(prev => [
         ...prev,
         { role: "assistant", content: "Sorry, something went wrong." }
@@ -54,6 +58,7 @@ const Chatbot = ({ closeChat }) => {
       setLoading(false);
     }
   };
+  
 
   const selectCategory = (category) => {
     const catMsg = { role: "user", content: `I want to know more about ${category} clothing.` };

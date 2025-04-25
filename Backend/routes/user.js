@@ -11,6 +11,8 @@ const router = express.Router();
 // Define the signup route
 router.post('/signup', signup);
 router.post('/submit-preferences', verifyToken, submitPreferences);
+router.get('/get-preferences', verifyToken, getUserPreferences);
+router.post('/update-preferences', verifyToken, updateUserPreferences);
 router.post('/login', login);
 router.get('/fetch-preferences', verifyToken, fetchPreferences);
 router.put('/update-preferences', verifyToken, updatePreferences);

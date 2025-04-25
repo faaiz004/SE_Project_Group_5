@@ -92,7 +92,7 @@ const ExplorePage = () => {
             <IconButton onClick={() => navigate("/cart")}>
               <ShoppingCart sx={{ color: "white", fontSize: 30 }} />
             </IconButton>
-            <IconButton>
+            <IconButton onClick={() => navigate("/account")}>
               <Person sx={{ color: "white", fontSize: 30 }} />
             </IconButton>
           </Box>
