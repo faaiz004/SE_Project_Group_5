@@ -6,10 +6,8 @@ const connectDB = async () => {
   try {
 
     const conn = await mongoose.connect('mongodb+srv://mshafaytanveer67j:12345@swipe-fit.hsaprtd.mongodb.net/?retryWrites=true&w=majority&appName=Swipe-Fit');
-    console.log(`✅ MongoDB connected: ${conn.connection.host}`);
 
   } catch (error) {
-    console.error(`❌ MongoDB connection error: ${error.message}`);
     process.exit(1);
   }
 };
