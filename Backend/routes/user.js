@@ -8,6 +8,7 @@ import { updateUserPreferences } from '../controllers/User/updatePreferences.js'
 import { fetchPreferences } from '../controllers/User/FetchPreferences.js';
 import { updatePreferences } from '../controllers/User/FetchPreferences.js';
 
+
 const router = express.Router();
 
 // all routes for user
@@ -18,7 +19,8 @@ router.post('/update-preferences', verifyToken, updateUserPreferences);
 router.get('/fetch-preferences', verifyToken, fetchPreferences);
 router.put('/update-preferences', verifyToken, updatePreferences);
 router.post('/login', login);
-
+router.get('/fetch-preferences', verifyToken, fetchPreferences);
+router.put('/update-preferences', verifyToken, updatePreferences);
 
 
 export default router;
