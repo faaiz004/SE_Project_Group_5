@@ -237,7 +237,7 @@ export default function ExploreClothes() {
 
 			// navigate to mannequin page and maybe store in session/local state
 			sessionStorage.setItem("selectedTextureUrl", textureUrl);
-			sessionStorage.setItem("selectedModelName", item.name);
+			sessionStorage.setItem("selectedTextureName", item.name);
 			sessionStorage.setItem("selectedModelisUpper", isUpper);
 			navigate("/mannequin");
 		} catch (err) {

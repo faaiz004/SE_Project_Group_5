@@ -412,6 +412,11 @@ export default function ClothingViewer() {
 	// --- State for dynamic texture URL ---
 	const [dynamicUpperTextureUrl, setDynamicUpperTextureUrl] = useState(null);
 	const [dynamicLowerTextureUrl, setDynamicLowerTextureUrl] = useState(null);
+
+	const [dynamicUpperTextureName, setDynamicUpperTextureName] =
+		useState("Default Shirt");
+	const [dynamicLowerTextureName, setDynamicLowerTextureName] =
+		useState("Default Pants");
 	// console.log("textureUrl", dynamicUpperTextureUrl);
 	const { data, isLoading, error } = useQuery({
 		queryKey: ["clothesAll"],
@@ -446,6 +451,7 @@ export default function ClothingViewer() {
 	};
 
 	// --- Effect to load URL from sessionStorage ---
+	const textureSelectedName = sessionStorage.getItem("selectedTextureName");
 	useEffect(() => {
 		const UrlFromStorage = sessionStorage.getItem("selectedTextureUrl");
 		const isUpper = sessionStorage.getItem("selectedModelisUpper") === "true";
@@ -454,9 +460,14 @@ export default function ClothingViewer() {
 		if (isUpper) {
 			setDynamicUpperTextureUrl(UrlFromStorage || "/textures/texture.png");
 			setDynamicLowerTextureUrl("/textures/jeans.png");
+			// For names - use the stored name or default if not available
+			setDynamicUpperTextureName(textureSelectedName || "Default Shirt");
+			setDynamicLowerTextureName("Default Jeans");
 		} else {
 			setDynamicUpperTextureUrl("/textures/red.png");
 			setDynamicLowerTextureUrl(UrlFromStorage || "/textures/texture.png");
+			setDynamicUpperTextureName("Default Shirt");
+			setDynamicLowerTextureName(textureSelectedName || "Default Pants");
 		}
 	}, []);
 	// --- Define clothing options dynamically using useMemo ---
@@ -534,7 +545,7 @@ export default function ClothingViewer() {
 		) {
 			return [
 				{
-					name: "Custom Selection",
+					name: dynamicUpperTextureName,
 					textureUrl: dynamicUpperTextureUrl,
 					geometryUrl: "/models/bomber_jacket.glb",
 					scale: [1, 1, 1],
@@ -548,7 +559,7 @@ export default function ClothingViewer() {
 		}
 
 		return regularList;
-	}, [data, upperTextures, dynamicUpperTextureUrl]);
+	}, [data, upperTextures, dynamicUpperTextureName, dynamicUpperTextureUrl]);
 
 	const LOWER_CLOTHING = useMemo(() => {
 		if (!Array.isArray(data)) return [];
@@ -573,7 +584,7 @@ export default function ClothingViewer() {
 		) {
 			return [
 				{
-					name: "Custom Selection",
+					name: dynamicLowerTextureName,
 					textureUrl: dynamicLowerTextureUrl,
 					geometryUrl: "/models/leg.glb",
 					scale: [1, 1, 1],
@@ -587,7 +598,7 @@ export default function ClothingViewer() {
 		}
 
 		return regularList;
-	}, [data, lowerTextures, dynamicLowerTextureUrl]);
+	}, [data, lowerTextures, dynamicLowerTextureName, dynamicLowerTextureUrl]);
 	// Reset upperIndex if it becomes invalid when options change
 	useEffect(() => {
 		if (upperIndex >= upperClothingOptions.length) {
