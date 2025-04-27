@@ -450,7 +450,6 @@ export default function ClothingViewer() {
 		const UrlFromStorage = sessionStorage.getItem("selectedTextureUrl");
 		const isUpper = sessionStorage.getItem("selectedModelisUpper") === "true";
 		// console.log("UrlFromStorage", UrlsFromStorage);
-		
 
 		if (isUpper) {
 			setDynamicUpperTextureUrl(UrlFromStorage || "/textures/texture.png");
@@ -515,7 +514,8 @@ export default function ClothingViewer() {
 
 		const upperItems = getUniqueByName(data.filter((item) => item.upper));
 
-		return upperItems
+		// Create the regular list
+		const regularList = upperItems
 			.filter((item) => upperTextures[item.name])
 			.map((item) => ({
 				name: item.name,
@@ -526,14 +526,36 @@ export default function ClothingViewer() {
 				price: item.price || 0,
 				imageUrl: item.imageUrl || "",
 			}));
-	}, [data, upperTextures]);
+
+		// If we have a dynamic texture, add it as first item
+		if (
+			dynamicUpperTextureUrl &&
+			dynamicUpperTextureUrl !== "/textures/texture.png"
+		) {
+			return [
+				{
+					name: "Custom Selection",
+					textureUrl: dynamicUpperTextureUrl,
+					geometryUrl: "/models/bomber_jacket.glb",
+					scale: [1, 1, 1],
+					position: [0, -0.3, 0],
+					price: 0,
+					imageUrl: "",
+					isDynamic: true, // Flag to identify dynamic item
+				},
+				...regularList,
+			];
+		}
+
+		return regularList;
+	}, [data, upperTextures, dynamicUpperTextureUrl]);
 
 	const LOWER_CLOTHING = useMemo(() => {
 		if (!Array.isArray(data)) return [];
 
 		const lowerItems = getUniqueByName(data.filter((item) => item.lower));
 
-		return lowerItems
+		const regularList = lowerItems
 			.filter((item) => lowerTextures[item.name])
 			.map((item) => ({
 				name: item.name,
@@ -544,8 +566,28 @@ export default function ClothingViewer() {
 				price: item.price || 0,
 				imageUrl: item.imageUrl || "",
 			}));
-	}, [data, lowerTextures]);
 
+		if (
+			dynamicLowerTextureUrl &&
+			dynamicLowerTextureUrl !== "/textures/texture.png"
+		) {
+			return [
+				{
+					name: "Custom Selection",
+					textureUrl: dynamicLowerTextureUrl,
+					geometryUrl: "/models/leg.glb",
+					scale: [1, 1, 1],
+					position: [0, -0.6, 0],
+					price: 0,
+					imageUrl: "",
+					isDynamic: true,
+				},
+				...regularList,
+			];
+		}
+
+		return regularList;
+	}, [data, lowerTextures, dynamicLowerTextureUrl]);
 	// Reset upperIndex if it becomes invalid when options change
 	useEffect(() => {
 		if (upperIndex >= upperClothingOptions.length) {
