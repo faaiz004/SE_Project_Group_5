@@ -69,7 +69,7 @@ function WeightPreference() {
 				<Box sx={{ flexGrow: 1, mx: 2 }}>
 					<LinearProgress
 						variant="determinate"
-						value={40}
+						value={66.66}
 						sx={{
 							height: 8,
 							borderRadius: 4,
@@ -105,7 +105,7 @@ function WeightPreference() {
 					variant="h5"
 					align="center"
 					sx={{ fontWeight: 500, width: "33%" }}>
-					Step 2 of 5
+					Step 2 of 3
 				</Typography>
 				<Box sx={{ width: "33%", display: "flex", justifyContent: "flex-end" }}>
 					<Button
