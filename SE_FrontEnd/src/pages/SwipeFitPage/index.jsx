@@ -35,7 +35,9 @@ import {
 import * as THREE from "three";
 import { useQuery } from "@tanstack/react-query";
 import { fetchOutfits } from "../../api/clothesService";
-
+import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
+import HomeIcon from "@mui/icons-material/Home";''
+import { useNavigate } from "react-router-dom";
 // --- Helper Components (CanvasLoader, Fallbacks, ClothingModel, SceneContent) ---
 
 function CanvasLoader() {
@@ -416,7 +418,8 @@ export default function ClothingViewer() {
 	});
 
 	console.log(data);
-
+    const navigate = useNavigate();
+	const [cartItems, setCartItems] = useState([]);
 	const { uppers, lowers } = useMemo(() => {
 		const list = Array.isArray(data) ? data : [];
 		return {
@@ -684,39 +687,57 @@ export default function ClothingViewer() {
 
 	return (
 		<Box
-			sx={{
-				height: "100vh",
-				display: "flex",
-				flexDirection: "column",
-				bgcolor: "#f5f5f7",
-			}}>
-			{/* Header */}
-			<Box
-				sx={{
-					p: { xs: 2, md: 3 },
-					textAlign: "center",
-					backgroundColor: "#fff",
-					borderBottom: "1px solid #eaeaea",
-				}}>
-				<Typography
-					variant="h4"
-					sx={{
-						fontWeight: 600,
-						color: "#333",
-						fontSize: { xs: "1.5rem", md: "2.125rem" },
-					}}>
-					SwipeFit Dressroom
-				</Typography>
-				<Typography
-					variant="body1"
-					sx={{
-						mt: 1,
-						color: "#666",
-						fontSize: { xs: "0.875rem", md: "1rem" },
-					}}>
-					Select items and see them combined in 3D
-				</Typography>
-			</Box>
+		sx={{ height: "100vh", display: "flex", flexDirection: "column", bgcolor: "#f5f5f7" }}>
+      {/* Header */}
+      <Box sx={{ p: { xs: 2, md: 3 }, textAlign: "center", backgroundColor: "#fff", borderBottom: "1px solid #eaeaea" }}>
+        {/* Home Button on Left */}
+        <IconButton onClick={() => navigate("/explore")} sx={{ position: "absolute", left: 10, top: 10 }}>
+          <HomeIcon />
+        </IconButton>
+
+        <Typography variant="h4" sx={{ fontWeight: 600, color: "#333", fontSize: { xs: "1.5rem", md: "2.125rem" } }}>
+          SwipeFit Dressroom
+        </Typography>
+        <Typography variant="body1" sx={{ mt: 1, color: "#666", fontSize: { xs: "0.875rem", md: "1rem" } }}>
+          Select items and see them combined in 3D
+        </Typography>
+
+        {/* Cart Button on Right */}
+        <IconButton
+          onClick={() => navigate("/cart")}
+          sx={{
+            position: "absolute",
+            right: 10,
+            top: 10,
+            backgroundColor: "#fff",
+            border: "1px solid #eaeaea",
+            borderRadius: "50%",
+            padding: 1,
+          }}
+        >
+          <ShoppingCartOutlinedIcon />
+          {cartItems > 0 && (
+            <Box
+              sx={{
+                position: "absolute",
+                top: -5,
+                right: -5,
+                bgcolor: "#FF0000",
+                color: "white",
+                width: 16,
+                height: 16,
+                borderRadius: "50%",
+                fontSize: 10,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              {cartItems}
+            </Box>
+          )}
+        </IconButton>
+      </Box>
 
 			{/* Main Content Area */}
 			<Box
@@ -765,54 +786,46 @@ export default function ClothingViewer() {
 				</Box>
 
 				{/* Right Side Action Buttons (Desktop) */}
-				<Box
-					sx={{
-						width: { md: "90px" },
-						display: { xs: "none", md: "flex" },
-						flexDirection: "column",
-						alignItems: "center",
-						justifyContent: "center",
-						gap: 4,
-						p: 2,
-						borderLeft: "1px solid #eaeaea",
-						backgroundColor: "#fff",
-						flexShrink: 0,
-					}}>
-					{[
-						{ icon: <RefreshIcon />, label: "Reset", handler: handleResetLook },
-						{
-							icon: <ShoppingCartIcon />,
-							label: "Add Cart",
-							handler: handleAddToCart,
-						},
-					].map((action) => (
-						<Box
-							key={action.label}
-							sx={{
-								display: "flex",
-								flexDirection: "column",
-								alignItems: "center",
-							}}>
-							<IconButton
-								onClick={action.handler}
-								sx={{
-									width: "50px",
-									height: "50px",
-									border: "1px solid #eaeaea",
-									backgroundColor: "#f9f9f9",
-									"&:hover": { backgroundColor: "#f0f0f0" },
-								}}>
-								{action.icon}
-							</IconButton>
-							<Typography
-								variant="caption"
-								sx={{ mt: 0.5, textAlign: "center" }}>
-								{action.label}
-							</Typography>
-						</Box>
-					))}
-				</Box>
-			</Box>
+				<Box sx={{
+        width: { md: "90px" },
+        display: { xs: "none", md: "flex" },
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 4,
+        p: 2,
+        borderLeft: "1px solid #eaeaea",
+        backgroundColor: "#fff",
+        flexShrink: 0,
+      }}>
+        {[ 
+          { icon: <RefreshIcon />, label: "Reset", handler: () => {} },
+          {
+            icon: <ShoppingCartIcon />,
+            label: "Add Cart",
+            handler: handleAddToCart, // This is where the cart count is updated
+          },
+        ].map((action) => (
+          <Box key={action.label} sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+            <IconButton
+              onClick={action.handler}
+              sx={{
+                width: "50px",
+                height: "50px",
+                border: "1px solid #eaeaea",
+                backgroundColor: "#f9f9f9",
+                "&:hover": { backgroundColor: "#f0f0f0" },
+              }}
+            >
+              {action.icon}
+            </IconButton>
+            <Typography variant="caption" sx={{ mt: 0.5, textAlign: "center" }}>
+              {action.label}
+            </Typography>
+          </Box>
+        ))}
+      </Box>
+    </Box>
 
 			{/* Selection Controls Footer */}
 			<Box
