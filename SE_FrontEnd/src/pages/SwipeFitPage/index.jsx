@@ -36,7 +36,8 @@ import * as THREE from "three";
 import { useQuery } from "@tanstack/react-query";
 import { fetchOutfits } from "../../api/clothesService";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
-import HomeIcon from "@mui/icons-material/Home";''
+import HomeIcon from "@mui/icons-material/Home";
+("");
 import { useNavigate } from "react-router-dom";
 // --- Helper Components (CanvasLoader, Fallbacks, ClothingModel, SceneContent) ---
 
@@ -66,8 +67,8 @@ function CanvasLoader() {
 
 function FallbackUpperClothing({ textureUrl, position }) {
 	const [fbTextureError, setFbTextureError] = useState(false);
-	const safeTextureUrl = textureUrl || "/textures/red.png";
-
+	const safeTextureUrl = textureUrl || "/textures/texture.png";
+	// console.log("Fallback texture URL:", safeTextureUrl);
 	const texture = useTexture(
 		safeTextureUrl,
 		(tex) => {
@@ -409,16 +410,16 @@ export default function ClothingViewer() {
 	const [snackbarSeverity, setSnackbarSeverity] = useState("success");
 
 	// --- State for dynamic texture URL ---
-	const [dynamicUpperTextureUrl, setDynamicUpperTextureUrl] = useState(null); // Start as null
-	const [dynamicLowerTextureUrl, setDynamicLowerTextureUrl] = useState(null); // New state for lower clothing
-
+	const [dynamicUpperTextureUrl, setDynamicUpperTextureUrl] = useState(null);
+	const [dynamicLowerTextureUrl, setDynamicLowerTextureUrl] = useState(null);
+	// console.log("textureUrl", dynamicUpperTextureUrl);
 	const { data, isLoading, error } = useQuery({
 		queryKey: ["clothesAll"],
 		queryFn: fetchOutfits,
 	});
 
-	console.log(data);
-    const navigate = useNavigate();
+	// console.log(data);
+	const navigate = useNavigate();
 	const [cartItems, setCartItems] = useState([]);
 	const { uppers, lowers } = useMemo(() => {
 		const list = Array.isArray(data) ? data : [];
@@ -430,7 +431,6 @@ export default function ClothingViewer() {
 
 	/** Convert one DB row → the shape ClothingModel expects */
 	const rowToOption = (row, isUpper) => {
-		// fix double “/thumbnails/thumbnails/” if it’s in S3 key
 		const img = (row.signedImageUrl || row.imageUrl || "").replace(
 			"/thumbnails/thumbnails/",
 			"/thumbnails/"
@@ -438,8 +438,8 @@ export default function ClothingViewer() {
 
 		return {
 			name: row.name,
-			textureUrl: img, // show correct picture
-			geometryUrl: isUpper ? "/models/bomber_jacket.glb" : "/models/leg.glb", // whatever model you want
+			textureUrl: img,
+			geometryUrl: isUpper ? "/models/bomber_jacket.glb" : "/models/leg.glb",
 			scale: [1, 1, 1],
 			position: isUpper ? [0, -0.3, 0] : [0, -0.6, 0],
 		};
@@ -449,13 +449,15 @@ export default function ClothingViewer() {
 	useEffect(() => {
 		const UrlFromStorage = sessionStorage.getItem("selectedTextureUrl");
 		const isUpper = sessionStorage.getItem("selectedModelisUpper") === "true";
+		// console.log("UrlFromStorage", UrlsFromStorage);
+		
 
 		if (isUpper) {
-			setDynamicUpperTextureUrl(UrlFromStorage || "/textures/red.png");
-			setDynamicLowerTextureUrl("/textures/jeans.png"); // Default lower clothing
+			setDynamicUpperTextureUrl(UrlFromStorage || "/textures/texture.png");
+			setDynamicLowerTextureUrl("/textures/jeans.png");
 		} else {
 			setDynamicUpperTextureUrl("/textures/red.png");
-			setDynamicLowerTextureUrl(UrlFromStorage || "/textures/red.png");
+			setDynamicLowerTextureUrl(UrlFromStorage || "/textures/texture.png");
 		}
 	}, []);
 	// --- Define clothing options dynamically using useMemo ---
@@ -687,57 +689,80 @@ export default function ClothingViewer() {
 
 	return (
 		<Box
-		sx={{ height: "100vh", display: "flex", flexDirection: "column", bgcolor: "#f5f5f7" }}>
-      {/* Header */}
-      <Box sx={{ p: { xs: 2, md: 3 }, textAlign: "center", backgroundColor: "#fff", borderBottom: "1px solid #eaeaea" }}>
-        {/* Home Button on Left */}
-        <IconButton onClick={() => navigate("/explore")} sx={{ position: "absolute", left: 10, top: 10 }}>
-          <HomeIcon />
-        </IconButton>
+			sx={{
+				height: "100vh",
+				display: "flex",
+				flexDirection: "column",
+				bgcolor: "#f5f5f7",
+			}}>
+			{/* Header */}
+			<Box
+				sx={{
+					p: { xs: 2, md: 3 },
+					textAlign: "center",
+					backgroundColor: "#fff",
+					borderBottom: "1px solid #eaeaea",
+				}}>
+				{/* Home Button on Left */}
+				<IconButton
+					onClick={() => navigate("/explore")}
+					sx={{ position: "absolute", left: 10, top: 10 }}>
+					<HomeIcon />
+				</IconButton>
 
-        <Typography variant="h4" sx={{ fontWeight: 600, color: "#333", fontSize: { xs: "1.5rem", md: "2.125rem" } }}>
-          SwipeFit Dressroom
-        </Typography>
-        <Typography variant="body1" sx={{ mt: 1, color: "#666", fontSize: { xs: "0.875rem", md: "1rem" } }}>
-          Select items and see them combined in 3D
-        </Typography>
+				<Typography
+					variant="h4"
+					sx={{
+						fontWeight: 600,
+						color: "#333",
+						fontSize: { xs: "1.5rem", md: "2.125rem" },
+					}}>
+					SwipeFit Dressroom
+				</Typography>
+				<Typography
+					variant="body1"
+					sx={{
+						mt: 1,
+						color: "#666",
+						fontSize: { xs: "0.875rem", md: "1rem" },
+					}}>
+					Select items and see them combined in 3D
+				</Typography>
 
-        {/* Cart Button on Right */}
-        <IconButton
-          onClick={() => navigate("/cart")}
-          sx={{
-            position: "absolute",
-            right: 10,
-            top: 10,
-            backgroundColor: "#fff",
-            border: "1px solid #eaeaea",
-            borderRadius: "50%",
-            padding: 1,
-          }}
-        >
-          <ShoppingCartOutlinedIcon />
-          {cartItems > 0 && (
-            <Box
-              sx={{
-                position: "absolute",
-                top: -5,
-                right: -5,
-                bgcolor: "#FF0000",
-                color: "white",
-                width: 16,
-                height: 16,
-                borderRadius: "50%",
-                fontSize: 10,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              {cartItems}
-            </Box>
-          )}
-        </IconButton>
-      </Box>
+				{/* Cart Button on Right */}
+				<IconButton
+					onClick={() => navigate("/cart")}
+					sx={{
+						position: "absolute",
+						right: 10,
+						top: 10,
+						backgroundColor: "#fff",
+						border: "1px solid #eaeaea",
+						borderRadius: "50%",
+						padding: 1,
+					}}>
+					<ShoppingCartOutlinedIcon />
+					{cartItems > 0 && (
+						<Box
+							sx={{
+								position: "absolute",
+								top: -5,
+								right: -5,
+								bgcolor: "#FF0000",
+								color: "white",
+								width: 16,
+								height: 16,
+								borderRadius: "50%",
+								fontSize: 10,
+								display: "flex",
+								alignItems: "center",
+								justifyContent: "center",
+							}}>
+							{cartItems}
+						</Box>
+					)}
+				</IconButton>
+			</Box>
 
 			{/* Main Content Area */}
 			<Box
@@ -786,46 +811,54 @@ export default function ClothingViewer() {
 				</Box>
 
 				{/* Right Side Action Buttons (Desktop) */}
-				<Box sx={{
-        width: { md: "90px" },
-        display: { xs: "none", md: "flex" },
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: 4,
-        p: 2,
-        borderLeft: "1px solid #eaeaea",
-        backgroundColor: "#fff",
-        flexShrink: 0,
-      }}>
-        {[ 
-          { icon: <RefreshIcon />, label: "Reset", handler: () => {} },
-          {
-            icon: <ShoppingCartIcon />,
-            label: "Add Cart",
-            handler: handleAddToCart, // This is where the cart count is updated
-          },
-        ].map((action) => (
-          <Box key={action.label} sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-            <IconButton
-              onClick={action.handler}
-              sx={{
-                width: "50px",
-                height: "50px",
-                border: "1px solid #eaeaea",
-                backgroundColor: "#f9f9f9",
-                "&:hover": { backgroundColor: "#f0f0f0" },
-              }}
-            >
-              {action.icon}
-            </IconButton>
-            <Typography variant="caption" sx={{ mt: 0.5, textAlign: "center" }}>
-              {action.label}
-            </Typography>
-          </Box>
-        ))}
-      </Box>
-    </Box>
+				<Box
+					sx={{
+						width: { md: "90px" },
+						display: { xs: "none", md: "flex" },
+						flexDirection: "column",
+						alignItems: "center",
+						justifyContent: "center",
+						gap: 4,
+						p: 2,
+						borderLeft: "1px solid #eaeaea",
+						backgroundColor: "#fff",
+						flexShrink: 0,
+					}}>
+					{[
+						{ icon: <RefreshIcon />, label: "Reset", handler: () => {} },
+						{
+							icon: <ShoppingCartIcon />,
+							label: "Add Cart",
+							handler: handleAddToCart, // This is where the cart count is updated
+						},
+					].map((action) => (
+						<Box
+							key={action.label}
+							sx={{
+								display: "flex",
+								flexDirection: "column",
+								alignItems: "center",
+							}}>
+							<IconButton
+								onClick={action.handler}
+								sx={{
+									width: "50px",
+									height: "50px",
+									border: "1px solid #eaeaea",
+									backgroundColor: "#f9f9f9",
+									"&:hover": { backgroundColor: "#f0f0f0" },
+								}}>
+								{action.icon}
+							</IconButton>
+							<Typography
+								variant="caption"
+								sx={{ mt: 0.5, textAlign: "center" }}>
+								{action.label}
+							</Typography>
+						</Box>
+					))}
+				</Box>
+			</Box>
 
 			{/* Selection Controls Footer */}
 			<Box

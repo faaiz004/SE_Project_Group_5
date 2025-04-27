@@ -18,7 +18,7 @@ import {
 	getUserPreferences,
 } from "../../api/clothesService";
 import { useNavigate } from "react-router-dom";
-
+import { fetchTextureByName } from "../../api/texturesService";
 const root = {
 	display: "flex",
 	flexDirection: "column",
@@ -190,7 +190,8 @@ export default function ExploreClothes() {
 							height="260"
 							loading="lazy"
 							sx={{ objectFit: "contain" }}
-							onClick={() => navigate("/mannequin")}
+							// onClick={() => navigate("/mannequin")}
+							onClick={() => handleImageClick(item)}
 						/>
 					</Box>
 					<Box sx={{ px: 1, py: 1, display: "flex", gap: 1 }}>
@@ -224,6 +225,25 @@ export default function ExploreClothes() {
 				</Card>
 			</Box>
 		);
+	};
+
+	const handleImageClick = async (item) => {
+		const textureName = `${item.name}_texture`; // append _texture
+		try {
+			const texture = await fetchTextureByName(textureName);
+			console.log("Texture found:", texture);
+			const textureUrl = texture.signedUrl;
+			const isUpper = texture.upper;
+
+			// navigate to mannequin page and maybe store in session/local state
+			sessionStorage.setItem("selectedTextureUrl", textureUrl);
+			sessionStorage.setItem("selectedModelName", item.name);
+			sessionStorage.setItem("selectedModelisUpper", isUpper);
+			navigate("/mannequin");
+		} catch (err) {
+			console.error("Texture not found for", textureName, err);
+			alert("Texture not found for this outfit.");
+		}
 	};
 
 	// loading / error states

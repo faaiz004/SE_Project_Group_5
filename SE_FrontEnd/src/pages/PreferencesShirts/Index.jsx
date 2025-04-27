@@ -16,7 +16,7 @@ import {
 } from "@mui/material"
 import CheckCircleIcon from "@mui/icons-material/CheckCircle"
 import { useNavigate } from "react-router-dom"
-import modernImg from "../../assets/StylePreferences/larki1.jpeg"
+import modernImg from "../../assets/StylePreferences/larki1.jpg"
 import businessImg from "../../assets/StylePreferences/larki2.png"
 import oldMoneyImg from "../../assets/StylePreferences/larki4.png"
 import casualImg from "../../assets/StylePreferences/larki5.png"
