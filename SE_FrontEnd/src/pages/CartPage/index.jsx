@@ -11,7 +11,7 @@ export default function CartPage() {
 	const styles = cartStyles;
 
 	const [cartItems, setCartItems] = useState(() => {
-		return JSON.parse(sessionStorage.getItem("cart")) || [];
+		return JSON.parse(sessionStorage.getItem("f")) || [];
 	});
 
 	const cartTotal = cartItems.reduce(
