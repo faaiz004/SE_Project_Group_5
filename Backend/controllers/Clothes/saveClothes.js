@@ -1,6 +1,6 @@
 // This file fetched saved clothes for a user and saved/unsaved clothes to/from the user's savedClothes array
 import User from '../../models/User.js';
-import Clothes from '../../models/clothes.js';
+import Clothes from '../../models/Clothes.js';
 
 // Save Clothes to User's savedClothes
 export const saveClothes = async (req, res) => {
