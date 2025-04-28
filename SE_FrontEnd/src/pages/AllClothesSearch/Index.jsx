@@ -14,10 +14,11 @@ import {
 } from "@mui/material";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useLocation, useNavigate } from "react-router-dom";
-import SearchIcon from "@mui/icons-material/Search";
+// import SearchIcon from "@mui/icons-material/Search";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
-
+import SearchBar from "../../Layouts/ExplorePage/SearchBar";
+import { SearchBox } from "../ExplorePage/Styles.jsx";
 import {
 	fetchOutfits,
 	saveClothes,
@@ -42,6 +43,7 @@ import {
 } from "./styles";
 import { fetchTextureByName } from "../../api/texturesService";
 // import { useNavigate } from "react-router-dom";
+// import ExplorePage from "../ExplorePage/Index";
 
 export default function AllClothesSearch() {
 	const navigate = useNavigate();
@@ -306,8 +308,13 @@ export default function AllClothesSearch() {
 				</Box>
 			</Box>
 
-			<Box sx={searchContainer}>
-				<TextField
+			<Box>
+				{/* Search Bar */}
+				<Box sx={SearchBox}>
+					<SearchBar />
+				</Box>
+				{/* <Box sx={searchContainer}> */}
+				{/* <TextField
 					placeholder="Search clothes by name, brand, or category..."
 					value={searchQuery}
 					onChange={(e) => setSearchQuery(e.target.value)}
@@ -321,7 +328,7 @@ export default function AllClothesSearch() {
 							</InputAdornment>
 						),
 					}}
-				/>
+				/> */}
 			</Box>
 
 			<Box sx={contentContainer}>

@@ -427,19 +427,19 @@ export default function ClothingViewer() {
 	}, []);
 
 	// First useEffect - set selected item from session storage
-	// useEffect(() => {
-	// 	// Only set the user-selected item part initially
-	// 	setDynamicTextures({
-	// 		upper: {
-	// 			url: isUpper ? selectedTextureUrl || "/textures/texture.png" : null, // Will be filled with random item later
-	// 			name: isUpper ? selectedName || "Default Shirt" : "Placeholder",
-	// 		},
-	// 		lower: {
-	// 			url: !isUpper ? selectedTextureUrl || "/textures/texture.png" : null, // Will be filled with random item later
-	// 			name: !isUpper ? selectedName || "Default Pants" : "Placeholder",
-	// 		},
-	// 	});
-	// }, []);
+	useEffect(() => {
+		// Only set the user-selected item part initially
+		setDynamicTextures({
+			upper: {
+				url: isUpper ? selectedTextureUrl || "/textures/texture.png" : null, // Will be filled with random item later
+				name: isUpper ? selectedName || "Default Shirt" : "Placeholder",
+			},
+			lower: {
+				url: !isUpper ? selectedTextureUrl || "/textures/texture.png" : null, // Will be filled with random item later
+				name: !isUpper ? selectedName || "Default Pants" : "Placeholder",
+			},
+		});
+	}, []);
 
 	// Fetch all textures when data is loaded
 	useEffect(() => {
@@ -495,6 +495,7 @@ export default function ClothingViewer() {
 						price: itemPrice,
 						imageUrl: itemImageUrl,
 						isDynamic: true,
+						Upper: isUpper,
 					},
 					...regularList,
 				];
@@ -502,7 +503,7 @@ export default function ClothingViewer() {
 
 			return regularList;
 		},
-		[getUniqueByName, itemPrice, itemImageUrl]
+		[getUniqueByName, itemPrice, isUpper, itemImageUrl]
 	);
 
 	// Create clothing options lists
@@ -548,18 +549,15 @@ export default function ClothingViewer() {
 
 			setDynamicTextures((prevTextures) => ({
 				upper: {
-					// If user selected upper (isUpper is true), keep it; otherwise use random
 					url: isUpper ? prevTextures.upper.url : randomUpper.textureUrl,
 					name: isUpper ? prevTextures.upper.name : randomUpper.name,
 				},
 				lower: {
-					// If user selected lower (!isUpper is true), keep it; otherwise use random
 					url: !isUpper ? prevTextures.lower.url : randomLower.textureUrl,
 					name: !isUpper ? prevTextures.lower.name : randomLower.name,
 				},
 			}));
 
-			// Mark that we've set random items
 			setRandomItemsSet(true);
 		}
 	}, [

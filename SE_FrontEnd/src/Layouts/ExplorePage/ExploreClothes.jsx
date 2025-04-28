@@ -34,7 +34,7 @@ const styleMatchMap = {
 	Casual_Everyday: ["Casual_Everyday", "Smart_Casual"],
 	Smart_Casual: ["Smart_Casual"],
 	Modern: ["Modern"],
-	oldmoney: ["Modern/Old_Money"],
+	Old_Money: ["Modern/Old_Money", "Old_Money"],
 };
 
 export default function ExploreClothes() {
@@ -86,7 +86,7 @@ export default function ExploreClothes() {
 		const filtered = outfits.filter((o) => {
 			const sizeOK = o.upper ? shirtMapped === o.size : pantMapped === o.size;
 			const styleOK = !stylePreference || matchingStyles.includes(o.category);
-			const genderOK = o.gender === "Unisex" || o.gender === userGender;
+			const genderOK = o.gender === "unisex" || o.gender === userGender;
 			if (!styleOK && sizeOK && genderOK) {
 				console.log("Style mismatch:", {
 					userPreference: stylePreference,
