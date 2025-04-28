@@ -45,7 +45,10 @@ export default function CartPage() {
 				component={Link}
 				to="/explore"
 				startIcon={<ArrowBack />}
-				sx={styles.backButton}>
+				sx={styles.backButton}
+				onClick={() => {
+					window.history.back();
+				}}>
 				Continue Shopping
 			</Button>
 
@@ -73,8 +76,8 @@ export default function CartPage() {
 					key={item.productId}
 					sx={{
 						...styles.cartItem,
-						py: 4, // more vertical padding
-						minHeight: 120, // keep rows taller
+						py: 4,
+						minHeight: 120,
 					}}>
 					{/* Image */}
 					<Box sx={styles.productImageContainer}>
