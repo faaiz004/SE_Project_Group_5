@@ -410,12 +410,15 @@ export default function ClothingViewer() {
 		}
 	}, []);
 
+	const selectedTextureUrl = sessionStorage.getItem("selectedTextureUrl");
+	const isUpper = sessionStorage.getItem("selectedModelisUpper") === "true";
+	const selectedName = sessionStorage.getItem("selectedTextureName");
+	const itemPrice = sessionStorage.getItem("itemPrice");
+	const itemImageUrl = sessionStorage.getItem("itemUrl");
+	console.log("itemImageUrl", itemImageUrl);
+	// const itemID = sessionStorage.getItem("itemID");
 	// Load texture from session storage
 	useEffect(() => {
-		const selectedTextureUrl = sessionStorage.getItem("selectedTextureUrl");
-		const isUpper = sessionStorage.getItem("selectedModelisUpper") === "true";
-		const selectedName = sessionStorage.getItem("selectedTextureName");
-
 		setDynamicTextures({
 			upper: {
 				url: isUpper
@@ -483,8 +486,8 @@ export default function ClothingViewer() {
 						name: dynamicTexture.name,
 						textureUrl: dynamicTexture.url,
 						...modelConfig,
-						price: 0,
-						imageUrl: "",
+						price: itemPrice,
+						imageUrl: itemImageUrl,
 						isDynamic: true,
 					},
 					...regularList,
@@ -493,7 +496,7 @@ export default function ClothingViewer() {
 
 			return regularList;
 		},
-		[getUniqueByName]
+		[getUniqueByName, itemPrice, itemImageUrl]
 	);
 
 	// Create clothing options lists

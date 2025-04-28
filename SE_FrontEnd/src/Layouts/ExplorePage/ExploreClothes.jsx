@@ -231,14 +231,23 @@ export default function ExploreClothes() {
 		const textureName = `${item.name}_texture`; // append _texture
 		try {
 			const texture = await fetchTextureByName(textureName);
-			console.log("Texture found:", texture);
+			// console.log("Texture found:", texture);
 			const textureUrl = texture.signedUrl;
 			const isUpper = texture.upper;
-
+			// const itemName = item.name;
+			const itemPrice = item.price;
+			const itemID = item._id;
+			const itemUrl = item.imageUrl;
+			console.log("item", item);
 			// navigate to mannequin page and maybe store in session/local state
 			sessionStorage.setItem("selectedTextureUrl", textureUrl);
 			sessionStorage.setItem("selectedTextureName", item.name);
 			sessionStorage.setItem("selectedModelisUpper", isUpper);
+			sessionStorage.setItem("itemPrice", itemPrice);
+			sessionStorage.setItem("itemID", itemID);
+			sessionStorage.setItem("itemUrl", itemUrl);
+			// sessionStorage.setItem("itemName", itemName);
+
 			navigate("/mannequin");
 		} catch (err) {
 			console.error("Texture not found for", textureName, err);
