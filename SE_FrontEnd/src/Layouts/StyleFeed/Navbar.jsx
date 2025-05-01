@@ -23,19 +23,13 @@ export default function Navbar() {
       >
         <Toolbar>
           {/* Swipe-Fit Button */}
-          <IconButton
-            onClick={() => navigate('/explore')}
-            sx={{
-              color: 'black',
-              fontSize: 30,
-              fontFamily: 'sans-serif',
-              fontWeight: 700,
-            }}
-          >
-            <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-              Swipe-Fit
-            </Typography>
-          </IconButton>
+          <Typography
+                    variant="h4"
+                    sx={{ flexGrow: 1, fontWeight: 'bold', cursor: 'pointer', transition: 'transform .2s', '&:hover': { transform: 'scale(1.03)' }, color: '#000000' }}
+                    onClick={() => navigate('/explore')}
+                  >
+                    Swipe-Fit
+                  </Typography>
 
           {/* Buttons on the Right */}
           <Box sx={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>

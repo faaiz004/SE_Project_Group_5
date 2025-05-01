@@ -13,12 +13,13 @@ import {
 } from "@mui/material";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useLocation, useNavigate } from "react-router-dom";
-import SearchIcon from "@mui/icons-material/Search";
+// import SearchIcon from "@mui/icons-material/Search";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 import HomeIcon from "@mui/icons-material/Home"; // Import HomeIcon
 
-
+import SearchBar from "../../Layouts/ExplorePage/SearchBar";
+import { SearchBox } from "../ExplorePage/Styles.jsx";
 import {
 	fetchOutfits,
 	saveClothes,
