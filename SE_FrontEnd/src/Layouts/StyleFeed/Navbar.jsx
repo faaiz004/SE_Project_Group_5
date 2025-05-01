@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useState, useEffect } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -10,6 +11,37 @@ import Typography from '@mui/material/Typography';
 
 export default function Navbar() {
   const navigate = useNavigate();
+  
+  // Add cart state
+  const [cartItems, setCartItems] = useState(
+    () => JSON.parse(sessionStorage.getItem('cart')) || []
+  );
+
+  // Add polling mechanism to check for cart updates
+  useEffect(() => {
+    const updateCartFromStorage = () => {
+      try {
+        const storedCart = sessionStorage.getItem('cart');
+        if (storedCart) {
+          const parsedCart = JSON.parse(storedCart);
+          if (Array.isArray(parsedCart)) {
+            setCartItems(parsedCart);
+          }
+        }
+      } catch (error) {
+        console.error('Error parsing cart data:', error);
+      }
+    };
+
+    // Set up interval to check for cart updates
+    const intervalId = setInterval(updateCartFromStorage, 300);
+
+    // Clean up
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, []);
+  
   return (
     <Box sx={{ flexGrow: 1 }}>
       {/* AppBar with Custom Styles */}
@@ -24,12 +56,12 @@ export default function Navbar() {
         <Toolbar>
           {/* Swipe-Fit Button */}
           <Typography
-                    variant="h4"
-                    sx={{ flexGrow: 1, fontWeight: 'bold', cursor: 'pointer', transition: 'transform .2s', '&:hover': { transform: 'scale(1.03)' }, color: '#000000' }}
-                    onClick={() => navigate('/explore')}
-                  >
-                    Swipe-Fit
-                  </Typography>
+            variant="h4"
+            sx={{ flexGrow: 1, fontWeight: 'bold', cursor: 'pointer', transition: 'transform .2s', '&:hover': { transform: 'scale(1.03)' }, color: '#000000' }}
+            onClick={() => navigate('/explore')}
+          >
+            Swipe-Fit
+          </Typography>
 
           {/* Buttons on the Right */}
           <Box sx={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
@@ -49,13 +81,35 @@ export default function Navbar() {
               <AddCircleIcon sx={{ fontSize: 32 }} />
             </IconButton>
 
-            {/* Cart Button */}
-            <IconButton
-              sx={{ color: 'black' }}
-              onClick={() => navigate('/cart')}
-            >
-              <ShoppingCartIcon sx={{ fontSize: 28 }} />
-            </IconButton>
+            {/* Cart Button with Badge */}
+            <Box sx={{ position: 'relative' }}>
+              <IconButton
+                sx={{ color: 'black' }}
+                onClick={() => navigate('/cart')}
+              >
+                <ShoppingCartIcon sx={{ fontSize: 28 }} />
+              </IconButton>
+              {cartItems.length > 0 && (
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    top: 4,
+                    right: 4,
+                    bgcolor: '#FF5733',
+                    color: '#fff',
+                    borderRadius: '50%',
+                    width: 20,
+                    height: 20,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '12px'
+                  }}
+                >
+                  {cartItems.length}
+                </Box>
+              )}
+            </Box>
           </Box>
         </Toolbar>
       </AppBar>
