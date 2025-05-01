@@ -66,7 +66,7 @@ const router = createBrowserRouter([
 		),
 	},
 
-	// ---- Mandatory-preference flow (token required, preference flag may still be false) ----
+
 	{
 		path: "/preferences/gender",
 		element: suspense(

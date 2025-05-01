@@ -87,14 +87,14 @@ export default function ExploreClothes() {
 			const sizeOK = o.upper ? shirtMapped === o.size : pantMapped === o.size;
 			const styleOK = !stylePreference || matchingStyles.includes(o.category);
 			const genderOK = o.gender === "unisex" || o.gender === userGender;
-			if (!styleOK && sizeOK && genderOK) {
-				console.log("Style mismatch:", {
-					userPreference: stylePreference,
-					lookingFor: matchingStyles,
-					itemCategory: o.category,
-					itemName: o.name,
-				});
-			}
+			// if (!styleOK && sizeOK && genderOK) {
+			// 	console.log("Style mismatch:", {
+			// 		userPreference: stylePreference,
+			// 		lookingFor: matchingStyles,
+			// 		itemCategory: o.category,
+			// 		itemName: o.name,
+			// 	});
+			// }
 
 			return sizeOK && styleOK && genderOK;
 		});
@@ -108,13 +108,13 @@ export default function ExploreClothes() {
 		});
 	}, [prefResp.preferences, outfits]);
 
-	useEffect(() => {
-		if (forYou.length) {
-			forYou.forEach((item) => {
-				console.log(item.signedImageUrl || item.imageUrl);
-			});
-		}
-	}, [forYou]);
+	// useEffect(() => {
+	// 	if (forYou.length) {
+	// 		forYou.forEach((item) => {
+	// 			console.log(item.signedImageUrl || item.imageUrl);
+	// 		});
+	// 	}
+	// }, [forYou]);
 
 	const saveM = useMutation({
 		mutationFn: saveClothes,
@@ -228,31 +228,8 @@ export default function ExploreClothes() {
 	};
 
 	const handleImageClick = async (item) => {
-		const textureName = `${item.name}_texture`; // append _texture
-		try {
-			const texture = await fetchTextureByName(textureName);
-			// console.log("Texture found:", texture);
-			const textureUrl = texture.signedUrl;
-			const isUpper = texture.upper;
-			// const itemName = item.name;
-			const itemPrice = item.price;
-			const itemID = item._id;
-			const itemUrl = item.imageUrl;
-			console.log("item", item);
-			// navigate to mannequin page and maybe store in session/local state
-			sessionStorage.setItem("selectedTextureUrl", textureUrl);
-			sessionStorage.setItem("selectedTextureName", item.name);
-			sessionStorage.setItem("selectedModelisUpper", isUpper);
-			sessionStorage.setItem("itemPrice", itemPrice);
-			sessionStorage.setItem("itemID", itemID);
-			sessionStorage.setItem("itemUrl", itemUrl);
-			// sessionStorage.setItem("itemName", itemName);
-
-			navigate("/mannequin");
-		} catch (err) {
-			console.error("Texture not found for", textureName, err);
-			alert("Texture not found for this outfit.");
-		}
+		sessionStorage.setItem("productId", item._id);
+		navigate("/mannequin");
 	};
 
 	// loading / error states

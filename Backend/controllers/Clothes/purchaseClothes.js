@@ -26,11 +26,6 @@ export const purchaseClothes = async (req, res) => {
       return res.status(404).json({ error: `No user found with email: ${email}` });
     }
 
-    // Check for duplicate ownership
-    if (user.ownedProducts.includes(clothesId)) {
-      console.info(`User ${user._id} already owns clothes item ${clothesId}`);
-      return res.status(400).json({ error: 'You already own this clothes item.' });
-    }
 
     user.ownedProducts.push(clothesId);
 
