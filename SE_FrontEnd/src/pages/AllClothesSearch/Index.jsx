@@ -17,6 +17,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 import HomeIcon from "@mui/icons-material/Home"; // Import HomeIcon
+import SearchIcon from "@mui/icons-material/Search";
 
 import SearchBar from "../../Layouts/ExplorePage/SearchBar";
 import { SearchBox } from "../ExplorePage/Styles.jsx";
