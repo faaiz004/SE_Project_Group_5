@@ -66,7 +66,12 @@ export default function Account() {
   const navigate = useNavigate();
 
   // TAB SELECTION
-  const [activeTab, setActiveTab] = useState('account');
+  const [activeTab, setActiveTab] = useState(
+    () => sessionStorage.getItem('activeTab') || 'account'
+  );
+  useEffect(() => {
+    sessionStorage.setItem('activeTab', activeTab);
+  }, [activeTab]);
 
   // CART STATE
   const [cartItems, setCartItems] = useState(
@@ -105,15 +110,30 @@ export default function Account() {
   /* ===============================================================
      1) ACCOUNT-INFO STATE
   =============================================================== */
-  const [profileImage, setProfileImage] = useState(null);
-  const [isEditing, setIsEditing] = useState(true);
-  const [userInfo, setUserInfo] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    bio: ''
-  });
+  const [profileImage, setProfileImage] = useState(
+    () => sessionStorage.getItem('profileImage') || null
+  );
+  useEffect(() => {
+    if (profileImage !== null) {
+      sessionStorage.setItem('profileImage', profileImage);
+    }
+  }, [profileImage]);
+
+  const [isEditing, setIsEditing] = useState(
+    () => JSON.parse(sessionStorage.getItem('isEditing')) ?? true
+  );
+  useEffect(() => {
+    sessionStorage.setItem('isEditing', JSON.stringify(isEditing));
+  }, [isEditing]);
+
+  const [userInfo, setUserInfo] = useState(
+    () => JSON.parse(sessionStorage.getItem('userInfo')) || {
+      firstName: '', lastName: '', email: '', phone: '', bio: ''
+    }
+  );
+  useEffect(() => {
+    sessionStorage.setItem('userInfo', JSON.stringify(userInfo));
+  }, [userInfo]);
 
   const handleUserInfoChange = e =>
     setUserInfo(p => ({ ...p, [e.target.name]: e.target.value }));
@@ -129,10 +149,33 @@ export default function Account() {
   /* ===============================================================
      2) PREFERENCES STATE
   =============================================================== */
-  const [gender, setGender]       = useState('');
-  const [shirtSize, setShirtSize] = useState('');
-  const [pantSize, setPantSize]   = useState('');
-  const [stylePref, setStylePref] = useState('');
+  const [gender, setGender] = useState(
+    () => sessionStorage.getItem('gender') || ''
+  );
+  useEffect(() => {
+    sessionStorage.setItem('gender', gender);
+  }, [gender]);
+
+  const [shirtSize, setShirtSize] = useState(
+    () => sessionStorage.getItem('shirtSize') || ''
+  );
+  useEffect(() => {
+    sessionStorage.setItem('shirtSize', shirtSize);
+  }, [shirtSize]);
+
+  const [pantSize, setPantSize] = useState(
+    () => sessionStorage.getItem('pantSize') || ''
+  );
+  useEffect(() => {
+    sessionStorage.setItem('pantSize', pantSize);
+  }, [pantSize]);
+
+  const [stylePref, setStylePref] = useState(
+    () => sessionStorage.getItem('stylePref') || ''
+  );
+  useEffect(() => {
+    sessionStorage.setItem('stylePref', stylePref);
+  }, [stylePref]);
 
   const {
     data: fetchedPrefs = null,
@@ -162,14 +205,26 @@ export default function Account() {
   /* ===============================================================
      3) BILLING STATE
   =============================================================== */
-  const [savedCards, setSavedCards] = useState([
-    { id: 1, cardNumber: '**** **** **** 4321', expiryDate: '05/25', cardHolder: 'John Doe', type: 'Visa' },
-    { id: 2, cardNumber: '**** **** **** 8765', expiryDate: '12/24', cardHolder: 'John Doe', type: 'Mastercard' }
-  ]);
-  const [newCard, setNewCard] = useState({
-    cardHolder: '', cardNumber: '', expiryDate: '', cvc: '',
-    address: '', city: '', state: '', zipCode: ''
-  });
+  const [savedCards, setSavedCards] = useState(
+    () => JSON.parse(sessionStorage.getItem('savedCards')) || [
+      { id: 1, cardNumber: '**** **** **** 4321', expiryDate: '05/25', cardHolder: 'John Doe', type: 'Visa' },
+      { id: 2, cardNumber: '**** **** **** 8765', expiryDate: '12/24', cardHolder: 'John Doe', type: 'Mastercard' }
+    ]
+  );
+  useEffect(() => {
+    sessionStorage.setItem('savedCards', JSON.stringify(savedCards));
+  }, [savedCards]);
+
+  const [newCard, setNewCard] = useState(
+    () => JSON.parse(sessionStorage.getItem('newCard')) || {
+      cardHolder: '', cardNumber: '', expiryDate: '', cvc: '',
+      address: '', city: '', state: '', zipCode: ''
+    }
+  );
+  useEffect(() => {
+    sessionStorage.setItem('newCard', JSON.stringify(newCard));
+  }, [newCard]);
+
   const handleNewCardChange = e => {
     const { name, value } = e.target;
     setNewCard(p => ({ ...p, [name]: value }));
