@@ -38,7 +38,8 @@ import {
   Favorite as FavoriteIcon,
   Delete as DeleteIcon,
   ShoppingCart as ShoppingCartIcon,
-  Edit as EditIcon
+  Edit as EditIcon,
+  GroupAdd as GroupAddIcon
 } from '@mui/icons-material';
 import { useQuery, useMutation } from '@tanstack/react-query';
 
@@ -685,8 +686,8 @@ export default function Account() {
             Swipe-Fit
           </Typography>
           <IconButton onClick={() => navigate('/stylefeed')}>
-            <PersonIcon />
-          </IconButton>
+          <GroupAddIcon />
+        </IconButton>
           <Box sx={{ position: 'relative' }}>
             <IconButton onClick={() => navigate('/cart')}>
               <ShoppingCartIcon />
@@ -711,7 +712,9 @@ export default function Account() {
                 {cartItems.length}
               </Box>
             )}
-          </Box>
+          </Box>    <IconButton onClick={() => navigate('/account')}>
+      <PersonIcon />
+    </IconButton>
         </Toolbar>
       </AppBar>
 

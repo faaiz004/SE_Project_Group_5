@@ -30,7 +30,6 @@ import {
   pageContainer,
   headerContainer,
   headerIconsContainer,
-  searchContainer,
   contentContainer,
   gridContainer,
   cardStyle,
@@ -286,8 +285,8 @@ export default function AllClothesSearch() {
             Swipe-Fit
           </Typography>
 
-          {/* Search bar moved into top bar */}
-		   <Box sx={{ flexGrow: 1, ml: 17, mr: 2 }}>
+          {/* Search bar */}
+          <Box sx={{ flexGrow: 1, ml: 17, mr: 2 }}>
             <form onSubmit={handleSearch}>
               <TextField
                 fullWidth
@@ -313,12 +312,10 @@ export default function AllClothesSearch() {
             </form>
           </Box>
 
+          {/* Icons: GroupAdd, CART, PERSON */}
           <Box sx={headerIconsContainer}>
             <IconButton onClick={() => navigate("/stylefeed")}>
               <GroupAddIcon />
-            </IconButton>
-            <IconButton onClick={() => navigate("/profile")}>
-              <PersonIcon />
             </IconButton>
             <Box sx={{ position: "relative" }}>
               <IconButton onClick={() => navigate("/cart")}>
@@ -345,6 +342,9 @@ export default function AllClothesSearch() {
                 </Box>
               )}
             </Box>
+            <IconButton onClick={() => navigate("/profile")}>
+              <PersonIcon />
+            </IconButton>
           </Box>
         </Box>
       </Box>

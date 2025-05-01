@@ -7,6 +7,8 @@ import IconButton from '@mui/material/IconButton';
 import { useNavigate } from 'react-router-dom';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
+import PersonIcon from '@mui/icons-material/Person';
+import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import Typography from '@mui/material/Typography';
 
 export default function Navbar() {
@@ -81,8 +83,16 @@ export default function Navbar() {
               <AddCircleIcon sx={{ fontSize: 32 }} />
             </IconButton>
 
+            {/* Style Feed Button */}
+            <IconButton
+              sx={{ color: 'black', mr: 2 }}
+              onClick={() => navigate('/stylefeed')}
+            >
+              <GroupAddIcon sx={{ fontSize: 28 }} />
+            </IconButton>
+
             {/* Cart Button with Badge */}
-            <Box sx={{ position: 'relative' }}>
+            <Box sx={{ position: 'relative', mr: 2 }}>
               <IconButton
                 sx={{ color: 'black' }}
                 onClick={() => navigate('/cart')}
@@ -110,6 +120,14 @@ export default function Navbar() {
                 </Box>
               )}
             </Box>
+
+            {/* Account Button */}
+            <IconButton
+              sx={{ color: 'black' }}
+              onClick={() => navigate('/account')}
+            >
+              <PersonIcon sx={{ fontSize: 28 }} />
+            </IconButton>
           </Box>
         </Toolbar>
       </AppBar>
