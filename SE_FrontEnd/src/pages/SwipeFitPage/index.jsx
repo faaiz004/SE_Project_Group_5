@@ -601,5 +601,5 @@ import {
 		</Snackbar>
 	  </Box>
 	);
-  }
+}
   

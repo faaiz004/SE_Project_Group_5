@@ -339,7 +339,10 @@ export default function Account() {
                       height="260"
                       alt={item.name}
                       sx={{ objectFit: 'contain', cursor: 'pointer' }}
-                      onClick={() => navigate(`/clothes/${item._id}`)}
+                      onClick={() => {
+                          sessionStorage.setItem("productId", item._id);
+                          navigate("/mannequin");
+                      }}
                     />
                   </Box>
                   <Box sx={{ px: 1, py: 1, display: 'flex', gap: 1, justifyContent: 'center' }}>

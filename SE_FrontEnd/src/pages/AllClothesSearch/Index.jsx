@@ -129,6 +129,7 @@ export default function AllClothesSearch() {
 		sessionStorage.setItem("productId", item._id);
 		navigate("/mannequin");
 	};
+
 	useEffect(() => {
 		const stored = JSON.parse(sessionStorage.getItem("cart")) || [];
 		setCartItems(stored);
