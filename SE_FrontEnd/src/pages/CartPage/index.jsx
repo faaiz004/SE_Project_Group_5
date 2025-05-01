@@ -2,13 +2,24 @@
 import React, { useState, useEffect } from "react";
 import { Box, Typography, Button, IconButton, Divider } from "@mui/material";
 import { ArrowBack, Add, Remove } from "@mui/icons-material";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { cartStyles } from "./styles";
 import deleteIcon from "../../assets/Mannequin/delete_icon.jpeg";
+
 
 export default function CartPage() {
 	const navigate = useNavigate();
 	const styles = cartStyles;
+	const location = useLocation();
+
+	const handleContinueShopping = () => {
+	const from = location.state?.from;
+	if (from && from !== "/checkout") {
+		navigate(from);
+	} else {
+		navigate("/explore"); // fallback if unknown or from checkout
+	}
+	};
 
 	const [cartItems, setCartItems] = useState(() => {
 		return JSON.parse(sessionStorage.getItem("cart")) || [];
@@ -42,15 +53,13 @@ export default function CartPage() {
 		<Box sx={styles.container}>
 			{/* Continue Shopping */}
 			<Button
-				component={Link}
-				to="/explore"
-				startIcon={<ArrowBack />}
-				sx={styles.backButton}
-				onClick={() => {
-					window.history.back();
-				}}>
-				Continue Shopping
+			startIcon={<ArrowBack />}
+			sx={styles.backButton}
+			onClick={handleContinueShopping}
+			>
+			Continue Shopping
 			</Button>
+
 
 			<Divider sx={styles.divider} />
 

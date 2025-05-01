@@ -1,5 +1,4 @@
-// AllClothesSearch.jsx
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import {
 	Box,
 	Typography,
@@ -17,6 +16,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import SearchIcon from "@mui/icons-material/Search";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
+import HomeIcon from "@mui/icons-material/Home"; // Import HomeIcon
+
 
 import {
 	fetchOutfits,
@@ -41,17 +42,16 @@ import {
 	searchInputStyle,
 } from "./styles";
 import { fetchTextureByName } from "../../api/texturesService";
-// import { useNavigate } from "react-router-dom";
 
 export default function AllClothesSearch() {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const category = new URLSearchParams(location.search).get("category");
-
 	const [savedStates, setSavedStates] = useState({});
 	const [cartItems, setCartItems] = useState([]);
 	const [searchQuery, setSearchQuery] = useState("");
 	const [userPrefs, setUserPrefs] = useState(null);
+	const [filteredCategory, setFilteredCategory] = useState("");
 
 	const {
 		data: clothes = [],
@@ -63,26 +63,82 @@ export default function AllClothesSearch() {
 		queryFn: fetchOutfits,
 	});
 
+	const filteredClothes = useMemo(() => {
+		const filterTarget = filteredCategory || category;
+		return clothes.filter((item) =>
+			filterTarget
+				? item.category?.toLowerCase() === filterTarget.toLowerCase()
+				: true
+		);
+	}, [clothes, category, filteredCategory]);
+
+	const fetchSearchCategoryFromOpenAI = async (prompt) => {
+		const response = await fetch("https://api.openai.com/v1/chat/completions", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+				Authorization: `Bearer ${import.meta.env.VITE_OPENAI_API_KEY}`,
+			},
+			body: JSON.stringify({
+				model: "gpt-3.5-turbo",
+				messages: [
+					{
+						role: "system",
+						content: `
+						You are a clothes-query parser. Below is the Mongoose schema for our “clothes” collection:
+						const clothesSchema = new mongoose.Schema({
+						  name: String,
+						  brand: String,
+						  size: { type: String, enum: ['XS','S','M','L','XL','XXL'] },
+						  category: { type: String, enum: ['Modern','Modern/Old_Money','Smart_Casual/Casual_Everyday','Smart_Casual','Casual_Everyday'] },
+						  price: Number,
+						  upper: Boolean,
+						  lower: Boolean,
+						  imageUrl: String
+						});
+						
+						When I give you a user’s free-text clothing query, respond with exactly three comma-separated tokens in the form:
+						<Category>,<minPrice>-<maxPrice>,<upper|lower|both>
+						
+						IMPORTANT:
+						- Category must be one of: 'Modern', 'Modern/Old_Money', 'Smart_Casual/Casual_Everyday', 'Smart_Casual', 'Casual_Everyday'
+						- Prices must be numeric and realistic.
+						- For clothing part: only choose from 'upper', 'lower', or 'both'.
+						- No extra words, explanation, or formatting. Only return the 3 tokens.`,
+					},
+					{ role: "user", content: prompt },
+				],
+				temperature: 0.2,
+				max_tokens: 30,
+			}),
+		});
+
+		const data = await response.json();
+		const content = data.choices?.[0]?.message?.content?.trim();
+
+		// Expecting: Category,min-max,upper|lower|both
+		if (!content || !content.includes(",")) return null;
+
+		const [category, priceRange, part] = content.split(",").map((s) => s.trim());
+		return { category, priceRange, part };
+	};
+
 	const handleImageClick = async (item) => {
-		const textureName = `${item.name}_texture`; // append _texture
+		const textureName = `${item.name}_texture`;
 		try {
 			const texture = await fetchTextureByName(textureName);
-			// console.log("Texture found:", texture);
 			const textureUrl = texture.signedUrl;
 			const isUpper = texture.upper;
-			// const itemName = item.name;
 			const itemPrice = item.price;
 			const itemID = item._id;
 			const itemUrl = item.imageUrl;
-			console.log("item", item);
-			// navigate to mannequin page and maybe store in session/local state
+
 			sessionStorage.setItem("selectedTextureUrl", textureUrl);
 			sessionStorage.setItem("selectedTextureName", item.name);
 			sessionStorage.setItem("selectedModelisUpper", isUpper);
 			sessionStorage.setItem("itemPrice", itemPrice);
 			sessionStorage.setItem("itemID", itemID);
 			sessionStorage.setItem("itemUrl", itemUrl);
-			// sessionStorage.setItem("itemName", itemName);
 
 			navigate("/mannequin");
 		} catch (err) {
@@ -90,23 +146,25 @@ export default function AllClothesSearch() {
 			alert("Texture not found for this outfit.");
 		}
 	};
+
 	useEffect(() => {
 		const stored = JSON.parse(sessionStorage.getItem("cart")) || [];
 		setCartItems(stored);
+
 		(async () => {
 			try {
 				const saved = await getSavedClothes();
 				const init = {};
-				saved.forEach((c) => {
-					init[c._id] = true;
-				});
+				saved.forEach((c) => (init[c._id] = true));
 				setSavedStates(init);
+
 				const prefs = await getUserPreferences();
 				setUserPrefs(prefs);
 			} catch (e) {
 				console.error("Init failed:", e);
 			}
 		})();
+
 	}, []);
 
 	const saveMutation = useMutation({
@@ -141,12 +199,6 @@ export default function AllClothesSearch() {
 		sessionStorage.setItem("cart", JSON.stringify(updated));
 		setCartItems(updated);
 	};
-
-	const filteredClothes = clothes.filter((item) => {
-		return category
-			? item.category?.toLowerCase() === category.toLowerCase()
-			: true;
-	});
 
 	const nameMap = new Map();
 	const uniqueClothes = filteredClothes.filter((item) => {
@@ -194,14 +246,16 @@ export default function AllClothesSearch() {
 						sx={{
 							...buttonStyle,
 							"&.Mui-disabled": { bgcolor: "#2D333A", color: "#fff" },
-						}}>
+						}}
+					>
 						{isInCart ? "Added" : "Add to Cart"}
 					</Button>
 					<Button
 						fullWidth
 						size="small"
 						onClick={() => handleToggleSave(item._id)}
-						sx={buttonStyle}>
+						sx={buttonStyle}
+					>
 						{isSaved ? "Unsave" : "Save"}
 					</Button>
 				</Box>
@@ -211,125 +265,110 @@ export default function AllClothesSearch() {
 
 	const renderContent = () => {
 		if (isLoading) {
-			return (
-				<Box sx={gridContainer}>
-					{[...Array(8)].map((_, i) => (
-						<Skeleton
-							key={i}
-							variant="rectangular"
-							height={280}
-							sx={{ borderRadius: 2 }}
-						/>
-					))}
-				</Box>
-			);
+		  return (
+			<Box sx={gridContainer}>
+			  {[...Array(8)].map((_, i) => (
+				<Skeleton key={i} variant="rectangular" height={280} sx={{ borderRadius: 2 }} />
+			  ))}
+			</Box>
+		  );
 		}
-
+	
 		if (isError) return <Typography>Error: {error.message}</Typography>;
-
+	
 		if (uniqueClothes.length === 0) {
-			return (
-				<Box sx={{ textAlign: "center", py: 4 }}>
-					<Typography variant="h6">No items match your search</Typography>
-					<Typography color="text.secondary">
-						Try adjusting your search criteria
-					</Typography>
-				</Box>
-			);
+		  return (
+			<Box sx={{ textAlign: "center", py: 4 }}>
+			  <Typography variant="h6">No items match your search</Typography>
+			  <Typography color="text.secondary">Try adjusting your search criteria</Typography>
+			</Box>
+		  );
 		}
-
+	
 		return (
-			<>
-				{personalizedClothes.length > 0 && (
-					<>
-						<Typography variant="h6" sx={{ mb: 2 }}>
-							For You ❤️
-						</Typography>
-						<Box sx={gridContainer}>
-							{personalizedClothes.map((item) => (
-								<Box key={item._id}>{renderCard(item)}</Box>
-							))}
-						</Box>
-					</>
-				)}
-				<Typography variant="h6" sx={{ mt: 4, mb: 2 }}>
-					All Results
+		  <>
+			<Typography variant="h6" sx={{ mb: 2 }}>
+			  Showing results for: {filteredCategory || category || "All Categories"}
+			</Typography>
+			{personalizedClothes.length > 0 && (
+			  <>
+				<Typography variant="h6" sx={{ mb: 2 }}>
+				  For You ❤️
 				</Typography>
 				<Box sx={gridContainer}>
-					{otherClothes.map((item) => (
-						<Box key={item._id}>{renderCard(item)}</Box>
-					))}
+				  {personalizedClothes.map((item) => (
+					<Box key={item._id}>{renderCard(item)}</Box>
+				  ))}
 				</Box>
-			</>
+			  </>
+			)}
+			<Typography variant="h6" sx={{ mt: 4, mb: 2 }}>
+			  All Results
+			</Typography>
+			<Box sx={gridContainer}>
+			  {otherClothes.map((item) => (
+				<Box key={item._id}>{renderCard(item)}</Box>
+			  ))}
+			</Box>
+		  </>
 		);
-	};
-
-	return (
+	  };
+	
+	  const handleSearch = async (e) => {
+		e.preventDefault();
+		if (!searchQuery.trim()) return;
+	
+		const parsed = await fetchSearchCategoryFromOpenAI(searchQuery);
+		if (!parsed) return alert("Could not understand your query.");
+	
+		console.log("Parsed Search:", parsed);
+		setFilteredCategory(parsed.category);
+		// You can also use parsed.priceRange and parsed.part to filter further if needed
+	  };
+	
+	  return (
 		<Box sx={pageContainer}>
-			<Box
-				sx={{
-					width: "100%",
-					backgroundColor: "#ffffff",
-					borderBottom: "1px solid #e0e0e0",
-				}}>
-				<Box sx={headerContainer}>
-					<Link href="/explore" sx={logoStyle}>
-						Swipe-Fit
-					</Link>
-					<Box sx={headerIconsContainer}>
-						<IconButton>
-							<PersonOutlineIcon />
-						</IconButton>
-						<IconButton onClick={() => navigate("/cart")}>
-							<ShoppingCartOutlinedIcon />
-							{cartItems.length > 0 && (
-								<Box
-									sx={{
-										position: "absolute",
-										top: 0,
-										right: 0,
-										bgcolor: "#2D333A",
-										color: "white",
-										width: 16,
-										height: 16,
-										borderRadius: "50%",
-										fontSize: 12,
-										display: "flex",
-										alignItems: "center",
-										justifyContent: "center",
-									}}>
-									{cartItems.length}
-								</Box>
-							)}
-						</IconButton>
-					</Box>
-				</Box>
+		  <Box sx={{ width: "100%", backgroundColor: "#ffffff", borderBottom: "1px solid #e0e0e0" }}>
+			<Box sx={headerContainer}>
+			  <Link to="/" sx={logoStyle}>
+				{/* Add your logo here */}
+			  </Link>
+			  <Box sx={headerIconsContainer}>
+				<IconButton color="inherit" onClick={() => navigate("/profile")}>
+				  <PersonOutlineIcon />
+				</IconButton>
+				<IconButton color="inherit" onClick={() => navigate("/cart")}>
+				  <ShoppingCartOutlinedIcon />
+				</IconButton>
+				<IconButton color="inherit" onClick={() => navigate("/home")}> {/* Navigate to home */}
+				  <HomeIcon />
+				</IconButton>
+			  </Box>
 			</Box>
-
-			<Box sx={searchContainer}>
-				<TextField
-					placeholder="Search clothes by name, brand, or category..."
-					value={searchQuery}
-					onChange={(e) => setSearchQuery(e.target.value)}
-					variant="outlined"
-					size="small"
-					sx={searchInputStyle}
-					InputProps={{
-						startAdornment: (
-							<InputAdornment position="start">
-								<SearchIcon />
-							</InputAdornment>
-						),
-					}}
-				/>
-			</Box>
-
-			<Box sx={contentContainer}>
-				<Typography sx={titleStyle}>
-					Results for: <strong>{category || "All Clothes"}</strong>
-				</Typography>
-				{renderContent()}
-			</Box>
+		  </Box>
+	
+		  <Box sx={searchContainer}>
+			<form onSubmit={handleSearch}>
+			  <TextField
+				fullWidth
+				placeholder="Search for clothes"
+				value={searchQuery}
+				onChange={(e) => setSearchQuery(e.target.value)}
+				InputProps={{
+				  endAdornment: (
+					<InputAdornment position="end">
+					  <IconButton edge="end" type="submit">
+						<SearchIcon />
+					  </IconButton>
+					</InputAdornment>
+				  ),
+				}}
+				sx={searchInputStyle}
+			  />
+			</form>
+		  </Box>
+	
+		  <Box sx={contentContainer}>{renderContent()}</Box>
 		</Box>
-	);
-}
+	  );
+	}
