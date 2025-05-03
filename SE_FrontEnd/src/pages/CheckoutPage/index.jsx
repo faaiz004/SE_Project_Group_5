@@ -34,9 +34,20 @@ const CheckoutPage = () => {
     e.preventDefault();
     setError('');
 
+    // if (paymentMethod === 'card') {
+    //   navigate('/card-payment');
+    //   return;
+    // }
     if (paymentMethod === 'card') {
-      navigate('/card-payment');
-      return;
+      setLoading(true);
+      try {
+        const res = await purchaseClothes(cartItems);
+        window.location.href = res.url; // redirect to Stripe Checkout
+      } catch (err) {
+        setError(err.response?.data?.error || err.message || 'Failed to initiate Stripe checkout.');
+      } finally {
+        setLoading(false);
+      }
     }
 
     if (!cartItems.length) {
@@ -46,9 +57,8 @@ const CheckoutPage = () => {
 
     setLoading(true);
     try {
-      await Promise.all(
-        cartItems.map(item => purchaseClothes(item.productId))
-      );
+      await purchaseClothes(cartItems);
+
       sessionStorage.removeItem('cart');
       navigate('/order-confirmation');
     } catch (err) {
@@ -226,3 +236,5 @@ const CheckoutPage = () => {
 };
 
 export default CheckoutPage;
+
+
