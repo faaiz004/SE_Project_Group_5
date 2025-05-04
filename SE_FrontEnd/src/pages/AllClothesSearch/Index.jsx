@@ -115,28 +115,10 @@ export default function AllClothesSearch() {
 		return { category, priceRange, part };
 	};
 
-	const handleImageClick = async (item) => {
-		const textureName = `${item.name}_texture`;
-		try {
-			const texture = await fetchTextureByName(textureName);
-			const textureUrl = texture.signedUrl;
-			const isUpper = texture.upper;
-			const itemPrice = item.price;
-			const itemID = item._id;
-			const itemUrl = item.imageUrl;
-
-			sessionStorage.setItem("selectedTextureUrl", textureUrl);
-			sessionStorage.setItem("selectedTextureName", item.name);
-			sessionStorage.setItem("selectedModelisUpper", isUpper);
-			sessionStorage.setItem("itemPrice", itemPrice);
-			sessionStorage.setItem("itemID", itemID);
-			sessionStorage.setItem("itemUrl", itemUrl);
-
-			navigate("/mannequin");
-		} catch (err) {
-			alert("Texture not found for this outfit.");
-		}
-	};
+  const handleImageClick = async (item) => {
+    sessionStorage.setItem("productId", item._id);
+    navigate("/mannequin");
+  };
 
   useEffect(() => {
     const stored = JSON.parse(sessionStorage.getItem("cart")) || [];
