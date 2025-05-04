@@ -272,7 +272,7 @@ import {
 		const json = await res.json();
 		return json.signedUrl;
 	  } catch {
-		return "/textures/placeholder.png";
+		return "/textures/green.png";
 	  }
 	}, []);
   
