@@ -2,7 +2,6 @@ import { OAuth2Client } from 'google-auth-library';
 import jwt from 'jsonwebtoken';
 import User from '../../models/User.js';
 
-// This function handles Google OAuth login
 export const googleAuth = async (req, res) => {
   const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
   const JWT_SECRET = process.env.JWT_SECRET 

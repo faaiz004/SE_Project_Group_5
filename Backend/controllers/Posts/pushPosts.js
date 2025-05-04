@@ -5,7 +5,6 @@ import { v4 as uuidv4 } from 'uuid';
 
 const s3 = new S3Client({ region: process.env.AWS_REGION });
 
-// Create a new post
 export const createPost = async (req, res) => {
   try {
 

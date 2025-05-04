@@ -136,7 +136,6 @@ export default function AllClothesSearch() {
 
 			navigate("/mannequin");
 		} catch (err) {
-			console.error("Texture not found for", textureName, err);
 			alert("Texture not found for this outfit.");
 		}
 	};
@@ -155,7 +154,6 @@ export default function AllClothesSearch() {
         const prefs = await getUserPreferences();
         setUserPrefs(prefs);
       } catch (e) {
-        console.error("Init failed:", e);
       }
     })();
   }, []);
@@ -171,7 +169,6 @@ export default function AllClothesSearch() {
           }
         }
       } catch (error) {
-        console.error("Error parsing cart data:", error);
       }
     };
 

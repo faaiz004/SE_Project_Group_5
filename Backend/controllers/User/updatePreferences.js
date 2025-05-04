@@ -1,6 +1,5 @@
 import User from '../../models/User.js';
 
-// This function updates the user's preferences in the database
 export const updateUserPreferences = async (req, res) => {
 	try {
 		const userId = req.user.id;

@@ -1,10 +1,8 @@
-// This file gets textures by name and generates signed URLs for their images
 import Texture from '../../models/textures.js';
 import Clothes from '../../models/clothes.js'; 
 import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
-// AWS S3 Client setup
 const s3 = new S3Client({ region: process.env.AWS_REGION });
 
 const generateSignedUrl = async (key) => {
@@ -22,7 +20,6 @@ const extractKeyFromUrl = (url) => {
   return parts.length === 2 ? parts[1] : url;
 };
 
-// Purpose: Fetch texture by name and generate a signed URL for its image
 export const getTextureByName = async (req, res) => {
   try {
     const { name } = req.params;

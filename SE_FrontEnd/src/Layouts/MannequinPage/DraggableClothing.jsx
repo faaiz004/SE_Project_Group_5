@@ -1,13 +1,6 @@
-// DraggableClothing.jsx
 import React from "react";
 import { motion } from "framer-motion";
 
-{
-	/*  
-  This component is responsible for rendering draggable clothing items on the mannequin.
-  It uses Framer Motion for drag functionality and accepts props for the image source, alt text, and additional styles.
-*/
-}
 function DraggableClothing({ src, alt, style = {} }) {
 	return (
 		<motion.img

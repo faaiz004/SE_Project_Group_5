@@ -2,7 +2,6 @@ import User from '../../models/User.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
-// This function handles user signup
 export const signup = async (req, res) => {
   const JWT_SECRET = process.env.JWT_SECRET
   const SALT_ROUNDS = 10;

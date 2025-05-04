@@ -44,7 +44,6 @@ export const unsaveClothes = async (req, res) => {
   }
 };
 
-// Get All Saved Clothes
 export const getSavedClothes = async (req, res) => {
   console.log("Fetching saved clothes for user:", req.user.id);
   try {

@@ -1,7 +1,6 @@
 import { genSalt } from 'bcrypt';
 import Clothes from '../../../models/clothes.js';
 
-// Get all clothes, optionally filtered by category
 export const getAllClothes = async (req, res) => {
   try {
     const filter = req.query.category ? { category: req.query.category } : {};

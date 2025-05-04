@@ -1,4 +1,3 @@
-// This file fetches purchased clothes for a user and generates signed URLs for their images.
 import User from '../../models/User.js';
 import Clothes from '../../models/clothes.js';
 
@@ -12,14 +11,12 @@ export const purchaseClothes = async (req, res) => {
       return res.status(400).json({ error: 'Both email and clothesId must be provided.' });
     }
 
-    // Check clothes existence
     const clothesItem = await Clothes.findById(clothesId);
     if (!clothesItem) {
       console.warn(`Clothes item not found for ID: ${clothesId}`);
       return res.status(404).json({ error: `No clothes item found with ID: ${clothesId}` });
     }
 
-    // Find user
     const user = await User.findOne({ email });
     if (!user) {
       console.warn(`User not found for email: ${email}`);

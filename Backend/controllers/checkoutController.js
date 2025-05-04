@@ -1,4 +1,4 @@
-import '../config/env.js'; // ✅ this ensures env vars are loaded
+import '../config/env.js';
 import Stripe from 'stripe';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
@@ -19,7 +19,7 @@ export const purchaseItems = async (req, res, next) => {
         product_data: {
           name: item.name,
         },
-        unit_amount: Math.round(item.price * 100), // Price in cents
+        unit_amount: Math.round(item.price * 100),
       },
       quantity: item.quantity || 1,
     }));

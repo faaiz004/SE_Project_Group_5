@@ -1,4 +1,3 @@
-// This file gets all posts and generates signed URLs for their images
 import Post    from '../../models/Post.js';
 import Clothes from '../../models/clothes.js';      
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';

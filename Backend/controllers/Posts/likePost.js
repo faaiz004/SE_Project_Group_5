@@ -6,7 +6,6 @@ export const likePost = async (req, res) => {
     const { postId } = req.params;
     const userId = req.user.id;
 
-    // Validate ObjectId
     if (!mongoose.Types.ObjectId.isValid(postId)) {
       return res.status(400).json({ error: 'Invalid post ID.' });
     }
@@ -16,14 +15,12 @@ export const likePost = async (req, res) => {
       return res.status(404).json({ error: 'Post not found.' });
     }
 
-    // Check if user already liked the post
     const alreadyLiked = post.likes.some(id => id.toString() === userId);
 
     if (alreadyLiked) {
       return res.status(400).json({ error: 'You have already liked this post.' });
     }
 
-    // Add userId to likes array
     post.likes.push(userId);
     await post.save();
 

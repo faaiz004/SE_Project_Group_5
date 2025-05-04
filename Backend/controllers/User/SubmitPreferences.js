@@ -1,7 +1,5 @@
 import User from '../../models/User.js';
 
-
-// This function handles the submission of user preferences
 export const submitPreferences = async (req, res) => {
   try {
     const userId = req.user.id;  
