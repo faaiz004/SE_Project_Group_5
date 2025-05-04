@@ -24,7 +24,6 @@ import {
   getSavedClothes,
   getUserPreferences,
 } from "../../api/clothesService";
-import { fetchTextureByName } from "../../api/texturesService";
 
 import {
   pageContainer,
@@ -36,7 +35,7 @@ import {
   buttonStyle,
   buttonContainerStyle,
   searchInputStyle,
-} from "./styles";
+} from "./Styles";
 
 export default function AllClothesSearch() {
   const navigate = useNavigate();
