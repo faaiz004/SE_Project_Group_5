@@ -267,7 +267,7 @@ import {
   
 	const fetchTextureUrl = useCallback(async (name) => {
 	  try {
-		const res = await fetch(`http://localhost:8000/api/textures/${name}`);
+		const res = await fetch(`https://se-project-group-5.onrender.com/api/textures/${name}`);
 		if (!res.ok) throw new Error();
 		const json = await res.json();
 		return json.signedUrl;
