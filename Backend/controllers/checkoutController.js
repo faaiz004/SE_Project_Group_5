@@ -28,8 +28,8 @@ export const purchaseItems = async (req, res, next) => {
       payment_method_types: ['card'],
       mode: 'payment',
       line_items,
-      success_url: 'https://se-project-group-5-exr1.vercel.app/order-confirmation', // update if needed
-      cancel_url: 'https://se-project-group-5-exr1.vercel.app/cart', // update if needed
+      success_url: 'https://se-project-group-5-exr1.vercel.app/order-confirmation', 
+      cancel_url: 'https://se-project-group-5-exr1.vercel.app/cart', 
     });
 
     res.status(200).json({ url: session.url });
