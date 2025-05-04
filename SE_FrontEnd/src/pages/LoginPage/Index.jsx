@@ -199,7 +199,7 @@ export default function LoginPage() {
 
                 <GoogleLogin
                   onSuccess={handleGoogleLoginSuccess}
-                  onError={() => console.log("Google login failed")}
+                  // onError={() => console.log("Google login failed")}
                   width="100%"
                 />
               </Stack>

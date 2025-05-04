@@ -55,17 +55,13 @@ const ExplorePage = () => {
       }
     }
 
-    // Clean up
     return () => {
       clearInterval(intervalId)
-      // Restore original sessionStorage.setItem
       sessionStorage.setItem = originalSetItem
     }
   }, [])
 
   const handleAddToCart = (product) => {
-    console.log("Adding to cart:", product)
-    // Create updated cart
     const updatedCart = [...cartItems, product]
     // Update state immediately
     setCartItems(updatedCart)
