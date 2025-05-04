@@ -315,6 +315,7 @@ import {
 		const res = await fetch(`https://se-project-group-5.onrender.com/api/textures/${name}`);
 		if (!res.ok) throw new Error();
 		const json = await res.json();
+		console.log("Fetched texture URL:", json);
 		return json.signedUrl;
 	  } catch {
 		return "/textures/green.png";
