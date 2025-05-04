@@ -296,7 +296,13 @@ import {
 	const [isAutoRotating, setAutoRotate] = useState(true);
 	const [snackbar, setSnackbar] = useState({ message: "", show: false, severity: "success" });
   
-	const { data } = useQuery({ queryKey: ["clothesAll"], queryFn: fetchOutfits });
+	const { data } = useQuery({
+		queryKey: ["clothesAll"],
+		queryFn: fetchOutfits,
+		refetchOnMount: true,
+		staleTime: 0,
+		cacheTime: 0,
+	});
 	const [textureStore, setTextureStore] = useState({ upper: {}, lower: {} });
   
 	const getUniqueByName = useCallback((items) => {
