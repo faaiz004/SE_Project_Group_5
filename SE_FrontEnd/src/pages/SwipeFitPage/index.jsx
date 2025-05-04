@@ -272,6 +272,7 @@ import {
 		const json = await res.json();
 		return json.signedUrl;
 	  } catch {
+	   	// console.error("Failed to fetch texture URL");
 		return "/textures/green.png";
 	  }
 	}, []);
