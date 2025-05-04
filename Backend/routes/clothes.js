@@ -22,7 +22,6 @@ router.get('/sample', async (req, res) => {
   
       res.json(data);
     } catch (err) {
-      console.error('Error in /clothes/sample:', err.message);
       res.status(400).json({ error: err.message });
     }
   });
@@ -30,7 +29,6 @@ router.post('/purchased', verifyToken, getPurchasedClothes);
 router.get('/getClothes', verifyToken, getAllClothes);
 
 
-// New Routes (Protected with verifyToken)
 router.post('/saveClothes/:clothesId', verifyToken, saveClothes);
 router.delete('/unsaveClothes/:clothesId', verifyToken, unsaveClothes);
 router.get('/savedClothes', verifyToken, getSavedClothes);

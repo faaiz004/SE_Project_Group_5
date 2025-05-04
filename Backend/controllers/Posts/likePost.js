@@ -29,7 +29,6 @@ export const likePost = async (req, res) => {
       likes: post.likes.length
     });
   } catch (error) {
-    console.error('Error liking post:', error);
     return res.status(500).json({ error: 'Internal server error.' });
   }
 };

@@ -51,7 +51,6 @@ export const googleAuth = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error('Error verifying Google token:', error);
     return res.status(400).json({ error: 'Invalid token' });
   }
 };

@@ -26,7 +26,6 @@ export const submitPreferences = async (req, res) => {
     });
 
   } catch (err) {
-    console.error('Preference submission error:', err);
     return res.status(500).json({ error: 'Server error' });
   }
 };

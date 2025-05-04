@@ -10,12 +10,9 @@ import ExploreClothes from "../../Layouts/ExplorePage/ExploreClothes"
 
 const ExplorePage = () => {
   const navigate = useNavigate()
-  // State to track cart items
   const [cartItems, setCartItems] = useState([])
 
-  // Load cart items from sessionStorage on component mount
   useEffect(() => {
-    // Function to update cart state from storage
     const updateCartFromStorage = () => {
       try {
         const storedCart = sessionStorage.getItem("cart")
@@ -26,23 +23,14 @@ const ExplorePage = () => {
           }
         }
       } catch (error) {
-        console.error("Error parsing cart data:", error)
       }
     }
-
-    // Initial load
     updateCartFromStorage()
-
-    // Set up interval to check for cart updates
     const intervalId = setInterval(updateCartFromStorage, 300)
-
-    // Override sessionStorage.setItem to detect cart updates
     const originalSetItem = sessionStorage.setItem
     sessionStorage.setItem = function (key, value) {
-      // Call original function
       originalSetItem.apply(this, arguments)
 
-      // If the cart is being updated, update our state
       if (key === "cart") {
         try {
           const parsedValue = JSON.parse(value)
@@ -50,7 +38,6 @@ const ExplorePage = () => {
             setCartItems(parsedValue)
           }
         } catch (error) {
-          console.error("Error parsing cart data:", error)
         }
       }
     }
@@ -63,20 +50,14 @@ const ExplorePage = () => {
 
   const handleAddToCart = (product) => {
     const updatedCart = [...cartItems, product]
-    // Update state immediately
     setCartItems(updatedCart)
-    // Save to sessionStorage
     sessionStorage.setItem("cart", JSON.stringify(updatedCart))
-
-    // Add this after setting sessionStorage in handleAddToCart
-    // Dispatch a custom event to notify other components
     const cartUpdateEvent = new Event("cartUpdated")
     window.dispatchEvent(cartUpdateEvent)
   }
 
   return (
     <Box sx={root}>
-      {/* Background Image */}
       <Box sx={ImageBox}>
         <Box sx={HeaderBox}>
           <Box
@@ -158,12 +139,10 @@ const ExplorePage = () => {
             </IconButton>
           </Box>
         </Box>
-        {/* Search Bar */}
         <Box sx={SearchBox}>
           <SearchBar />
         </Box>
       </Box>
-      {/* Main Content */}
       <Box sx={ClothesBox}>
         <Box
           sx={{

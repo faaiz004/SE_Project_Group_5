@@ -78,7 +78,6 @@ export default function StylePreferences() {
 					});
 					setImages(imgs);
 				} catch (err) {
-					console.error("Failed to fetch style previews:", err);
 				} finally {
 					setLoading(false);
 				}
@@ -100,7 +99,6 @@ export default function StylePreferences() {
 	const handleStyleSelect = (style) => {
 		setSelectedStyle(style);
 		updateSession({ stylePreference: style });
-		// console.log("Selected style:", style);
 	};
 
 	const handleSubmitPreferences = async () => {
@@ -203,7 +201,6 @@ export default function StylePreferences() {
 		</Box>
 	);
 
-	// Show loading skeleton while fetching data
 	if (loading) {
 		return renderCommonLayout(
 			dynamicStyleOptions.map((_, idx) => (

@@ -25,7 +25,6 @@ export const getAllClothes = async (req, res) => {
 
     res.status(200).json(clothesResponse);
   } catch (error) {
-    console.error('Error fetching clothes:', error);
     res.status(500).json({ error: 'Server error.' });
   }
 };

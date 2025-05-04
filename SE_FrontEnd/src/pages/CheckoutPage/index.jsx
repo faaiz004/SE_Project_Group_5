@@ -34,15 +34,11 @@ const CheckoutPage = () => {
     e.preventDefault();
     setError('');
 
-    // if (paymentMethod === 'card') {
-    //   navigate('/card-payment');
-    //   return;
-    // }
     if (paymentMethod === 'card') {
       setLoading(true);
       try {
         const res = await purchaseClothes(cartItems);
-        window.location.href = res.url; // redirect to Stripe Checkout
+        window.location.href = res.url;
       } catch (err) {
         setError(err.response?.data?.error || err.message || 'Failed to initiate Stripe checkout.');
       } finally {
@@ -70,7 +66,6 @@ const CheckoutPage = () => {
 
   return (
     <>
-      {/* Navbar - Full Width */}
       <AppBar position="static" color="default" elevation={0} sx={{ width: '100%' }}>
         <Toolbar sx={{ justifyContent: "space-between" }}>
           <Typography

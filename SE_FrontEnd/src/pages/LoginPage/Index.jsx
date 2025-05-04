@@ -56,7 +56,6 @@ export default function LoginPage() {
       await loginWithGoogle(googleToken);
       navigate("/explore");
     } catch (err) {
-      console.error("Google login failed:", err.response?.data || err.message);
       setError("Google login failed. Please try again.");
     } finally {
       setIsLoading(false);
@@ -199,7 +198,6 @@ export default function LoginPage() {
 
                 <GoogleLogin
                   onSuccess={handleGoogleLoginSuccess}
-                  // onError={() => console.log("Google login failed")}
                   width="100%"
                 />
               </Stack>

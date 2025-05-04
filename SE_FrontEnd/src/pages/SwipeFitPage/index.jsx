@@ -37,7 +37,6 @@ import {
   import HomeIcon from "@mui/icons-material/Home";
   import { useNavigate } from "react-router-dom";
   
-  // Loader overlay
   function CanvasLoader() {
 	return (
 	  <Box
@@ -63,7 +62,6 @@ import {
 	);
   }
   
-  // Fallback for missing model or texture
   function FallbackClothing({ textureUrl, position, type }) {
 	const isUpper = type === "upper";
 	const [error, setError] = useState(false);
@@ -127,7 +125,6 @@ import {
 	);
   }
   
-  // Loads and textures the GLTF model
   function ClothingModel({ geometryUrl, textureUrl, scale, position, isUpper }) {
 	const [modelError, setModelError] = useState(false);
 	const [texError, setTexError] = useState(false);
@@ -186,7 +183,6 @@ import {
 	return cloned ? <primitive object={cloned} dispose={null} /> : <FallbackClothing textureUrl={safeUrl} position={position} type={isUpper ? "upper" : "lower"} />;
   }
   
-  // Scene with lights, ground and controls
   function SceneContent({ upperData, lowerData, isAutoRotating, setAutoRotate }) {
 	const groupRef = useRef();
 	const controlsRef = useRef();
@@ -248,7 +244,6 @@ import {
 	);
   }
   
-  // Main viewer component
   export default function ClothingViewer() {
 	const navigate = useNavigate();
   
@@ -272,12 +267,10 @@ import {
 		const json = await res.json();
 		return json.signedUrl;
 	  } catch {
-	   	// console.error("Failed to fetch texture URL");
 		return "/textures/green.png";
 	  }
 	}, []);
   
-	// load all texture URLs
 	useEffect(() => {
 	  if (!Array.isArray(data)) return;
 	  const load = async (items, key) => {
@@ -328,7 +321,6 @@ import {
 	  [data, textureStore.lower, generateOptions]
 	);
   
-	// set indices from productId
 	useEffect(() => {
 	  if (!upperOptions.length || !lowerOptions.length) return;
 	  const pid = sessionStorage.getItem("productId");
@@ -339,7 +331,6 @@ import {
 	  else if (lIdx !== -1) setIndices((p) => ({ ...p, lower: lIdx }));
 	}, [upperOptions, lowerOptions]);
   
-	// clamp upper index
 	useEffect(() => {
 	  if (indices.upper >= upperOptions.length && upperOptions.length) {
 		setIndices((p) => ({ ...p, upper: 0 }));

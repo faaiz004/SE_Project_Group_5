@@ -1,4 +1,3 @@
-// src/pages/Cart/CartPage.jsx
 import React, { useState, useEffect } from "react";
 import { Box, Typography, Button, IconButton, Divider, AppBar, Toolbar, Badge } from "@mui/material";
 import { ArrowBack, Add, Remove } from "@mui/icons-material";
@@ -19,7 +18,7 @@ export default function CartPage() {
 		if (from && from !== "/checkout") {
 			navigate(from);
 		} else {
-			navigate("/explore"); // fallback if unknown or from checkout
+			navigate("/explore");
 		}
 	};
 
@@ -82,7 +81,6 @@ export default function CartPage() {
 			</AppBar>
 
 			<Box sx={styles.container}>
-				{/* Continue Shopping */}
 				<Button
 					startIcon={<ArrowBack />}
 					sx={styles.backButton}
@@ -93,7 +91,6 @@ export default function CartPage() {
 
 				<Divider sx={styles.divider} />
 
-				{/* Header */}
 				<Typography variant="h5" sx={styles.title}>
 					Shopping Cart
 				</Typography>
@@ -102,14 +99,12 @@ export default function CartPage() {
 					{cartItems.length !== 1 ? "s" : ""} in your cart
 				</Typography>
 
-				{/* Empty state */}
 				{cartItems.length === 0 && (
 					<Typography sx={{ mt: 4, textAlign: "center" }}>
 						No items in cart.
 					</Typography>
 				)}
 
-				{/* Items list */}
 				{cartItems.map((item) => (
 					<Box
 						key={item.productId}
@@ -118,7 +113,7 @@ export default function CartPage() {
 							py: 4,
 							minHeight: 120,
 						}}>
-						{/* Image */}
+
 						<Box sx={styles.productImageContainer}>
 							<Box
 								component="img"
@@ -128,7 +123,6 @@ export default function CartPage() {
 							/>
 						</Box>
 
-						{/* Name / details */}
 						<Box sx={styles.productInfo}>
 							<Typography variant="h6" sx={styles.productName}>
 								{item.name}
@@ -138,7 +132,6 @@ export default function CartPage() {
 							</Typography>
 						</Box>
 
-						{/* Quantity */}
 						<Box sx={styles.quantityControls}>
 							<IconButton
 								sx={styles.quantityButton}
@@ -155,12 +148,10 @@ export default function CartPage() {
 							</IconButton>
 						</Box>
 
-						{/* Line total */}
 						<Typography variant="h6" sx={styles.productPrice}>
 							PKR {(item.price * (item.quantity || 1)).toFixed(2)}
 						</Typography>
 
-						{/* Remove button */}
 						<IconButton
 							sx={styles.deleteButton}
 							onClick={() => handleRemove(item.productId)}>
@@ -175,7 +166,6 @@ export default function CartPage() {
 					</Box>
 				))}
 
-				{/* Summary */}
 				{cartItems.length > 0 && (
 					<Box sx={{ mt: 6, ...styles.summaryContainer }}>
 						<Typography variant="h4" sx={styles.totalPrice}>

@@ -1,15 +1,5 @@
-// src/api/clothesService.js
-// this file contains functions to interact with the clothing-related API endpoints.
 import apiClient from './apiClient.js';
 import axios from 'axios';
-
-// export const purchaseClothes = async clothesId => {
-//   const email = localStorage.getItem('email');
-//   if (!email) throw new Error('Missing email in localStorage');
-
-//   const { data } = await apiClient.post('/clothes/purchase', { email, clothesId });
-//   return data;
-// };
 export const purchaseClothes = async (cartItems) => {
   const token = localStorage.getItem('jwt');
 
@@ -60,7 +50,6 @@ export const getUserPreferences = async () => {
   const token = localStorage.getItem('jwt');
   if (!token) throw new Error('No authentication token found');
 
-  // GET /api/auth/fetch-references
   const { data } = await apiClient.get('/auth/fetch-preferences', {
     headers: { Authorization: `Bearer ${token}` }
   });

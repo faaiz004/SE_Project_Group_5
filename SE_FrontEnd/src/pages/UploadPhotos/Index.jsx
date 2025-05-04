@@ -1,5 +1,3 @@
-// src/components/CreatePostForm.jsx
-
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
@@ -33,10 +31,10 @@ export default function CreatePostForm() {
   const [selectedImagePreview, setSelectedImagePreview] = useState(null);
   const [selectedImageFile, setSelectedImageFile] = useState(null);
   const [caption, setCaption] = useState("");
-  const [selectedItems, setSelectedItems] = useState([]); // array of ids
+  const [selectedItems, setSelectedItems] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [snackbar, setSnackbar] = useState({ open: false, msg: "", sev: "success" });
-  const [loading, setLoading] = useState(false);  // Manual loading state
+  const [loading, setLoading] = useState(false);
 
   const { data, isLoading: purchasesLoading, error: purchasesError } = useQuery({
     queryKey: ["purchasedClothes"],

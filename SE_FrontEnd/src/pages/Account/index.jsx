@@ -46,9 +46,6 @@ import { getSavedClothes, unsaveClothes } from "../../api/clothesService"
 import { getPreferences, updatePreferences } from "../../api/authService"
 import { styles } from "./styles"
 
-/* ------------------------------------------------------------------
-   Style-preference buttons : id ↔ label
-------------------------------------------------------------------- */
 const styleOptions = [
   { id: "Modern", name: "Modern" },
   { id: "Smart_Casual", name: "Business" },
@@ -59,13 +56,11 @@ const styleOptions = [
 export default function Account() {
   const navigate = useNavigate()
 
-  // TAB SELECTION
   const [activeTab, setActiveTab] = useState(() => sessionStorage.getItem("activeTab") || "account")
   useEffect(() => {
     sessionStorage.setItem("activeTab", activeTab)
   }, [activeTab])
 
-  // CART STATE
   const [cartItems, setCartItems] = useState(() => JSON.parse(sessionStorage.getItem("cart")) || [])
   useEffect(() => {
     sessionStorage.setItem("cart", JSON.stringify(cartItems))
@@ -93,13 +88,9 @@ export default function Account() {
       await unsaveClothes(id)
       setFilteredData((prev) => prev.filter((item) => item._id !== id))
     } catch (err) {
-      console.error("Failed to unsave:", err)
     }
   }
 
-  /* ===============================================================
-     1) ACCOUNT-INFO STATE
-  =============================================================== */
   const [profileImage, setProfileImage] = useState(() => sessionStorage.getItem("profileImage") || null)
   useEffect(() => {
     if (profileImage !== null) {
@@ -136,9 +127,6 @@ export default function Account() {
     reader.readAsDataURL(f)
   }
 
-  /* ===============================================================
-     2) PREFERENCES STATE
-  =============================================================== */
   const [gender, setGender] = useState(() => sessionStorage.getItem("gender") || "")
   useEffect(() => {
     sessionStorage.setItem("gender", gender)
@@ -184,9 +172,6 @@ export default function Account() {
     onError: () => alert("Could not save preferences"),
   })
 
-  /* ===============================================================
-     3) BILLING STATE
-  =============================================================== */
   const [savedCards, setSavedCards] = useState(
     () =>
       JSON.parse(sessionStorage.getItem("savedCards")) || [
@@ -250,22 +235,15 @@ export default function Account() {
   const handleDeleteCard = (id) => setSavedCards((prev) => prev.filter((c) => c.id !== id))
 
   const handleLogout = () => {
-    // Clear all session storage
     sessionStorage.clear()
-    // Clear local storage if needed
     localStorage.clear()
-    // Navigate to logout screen
     navigate("/login")
-    // Prevent browser back navigation
     window.history.pushState(null, "", window.location.href)
     window.onpopstate = () => {
       window.history.pushState(null, "", window.location.href)
     }
   }
 
-  /* ===============================================================
-     4) SAVED CLOTHES QUERY & STATE
-  =============================================================== */
   const {
     data: savedClothes = [],
     isLoading: isLoadingSaved,
@@ -391,9 +369,6 @@ export default function Account() {
     })
   }
 
-  /* ===============================================================
-     RENDER CONTENT SWITCH
-  =============================================================== */
   const renderContent = () => {
     switch (activeTab) {
       case "account":
@@ -705,9 +680,6 @@ export default function Account() {
     }
   }
 
-  /* ===============================================================
-     MAIN RENDER
-  =============================================================== */
   return (
     <Box sx={styles.root}>
       <AppBar position="static" sx={{ bgcolor: "#fff", color: "#000", boxShadow: "none" }}>

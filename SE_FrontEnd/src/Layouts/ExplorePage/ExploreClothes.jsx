@@ -28,7 +28,6 @@ const root = {
 	fontFamily: "Inter, sans-serif",
 };
 
-// size & style mappings
 const sizeMap = { small: "S", medium: "M", large: "L" };
 const styleMatchMap = {
 	Casual_Everyday: ["Casual_Everyday", "Smart_Casual"],
@@ -57,7 +56,6 @@ export default function ExploreClothes() {
 		error: pErr,
 	} = useQuery({ queryKey: ["preferences"], queryFn: getUserPreferences });
 
-	// init cart & saved states
 	useEffect(() => {
 		setCartItems(JSON.parse(sessionStorage.getItem("cart")) || []);
 		(async () => {
@@ -69,12 +67,10 @@ export default function ExploreClothes() {
 				});
 				setSavedStates(init);
 			} catch (e) {
-				console.error("Failed to fetch saved clothes:", e);
 			}
 		})();
 	}, []);
 
-	// compute "For You" list via useMemo (with gender filter)
 	const forYou = useMemo(() => {
 		const prefs = prefResp.preferences;
 		if (!prefs || !Array.isArray(outfits)) return [];
@@ -87,14 +83,6 @@ export default function ExploreClothes() {
 			const sizeOK = o.upper ? shirtMapped === o.size : pantMapped === o.size;
 			const styleOK = !stylePreference || matchingStyles.includes(o.category);
 			const genderOK = o.gender === "unisex" || o.gender === userGender;
-			// if (!styleOK && sizeOK && genderOK) {
-			// 	console.log("Style mismatch:", {
-			// 		userPreference: stylePreference,
-			// 		lookingFor: matchingStyles,
-			// 		itemCategory: o.category,
-			// 		itemName: o.name,
-			// 	});
-			// }
 
 			return sizeOK && styleOK && genderOK;
 		});
@@ -107,14 +95,6 @@ export default function ExploreClothes() {
 			return true;
 		});
 	}, [prefResp.preferences, outfits]);
-
-	// useEffect(() => {
-	// 	if (forYou.length) {
-	// 		forYou.forEach((item) => {
-	// 			console.log(item.signedImageUrl || item.imageUrl);
-	// 		});
-	// 	}
-	// }, [forYou]);
 
 	const saveM = useMutation({
 		mutationFn: saveClothes,
@@ -190,7 +170,6 @@ export default function ExploreClothes() {
 							height="260"
 							loading="lazy"
 							sx={{ objectFit: "contain" }}
-							// onClick={() => navigate("/mannequin")}
 							onClick={() => handleImageClick(item)}
 						/>
 					</Box>
@@ -232,7 +211,6 @@ export default function ExploreClothes() {
 		navigate("/mannequin");
 	};
 
-	// loading / error states
 	if (oL || pL) {
 		return (
 			<Box sx={root}>
@@ -258,7 +236,6 @@ export default function ExploreClothes() {
 	if (oE) return <Typography>Error: {oErr.message}</Typography>;
 	if (pE) return <Typography>Error: {pErr.message}</Typography>;
 
-	// group other categories
 	const categoriesMap = outfits.reduce((acc, o) => {
 		const type = o.upper ? "Uppers" : "Lowers";
 		const key = `${o.category} - ${type}`;
@@ -303,7 +280,6 @@ export default function ExploreClothes() {
 				</Box>
 			</Box>
 
-			{/* Other categories */}
 			{categories.map(([groupName, items]) => {
 				const unique = items.filter(
 					(o, i, arr) => arr.findIndex((x) => x.name === o.name) === i

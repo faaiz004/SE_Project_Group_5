@@ -1,6 +1,5 @@
 import { styled } from "@mui/material/styles";
 
-// These styled components are used in the ChatbotWidget.
 export const ChatbotContainer = styled("div")({
 	position: "fixed",
 	bottom: 20,
@@ -33,7 +32,6 @@ export const ChatbotWindow = styled("div")(({ isOpen }) => ({
 	transition: "right 0.3s ease-in-out",
 }));
 
-// Custom hook returning style objects for the Chatbot component using Material‑UI's sx syntax.
 const useStyles = () => {
 	return {
 		chatbotBox: {

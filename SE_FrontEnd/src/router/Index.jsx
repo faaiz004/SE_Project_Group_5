@@ -1,7 +1,5 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { lazy, Suspense } from "react";
-
-// ---------- Lazy-loaded pages ----------
 import SwipeFitPage from "../pages/SwipeFitPage/index";
 
 const ExplorePage = lazy(() => import("../pages/ExplorePage/Index"));
@@ -19,14 +17,10 @@ const Chatbot = lazy(() => import("../pages/Chatbot/index"));
 const GenderPreference = lazy(() => import("../pages/GenderPreference/Index"));
 const WeightPreference = lazy(() => import("../pages/WeightPreference/Index"));
 const StylePreferences = lazy(() => import("../pages/StylePreferences/Index"));
-// const PreferencesShirts = lazy(() =>	import("../pages/PreferencesShirts/Index"));
-// const PreferencesPants = lazy(() => import("../pages/PreferencesPants/Index"));
 const SignInPage = lazy(() => import("../pages/LoginPage/Index"));
-// const SavedOutfits           = lazy(() => import('../pages/SavedOutfits/Index'));
 const AccountPage = lazy(() => import("../pages/Account/index"));
 const AllClothesSearch = lazy(() => import("../pages/AllClothesSearch/Index"));
 
-// ---------- Route guards ----------
 import PublicRoute from "./PublicRoute";
 import PrivateRoute from "./PrivateRoute";
 import PreferenceGuardRoute from "./PreferenceGuardRoute";
@@ -35,9 +29,7 @@ const suspense = (node, msg) => (
 	<Suspense fallback={<div>{msg}</div>}>{node}</Suspense>
 );
 
-// ---------------- Router ----------------
 const router = createBrowserRouter([
-	// ---- Public (tokenless) ----
 	{
 		path: "/",
 		element: suspense(
@@ -94,26 +86,6 @@ const router = createBrowserRouter([
 			"Loading Style Pref..."
 		),
 	},
-	// {
-	// 	path: "/preferences/shirts",
-	// 	element: suspense(
-	// 		<PrivateRoute>
-	// 			<PreferencesShirts />
-	// 		</PrivateRoute>,
-	// 		"Loading Shirt Pref..."
-	// 	),
-	// },
-	// {
-	// 	path: "/preferences/pants",
-	// 	element: suspense(
-	// 		<PrivateRoute>
-	// 			<PreferencesPants />
-	// 		</PrivateRoute>,
-	// 		"Loading Pant Pref..."
-	// 	),
-	// },
-
-	// ---- Main app (token + preferencesCompleted === true) ----
 	{
 		path: "/explore",
 		element: suspense(
@@ -132,15 +104,6 @@ const router = createBrowserRouter([
 			"Loading Style Feed..."
 		),
 	},
-	// {
-	//   path: "/saved-outfits",
-	//   element: suspense(
-	//     <PreferenceGuardRoute>
-	//       <SavedOutfits />
-	//     </PreferenceGuardRoute>,
-	//     "Loading Saved Outfits..."
-	//   )
-	// },
 	{
 		path: "/cart",
 		element: suspense(
@@ -221,8 +184,6 @@ const router = createBrowserRouter([
 			</Suspense>
 		),
 	},
-
-	// ---- Catch-all ----
 	{
 		path: "*",
 		element: suspense(

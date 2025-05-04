@@ -60,7 +60,6 @@ export default function SearchBar() {
 			navigate(`/all-clothes-search?${params.toString()}`);
 			setFocused(false);
 		} catch (err) {
-			console.error("Error during search:", err);
 		} finally {
 			setLoading(false);
 		}

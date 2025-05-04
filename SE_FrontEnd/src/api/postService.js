@@ -1,4 +1,3 @@
-// src/api/postService.js
 import apiClient from './apiClient.js';
 
 export const getPosts = async () => {

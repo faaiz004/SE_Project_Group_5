@@ -7,7 +7,6 @@ export async function sampleClothes({ categories, gender, count, upper }) {
   }
 
   if (!Array.isArray(categories) || !categories.length) {
-    console.warn('[sampleClothes] Invalid categories:', categories);
     return [];
   }
 

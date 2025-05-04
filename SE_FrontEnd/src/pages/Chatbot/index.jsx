@@ -57,7 +57,6 @@ const Chatbot = ({ closeChat }) => {
 				{ role: "assistant", content: botContent },
 			]);
 		} catch (err) {
-			console.error("OpenAI Fetch Error:", err);
 			setMessages((prev) => [
 				...prev,
 				{ role: "assistant", content: "Sorry, something went wrong." },

@@ -9,12 +9,10 @@ const persist = ({ token, user }) => {
   }
 };
 
-/* Utility to clear storage */
 const clearStorage = () => {
   localStorage.clear();
   sessionStorage.clear();
 };
-// signupUser
 export const signupUser = async (userData) => {
   clearStorage();
   const { data } = await apiClient.post('/auth/signup', userData);

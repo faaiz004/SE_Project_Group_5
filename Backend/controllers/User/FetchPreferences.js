@@ -33,7 +33,6 @@ export const fetchPreferences = async (req, res) => {
       }
     });
   } catch (err) {
-    console.error('Fetch preferences error:', err);
     return res.status(500).json({ error: 'Server error' });
   }
 };
@@ -75,7 +74,6 @@ export const updatePreferences = async (req, res) => {
       }
     });
   } catch (err) {
-    console.error('Update preferences error:', err);
     return res.status(500).json({ error: 'Server error' });
   }
 };

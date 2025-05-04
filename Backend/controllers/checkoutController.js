@@ -34,7 +34,6 @@ export const purchaseItems = async (req, res, next) => {
 
     res.status(200).json({ url: session.url });
   } catch (err) {
-    console.error('Stripe Error:', err);
     res.status(500).json({ error: 'Stripe checkout failed' });
   }
 };

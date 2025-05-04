@@ -109,8 +109,6 @@ export default function AllClothesSearch() {
 
 		const data = await response.json();
 		const content = data.choices?.[0]?.message?.content?.trim();
-
-		// Expecting: Category,min-max,upper|lower|both
 		if (!content || !content.includes(",")) return null;
 
 		const [category, priceRange, part] = content.split(",").map((s) => s.trim());
@@ -329,7 +327,6 @@ export default function AllClothesSearch() {
 
   return (
     <Box sx={pageContainer}>
-      {/* Top bar with search included */}
       <Box sx={{ width: "100%", backgroundColor: "#ffffff", borderBottom: "1px solid #e0e0e0" }}>
         <Box sx={headerContainer}>
           <Typography
@@ -347,8 +344,6 @@ export default function AllClothesSearch() {
           >
             Swipe-Fit
           </Typography>
-
-          {/* Search bar */}
           <Box sx={{ flexGrow: 1, ml: 17, mr: 2 }}>
             <form onSubmit={handleSearch}>
               <TextField
@@ -374,8 +369,6 @@ export default function AllClothesSearch() {
               />
             </form>
           </Box>
-
-          {/* Icons: GroupAdd, CART, PERSON */}
           <Box sx={headerIconsContainer}>
             <IconButton onClick={() => navigate("/stylefeed")}>
               <GroupAddIcon />
@@ -411,8 +404,6 @@ export default function AllClothesSearch() {
           </Box>
         </Box>
       </Box>
-
-      {/* Content below unchanged */}
       <Box sx={contentContainer}>{renderContent()}</Box>
     </Box>
   );

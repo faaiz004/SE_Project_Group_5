@@ -32,7 +32,6 @@ export const updateUserPreferences = async (req, res) => {
 
 		return res.status(200).json({ message: 'Preferences updated.', user: updatedUser });
 	} catch (err) {
-		console.error('Error updating preferences:', err);
 		return res.status(500).json({ error: 'Server error.' });
 	}
 };

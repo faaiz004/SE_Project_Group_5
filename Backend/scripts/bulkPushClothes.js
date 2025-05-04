@@ -10,7 +10,6 @@ dotenv.config();
 
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
-// Set up the S3 client using credentials and region from your .env file
 const s3 = new S3Client({
   region: process.env.AWS_REGION, 
   credentials: {
@@ -19,7 +18,6 @@ const s3 = new S3Client({
   },
 });
 
-// Array of clothes data with proper relative paths to your image assets.
 const clothesData = [
   {
     name: "Formal Suit",
@@ -151,12 +149,10 @@ const clothesData = [
   }
 ];
 
-// Upload a local image file to AWS S3
 const uploadImageToS3 = async (filePath) => {
   try {
     const fileBuffer = fs.readFileSync(filePath);
     const fileExtension = path.extname(filePath);
-    // Generate a unique S3 key for the file
     const key = `clothes/${uuidv4()}${fileExtension}`;
 
     const params = {
@@ -166,29 +162,22 @@ const uploadImageToS3 = async (filePath) => {
       ContentType: 'image/png', 
     };
 
-    // Upload the file to S3
     await s3.send(new PutObjectCommand(params));
 
-    // Construct and return the public URL of the uploaded image
     return `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
   } catch (error) {
-    console.error("Error uploading image to S3:", error);
     throw error;
   }
 };
 
-// Main function to bulk push clothes data
 const bulkPushClothes = async () => {
   try {
     await mongoose.connect(process.env.MONGO_URI);
-    console.log("✅ Connected to MongoDB");
 
-    // Process each clothing item
     const clothesToInsert = [];
     for (const item of clothesData) {
       const imageUrl = await uploadImageToS3(item.imagePath);
       
-      // Create a clothing item object matching the Clothes model
       const newClothes = {
         name: item.name,
         brand: item.brand,
@@ -200,11 +189,9 @@ const bulkPushClothes = async () => {
       clothesToInsert.push(newClothes);
     }
 
-    // Bulk insert the clothing items into MongoDB
     const insertedDocs = await Clothes.insertMany(clothesToInsert);
     process.exit(0);
   } catch (error) {
-    console.error("❌ Bulk insert error:", error);
     process.exit(1);
   }
 };

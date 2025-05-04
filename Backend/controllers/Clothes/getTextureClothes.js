@@ -42,7 +42,6 @@ export const getTextureByName = async (req, res) => {
       upper: clothingItem.upper,
     });
   } catch (err) {
-    console.error('Error fetching texture by name:', err);
     return res.status(500).json({ error: 'Server error.' });
   }
 };

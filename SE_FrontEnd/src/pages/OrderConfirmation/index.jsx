@@ -7,11 +7,18 @@ const OrderConfirmation = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    sessionStorage.removeItem('cart');
+    
     const timer = setTimeout(() => {
       navigate('/explore');
     }, 5000);
     return () => clearTimeout(timer);
   }, [navigate]);
+
+  const handleReturnClick = () => {
+    sessionStorage.removeItem('cart');
+    navigate('/explore');
+  };
 
   return (
     <Box sx={{ 
@@ -32,8 +39,7 @@ const OrderConfirmation = () => {
       </Typography>
       <Button 
         variant="contained"
-        component={Link}
-        to="/explore"
+        onClick={handleReturnClick}
         size="large"
       >
         Return Now

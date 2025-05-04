@@ -58,14 +58,12 @@ function LandingPage() {
         navigate("/preferences/gender");
       }
     } catch (error) {
-      console.error("Google login failed:", error.response?.data || error.message);
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleGoogleLoginFailure = () => {
-    console.log("Google login failed");
   };
 
   return (

@@ -1,5 +1,3 @@
-// src/style.js
-
 export const pageContainer = {
 	display: "flex",
 	flexDirection: "row",
@@ -49,7 +47,6 @@ export const titleHighlight = {
 	fontWeight: 700,
 };
 
-// Subheading
 export const subtitle = {
 	fontSize: "1rem",
 	fontWeight: 400,
@@ -67,7 +64,6 @@ export const collageContainer = {
 	margin: "0 auto",
 };
 
-// Repositioned images to create a collage with visible gaps
 export const collageImage1 = {
 	position: "absolute",
 	top: "0%",
@@ -113,7 +109,6 @@ export const collageImage4 = {
 	zIndex: 2,
 };
 
-// Reincorporated collageImage5 with adjusted positioning
 export const collageImage5 = {
 	position: "absolute",
 	top: "55%",
@@ -141,7 +136,6 @@ export const buttonContainer = {
 };
 
 export const signInButton = {
-	// This should be renamed to signUpButton in your component
 	backgroundColor: "#F1C40F",
 	color: "#fff",
 	padding: "0.7rem 1rem",
@@ -185,7 +179,6 @@ export const googleIcon = {
 	marginRight: "8px",
 };
 
-// Add this global style to your root component
 export const globalStyles = {
 	"*": {
 		boxSizing: "border-box",

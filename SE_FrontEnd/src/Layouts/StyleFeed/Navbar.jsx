@@ -14,12 +14,10 @@ import Typography from '@mui/material/Typography';
 export default function Navbar() {
   const navigate = useNavigate();
   
-  // Add cart state
   const [cartItems, setCartItems] = useState(
     () => JSON.parse(sessionStorage.getItem('cart')) || []
   );
 
-  // Add polling mechanism to check for cart updates
   useEffect(() => {
     const updateCartFromStorage = () => {
       try {
@@ -31,14 +29,11 @@ export default function Navbar() {
           }
         }
       } catch (error) {
-        console.error('Error parsing cart data:', error);
       }
     };
 
-    // Set up interval to check for cart updates
     const intervalId = setInterval(updateCartFromStorage, 300);
 
-    // Clean up
     return () => {
       clearInterval(intervalId);
     };
@@ -46,7 +41,6 @@ export default function Navbar() {
   
   return (
     <Box sx={{ flexGrow: 1 }}>
-      {/* AppBar with Custom Styles */}
       <AppBar
         position="static"
         elevation={1}
@@ -56,7 +50,6 @@ export default function Navbar() {
         }}
       >
         <Toolbar>
-          {/* Swipe-Fit Button */}
           <Typography
             variant="h4"
             sx={{ flexGrow: 1, fontWeight: 'bold', cursor: 'pointer', transition: 'transform .2s', '&:hover': { transform: 'scale(1.03)' }, color: '#000000' }}
@@ -65,9 +58,7 @@ export default function Navbar() {
             Swipe-Fit
           </Typography>
 
-          {/* Buttons on the Right */}
           <Box sx={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
-            {/* Add Post Button */}
             <IconButton
               sx={{
                 color: '#5F65C3',
@@ -83,7 +74,6 @@ export default function Navbar() {
               <AddCircleIcon sx={{ fontSize: 32 }} />
             </IconButton>
 
-            {/* Style Feed Button */}
             <IconButton
               sx={{ color: 'black', mr: 2 }}
               onClick={() => navigate('/stylefeed')}
@@ -91,7 +81,6 @@ export default function Navbar() {
               <GroupAddIcon sx={{ fontSize: 28 }} />
             </IconButton>
 
-            {/* Cart Button with Badge */}
             <Box sx={{ position: 'relative', mr: 2 }}>
               <IconButton
                 sx={{ color: 'black' }}
@@ -121,7 +110,6 @@ export default function Navbar() {
               )}
             </Box>
 
-            {/* Account Button */}
             <IconButton
               sx={{ color: 'black' }}
               onClick={() => navigate('/account')}

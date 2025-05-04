@@ -28,7 +28,6 @@ function PreferencesShirts() {
 
   const shirtImages = [modernImg, businessImg, oldMoneyImg, casualImg]
 
-  // Only 9 shirts for 3x3 grid
   const shirts = Array.from({ length: 9 }, (_, i) => ({
     id: i + 1,
     name: `Shirt ${i + 1}`,
@@ -64,7 +63,6 @@ function PreferencesShirts() {
         pb: 6,
       }}
     >
-      {/* Top Progress */}
       <Box sx={{ px: 2, mb: 4 }}>
         <LinearProgress
           variant="determinate"
@@ -81,12 +79,10 @@ function PreferencesShirts() {
         />
       </Box>
 
-      {/* Step Indicator */}
       <Typography variant="h5" align="center" sx={{ mb: 6, fontWeight: 500 }}>
         Step 4 of 5
       </Typography>
 
-      {/* Main Content */}
       <Container maxWidth="lg" sx={{ flexGrow: 1 }}>
         <Typography variant="h3" align="center" sx={{ mb: 2, fontWeight: 600 }}>
           Select 3 Shirts
@@ -153,8 +149,6 @@ function PreferencesShirts() {
         ))}
       </Grid>
       
-
-        {/* Navigation Buttons */}
         <Stack
           direction={{ xs: "column", sm: "row" }}
           spacing={2}

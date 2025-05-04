@@ -1,5 +1,3 @@
-// Styles for AllClothesSearch component
-
 export const pageContainer = {
 	display: "flex",
 	flexDirection: "column",
@@ -110,7 +108,7 @@ export const searchInputStyle = {
 	width: "100%",
 	maxWidth: "600px",
 	backgroundColor: "#f5f5f5",
-	borderRadius: "50px", // Pill shape
+	borderRadius: "50px",
 	"& .MuiOutlinedInput-root": {
 		borderRadius: "50px",
 		"& fieldset": {

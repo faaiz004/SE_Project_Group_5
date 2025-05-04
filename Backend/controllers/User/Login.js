@@ -39,7 +39,6 @@ export const login = async (req, res) => {
       },
     });
   } catch (err) {
-    console.error('Login error:', err);
     return res.status(500).json({ error: 'Server error' });
   }
 };

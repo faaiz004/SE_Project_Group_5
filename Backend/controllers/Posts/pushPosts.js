@@ -16,18 +16,15 @@ export const createPost = async (req, res) => {
       try {
         clothesArray = JSON.parse(req.body.clothes);
       } catch (err) {
-        console.error("Error parsing clothes array:", err);
       }
     }
 
     if (!req.file || !caption || !email) {
-      console.warn("Missing fields - image:", !req.file, "caption:", !caption, "email:", !email);
       return res.status(400).json({ error: "Missing required fields: image, caption, or email." });
     }
 
     const user = await User.findOne({ email });
     if (!user) {
-      console.warn("User not found with email:", email);
       return res.status(404).json({ error: "User not found with the provided email." });
     }
 
@@ -54,7 +51,6 @@ export const createPost = async (req, res) => {
 
     return res.status(201).json({ post: newPost });
   } catch (error) {
-    console.error("Error creating post:", error);
     return res.status(500).json({ error: "Server error while creating post." });
   }
 };
