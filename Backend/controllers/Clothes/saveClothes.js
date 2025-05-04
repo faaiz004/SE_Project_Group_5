@@ -1,14 +1,12 @@
-// This file fetched saved clothes for a user and saved/unsaved clothes to/from the user's savedClothes array
 import User from '../../models/User.js';
 import Clothes from '../../models/clothes.js';
 
-// Save Clothes to User's savedClothes
 export const saveClothes = async (req, res) => {
   try {
     const userId = req.user.id;
     const { clothesId } = req.params;
 
-    // Validate clothes existence
+    
     const clothesExists = await Clothes.findById(clothesId);
     if (!clothesExists) {
       return res.status(404).json({ error: 'Clothes item not found.' });
@@ -27,7 +25,7 @@ export const saveClothes = async (req, res) => {
   }
 };
 
-// Unsave Clothes
+
 export const unsaveClothes = async (req, res) => {
   try {
     const userId = req.user.id;

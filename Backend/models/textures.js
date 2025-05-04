@@ -1,7 +1,6 @@
 import mongoose from 'mongoose';
 
 
-// schema for the texture collection
 const textureSchema = new mongoose.Schema(
   {
     name: {

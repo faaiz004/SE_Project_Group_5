@@ -9,7 +9,6 @@ import { sampleClothes } from '../controllers/Clothes/getClothesForPreferences.j
 
 const router = express.Router();
 
-// Existing Routes
 router.get('/sample', async (req, res) => {
     try {
       const { categories, gender, count, upper } = req.query;

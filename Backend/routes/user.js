@@ -10,7 +10,6 @@ import { updatePreferences } from '../controllers/User/FetchPreferences.js';
 
 const router = express.Router();
 
-// all routes for user
 router.post('/signup', signup);
 router.post('/submit-preferences', verifyToken, submitPreferences);
 router.get('/get-preferences', verifyToken, getUserPreferences);

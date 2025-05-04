@@ -9,7 +9,6 @@ const router = express.Router();
 const storage = multer.memoryStorage();
 const upload = multer({ storage }); 
 
-// Route setup — notice `upload.single("image")` here
 router.post('/create',  upload.single("image"), verifyToken, createPost);
 router.get('/getAll', verifyToken, getAllPosts);
 router.post('/:postId/like', verifyToken, likePost);
