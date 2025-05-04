@@ -131,7 +131,7 @@ import {
   function ClothingModel({ geometryUrl, textureUrl, scale, position, isUpper }) {
 	const [modelError, setModelError] = useState(false);
 	const [texError, setTexError] = useState(false);
-	const safeUrl = textureUrl || "/textures/placeholder.png";
+	const safeUrl = textureUrl || "/textures/green.png";
   
 	useEffect(() => {
 	  setModelError(false);
