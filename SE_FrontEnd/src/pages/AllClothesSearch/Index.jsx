@@ -67,12 +67,79 @@ export default function AllClothesSearch() {
   }, [clothes, category, filteredCategory]);
 
   const fetchSearchCategoryFromOpenAI = async (prompt) => {
-    // ... existing implementation ...
-  };
+		const response = await fetch("https://api.openai.com/v1/chat/completions", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+				Authorization: `Bearer ${import.meta.env.VITE_OPENAI_API_KEY}`,
+			},
+			body: JSON.stringify({
+				model: "gpt-3.5-turbo",
+				messages: [
+					{
+						role: "system",
+						content: `
+						You are a clothes-query parser. Below is the Mongoose schema for our “clothes” collection:
+						const clothesSchema = new mongoose.Schema({
+						  name: String,
+						  brand: String,
+						  size: { type: String, enum: ['XS','S','M','L','XL','XXL'] },
+						  category: { type: String, enum: ['Modern','Modern/Old_Money','Smart_Casual/Casual_Everyday','Smart_Casual','Casual_Everyday'] },
+						  price: Number,
+						  upper: Boolean,
+						  lower: Boolean,
+						  imageUrl: String
+						});
+						
+						When I give you a user’s free-text clothing query, respond with exactly three comma-separated tokens in the form:
+						<Category>,<minPrice>-<maxPrice>,<upper|lower|both>
+						
+						IMPORTANT:
+						- Category must be one of: 'Modern', 'Modern/Old_Money', 'Smart_Casual/Casual_Everyday', 'Smart_Casual', 'Casual_Everyday'
+						- Prices must be numeric and realistic.
+						- For clothing part: only choose from 'upper', 'lower', or 'both'.
+						- No extra words, explanation, or formatting. Only return the 3 tokens.`,
+					},
+					{ role: "user", content: prompt },
+				],
+				temperature: 0.2,
+				max_tokens: 30,
+			}),
+		});
 
-  const handleImageClick = async (item) => {
-    // ... existing implementation ...
-  };
+		const data = await response.json();
+		const content = data.choices?.[0]?.message?.content?.trim();
+
+		// Expecting: Category,min-max,upper|lower|both
+		if (!content || !content.includes(",")) return null;
+
+		const [category, priceRange, part] = content.split(",").map((s) => s.trim());
+		return { category, priceRange, part };
+	};
+
+	const handleImageClick = async (item) => {
+		const textureName = `${item.name}_texture`;
+		try {
+			const texture = await fetchTextureByName(textureName);
+			const textureUrl = texture.signedUrl;
+			const isUpper = texture.upper;
+			const itemPrice = item.price;
+			const itemID = item._id;
+			const itemUrl = item.imageUrl;
+
+			sessionStorage.setItem("selectedTextureUrl", textureUrl);
+			sessionStorage.setItem("selectedTextureName", item.name);
+			sessionStorage.setItem("selectedModelisUpper", isUpper);
+			sessionStorage.setItem("itemPrice", itemPrice);
+			sessionStorage.setItem("itemID", itemID);
+			sessionStorage.setItem("itemUrl", itemUrl);
+
+			navigate("/mannequin");
+		} catch (err) {
+			console.error("Texture not found for", textureName, err);
+			alert("Texture not found for this outfit.");
+		}
+	};
 
   useEffect(() => {
     const stored = JSON.parse(sessionStorage.getItem("cart")) || [];
