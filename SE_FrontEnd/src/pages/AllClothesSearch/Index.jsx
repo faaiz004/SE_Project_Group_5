@@ -169,7 +169,6 @@ export default function AllClothesSearch() {
           }
         }
       } catch (error) {
-        console.error("Error parsing cart data:", error);
       }
     };
 
