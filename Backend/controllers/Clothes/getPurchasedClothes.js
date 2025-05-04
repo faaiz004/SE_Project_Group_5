@@ -1,6 +1,4 @@
-// This file fetches purchased clothes for a user and generates signed URLs for their images.
 import User    from '../../models/User.js';
-import Clothes from '../../models/Clothes.js';
 import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
@@ -18,7 +16,6 @@ const keyFromURL = (url) => {
   return i === -1 ? url : url.slice(i + 15);
 };
 
-// Purpose: Fetch purchased clothes for a user and generate signed URLs for their images
 export const getPurchasedClothes = async (req, res) => {
   try {
     const { email } = req.body;
