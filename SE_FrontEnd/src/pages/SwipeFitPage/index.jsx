@@ -65,7 +65,8 @@ import {
   function FallbackClothing({ textureUrl, position, type }) {
 	const isUpper = type === "upper";
 	const [error, setError] = useState(false);
-	const safeUrl = textureUrl || (isUpper ? "/textures/texture.png" : "/textures/red.png");
+	const safeUrl =
+	  textureUrl || (isUpper ? "/textures/texture.png" : "/textures/red.png");
 	const texture = useTexture(
 	  safeUrl,
 	  (tex) => {
@@ -125,33 +126,60 @@ import {
 	);
   }
   
-  function ClothingModel({ geometryUrl, textureUrl, scale, position, isUpper }) {
+  /**
+   * ClothingModel with retry‑on‑error for expired S3 URLs.
+   */
+  function ClothingModel({ geometryUrl, textureUrl, scale, position, isUpper, name }) {
 	const [modelError, setModelError] = useState(false);
 	const [texError, setTexError] = useState(false);
-	const safeUrl = textureUrl || "/textures/green.png";
   
+	// Keep a local, replaceable texture URL so we can swap a fresh presigned link on failure.
+	const initialUrl = textureUrl || "/textures/green.png";
+	const [currentUrl, setCurrentUrl] = useState(initialUrl);
+  
+	// Reset error flags when the geometry or base URL changes (e.g., on option switch).
 	useEffect(() => {
 	  setModelError(false);
 	  setTexError(false);
-	}, [geometryUrl, safeUrl]);
+	  setCurrentUrl(initialUrl);
+	}, [geometryUrl, initialUrl]);
   
+	/** Load geometry */
 	const { scene, error: gltfError } = useGLTF(geometryUrl, true);
 	useEffect(() => {
 	  if (gltfError) setModelError(true);
 	}, [gltfError]);
   
+	/** Load texture with retry */
 	const texture = useTexture(
-	  safeUrl,
+	  currentUrl,
 	  (tex) => {
 		tex.flipY = false;
 		tex.colorSpace = THREE.SRGBColorSpace;
 		tex.needsUpdate = true;
+		setTexError(false);
 	  },
-	  () => setTexError(true)
+	  async () => {
+		// Texture failed (likely URL expired) → try fetching a fresh signed URL.
+		try {
+		  const res = await fetch(`/api/textures/${name}_texture`);
+		  if (!res.ok) throw new Error("fetch failed");
+		  const { signedUrl } = await res.json();
+		  setCurrentUrl(signedUrl); // triggers re‑load automatically
+		} catch (err) {
+		  setTexError(true); // final fallback to grey material
+		}
+	  }
 	);
   
 	if (modelError) {
-	  return <FallbackClothing textureUrl={safeUrl} position={position} type={isUpper ? "upper" : "lower"} />;
+	  return (
+		<FallbackClothing
+		  textureUrl={currentUrl}
+		  position={position}
+		  type={isUpper ? "upper" : "lower"}
+		/>
+	  );
 	}
   
 	const cloned = useMemo(() => {
@@ -160,16 +188,15 @@ import {
 	  clone.traverse((child) => {
 		if (child.isMesh && child.material) {
 		  const apply = (m) => {
-			if (!texError && m.map !== undefined) {
+			if (!texError && texture) {
 			  m.map = texture;
-			  m.transparent = !!(texture.format === THREE.RGBAFormat || safeUrl.endsWith(".png"));
+			  m.transparent = texture.format === THREE.RGBAFormat || currentUrl.endsWith(".png");
 			  m.alphaTest = m.transparent ? 0.1 : 0;
-			  m.needsUpdate = true;
 			} else if (texError) {
 			  m.color.set("#888888");
 			  m.map = null;
-			  m.needsUpdate = true;
 			}
+			m.needsUpdate = true;
 		  };
 		  Array.isArray(child.material) ? child.material.forEach(apply) : apply(child.material);
 		  child.castShadow = child.receiveShadow = true;
@@ -178,11 +205,22 @@ import {
 	  clone.scale.set(...scale);
 	  clone.position.set(...position);
 	  return clone;
-	}, [scene, texture, scale, position, safeUrl, texError]);
+	}, [scene, texture, scale, position, currentUrl, texError]);
   
-	return cloned ? <primitive object={cloned} dispose={null} /> : <FallbackClothing textureUrl={safeUrl} position={position} type={isUpper ? "upper" : "lower"} />;
+	return cloned ? (
+	  <primitive object={cloned} dispose={null} />
+	) : (
+	  <FallbackClothing
+		textureUrl={currentUrl}
+		position={position}
+		type={isUpper ? "upper" : "lower"}
+	  />
+	);
   }
   
+  /**
+   * SceneContent – unchanged except name prop now passed to ClothingModel.
+   */
   function SceneContent({ upperData, lowerData, isAutoRotating, setAutoRotate }) {
 	const groupRef = useRef();
 	const controlsRef = useRef();
@@ -209,9 +247,7 @@ import {
 	  };
 	}, [setAutoRotate]);
   
-	if (!upperData?.textureUrl || !lowerData?.textureUrl) {
-	  return <CanvasLoader />;
-	}
+	if (!upperData?.textureUrl || !lowerData?.textureUrl) return <CanvasLoader />;
   
 	return (
 	  <>
@@ -236,10 +272,18 @@ import {
 		  <meshStandardMaterial color="#cccccc" side={THREE.DoubleSide} />
 		</mesh>
 		<group ref={groupRef}>
-		  <ClothingModel {...upperData} isUpper={true} />
-		  <ClothingModel {...lowerData} isUpper={false} />
+		  <ClothingModel {...upperData} isUpper name={upperData.name} />
+		  <ClothingModel {...lowerData} isUpper={false} name={lowerData.name} />
 		</group>
-		<OrbitControls ref={controlsRef} makeDefault enablePan enableZoom target={[0, 0, 0]} minDistance={2} maxDistance={10} />
+		<OrbitControls
+		  ref={controlsRef}
+		  makeDefault
+		  enablePan
+		  enableZoom
+		  target={[0, 0, 0]}
+		  minDistance={2}
+		  maxDistance={10}
+		/>
 	  </>
 	);
   }
@@ -271,6 +315,7 @@ import {
 	  }
 	}, []);
   
+	/** Load texture URLs once per session; they may still expire but we now retry on error inside ClothingModel. */
 	useEffect(() => {
 	  if (!Array.isArray(data)) return;
 	  const load = async (items, key) => {
@@ -293,6 +338,7 @@ import {
 		  .filter((i) => textures[i.name])
 		  .map((i) => ({
 			...i,
+			name: i.name, // explicitly include name so ClothingModel can request fresh URL
 			textureUrl: textures[i.name],
 			...cfg,
 			price: i.price ?? 0,
@@ -411,8 +457,9 @@ import {
   
 	return (
 	  <Box sx={{ height: "100vh", display: "flex", flexDirection: "column", bgcolor: "#f5f5f7" }}>
+		{/* Header */}
 		<Box sx={{ p: { xs: 2, md: 3 }, textAlign: "center", bgcolor: "#fff", borderBottom: "1px solid #eaeaea" }}>
-		  <IconButton onClick={() => navigate("/explore")} sx={{ position: "absolute", left: 10, top: 10 }}>
+		  <IconButton onClick={() => navigate("/explore") } sx={{ position: "absolute", left: 10, top: 10 }}>
 			<HomeIcon />
 		  </IconButton>
 		  <Typography variant="h4" sx={{ fontWeight: 600, color: "#333", fontSize: { xs: "1.5rem", md: "2.125rem" } }}>
@@ -422,16 +469,17 @@ import {
 			Select items and see them combined in 3D
 		  </Typography>
 		  <IconButton
-			onClick={() => navigate("/cart")}
+			onClick={() => navigate("/cart") }
 			sx={{ position: "absolute", right: 10, top: 10, bgcolor: "#fff", border: "1px solid #eaeaea", borderRadius: "50%", p: 1 }}
 		  >
 			<ShoppingCartOutlinedIcon />
 		  </IconButton>
 		</Box>
   
+		{/* Canvas */}
 		<Box sx={{ flexGrow: 1, position: "relative", display: "flex", overflow: "hidden" }}>
 		  <Box sx={{ flexGrow: 1, position: "relative", minHeight: "300px" }}>
-			<Suspense fallback={<CanvasLoader />}>
+			<Suspense fallback={<CanvasLoader /> }>
 			  <Canvas
 				key={canvasKey}
 				shadows
@@ -442,11 +490,17 @@ import {
 				}}
 				style={{ background: "linear-gradient(to bottom, #eef2f7, #ffffff)" }}
 			  >
-				<SceneContent upperData={currentUpper} lowerData={currentLower} isAutoRotating={isAutoRotating} setAutoRotate={setAutoRotate} />
+				<SceneContent
+				  upperData={currentUpper}
+				  lowerData={currentLower}
+				  isAutoRotating={isAutoRotating}
+				  setAutoRotate={setAutoRotate}
+				/>
 			  </Canvas>
 			</Suspense>
 		  </Box>
   
+		  {/* Controls (desktop) */}
 		  <Box
 			sx={{
 			  width: { md: "90px" },
@@ -461,7 +515,10 @@ import {
 			  flexShrink: 0,
 			}}
 		  >
-			{[{ icon: <RefreshIcon />, label: "Reset", handler: handleReset }, { icon: <ShoppingCartIcon />, label: "Add Cart", handler: handleAddToCart }].map((act) => (
+			{[
+			  { icon: <RefreshIcon />, label: "Reset", handler: handleReset },
+			  { icon: <ShoppingCartIcon />, label: "Add Cart", handler: handleAddToCart },
+			].map((act) => (
 			  <Box key={act.label} sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
 				<IconButton onClick={act.handler} sx={{ width: 50, height: 50, border: "1px solid #eaeaea", bgcolor: "#f9f9f9", "&:hover": { bgcolor: "#f0f0f0" } }}>
 				  {act.icon}
@@ -474,6 +531,7 @@ import {
 		  </Box>
 		</Box>
   
+		{/* Item labels & navigation */}
 		<Box
 		  sx={{
 			p: 2,
@@ -486,6 +544,7 @@ import {
 			borderTop: "1px solid #eaeaea",
 		  }}
 		>
+		  {/* Shirt row */}
 		  <Box
 			sx={{
 			  display: "flex",
@@ -525,6 +584,7 @@ import {
 			</Box>
 		  </Box>
   
+		  {/* Pants row */}
 		  <Box
 			sx={{
 			  display: "flex",
@@ -565,6 +625,7 @@ import {
 		  </Box>
 		</Box>
   
+		{/* Mobile action bar */}
 		<Box
 		  sx={{
 			display: { xs: "flex", md: "none" },
@@ -586,12 +647,18 @@ import {
 		  </Button>
 		</Box>
   
-		<Snackbar open={snackbar.show} autoHideDuration={3000} onClose={handleCloseSnackbar} anchorOrigin={{ vertical: "bottom", horizontal: "center" }}>
+		{/* Snackbar */}
+		<Snackbar
+		  open={snackbar.show}
+		  autoHideDuration={3000}
+		  onClose={handleCloseSnackbar}
+		  anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+		>
 		  <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} variant="filled" sx={{ width: "100%" }}>
 			{snackbar.message}
 		  </Alert>
 		</Snackbar>
 	  </Box>
 	);
-}
+  }
   
