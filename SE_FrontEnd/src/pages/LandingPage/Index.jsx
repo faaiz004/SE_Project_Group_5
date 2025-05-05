@@ -89,24 +89,47 @@ function LandingPage() {
         <Box component="img" src={mannequin} alt="Wooden Mannequin" sx={mannequinImage} />
 
         <Box sx={buttonContainer}>
-          <Button variant="contained" sx={signInButton} onClick={() => navigate("/sign-up")}>
-            Sign Up
-          </Button>
-          <GoogleLogin
-            onSuccess={handleGoogleLoginSuccess}
-            onError={handleGoogleLoginFailure}
-            render={(renderProps) => (
-              <Button
-                variant="contained"
-                sx={googleButton}
-                onClick={renderProps.onClick}
-                disabled={renderProps.disabled}
-              >
-                Continue with Google
-              </Button>
-            )}
-          />
-        </Box>
+  <Button variant="contained" sx={signInButton} onClick={() => navigate("/sign-up")}>
+    Sign Up
+  </Button>
+
+  <Box sx={{ display: "flex", gap: 2, mt: 2 }}>
+    <GoogleLogin
+      onSuccess={handleGoogleLoginSuccess}
+      onError={handleGoogleLoginFailure}
+      render={(renderProps) => (
+        <Button
+          fullWidth
+          variant="contained"
+          sx={{
+            ...googleButton,
+            flex: 1,  // Equal width for both buttons
+          }}
+          onClick={renderProps.onClick}
+          disabled={renderProps.disabled}
+        >
+          Continue with Google
+        </Button>
+      )}
+    />
+    <Button
+      fullWidth
+      variant="contained"
+      sx={{
+        flex: 1,  // Equal width for both buttons
+        backgroundColor: "black",  // Black background for "Login"
+        color: "white",  // White text for "Login"
+        "&:hover": {
+          backgroundColor: "#333",  // Darker black on hover
+        },
+      }}
+      onClick={() => navigate("/sign-in")}
+    >
+      Login
+    </Button>
+  </Box>
+</Box>
+
       </Box>
     </Box>
   );
